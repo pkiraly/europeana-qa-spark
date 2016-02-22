@@ -17,7 +17,7 @@ public class JsonPathBasedCompletenessCounter {
 
 	private String recordID;
 	private String dataProvider;
-	private static Map<String, Integer> dataProviders;
+	private Map<String, Integer> dataProviders;
 	private Counters counters;
 	private List<String> missingFields;
 	private List<String> emptyFields;
@@ -28,16 +28,10 @@ public class JsonPathBasedCompletenessCounter {
 
 	public JsonPathBasedCompletenessCounter() {
 		this.recordID = null;
-		initializeDataProviders();
 	}
 
 	public JsonPathBasedCompletenessCounter(String recordID) {
 		this.recordID = recordID;
-		initializeDataProviders();
-	}
-	
-	private void initializeDataProviders() {
-		dataProviders = new DataProvidersFactory().getDataProviders();
 	}
 
 	public void count(String jsonString) {
@@ -47,8 +41,8 @@ public class JsonPathBasedCompletenessCounter {
 			emptyFields = new ArrayList<>();
 			existingFields = new ArrayList<>();
 		}
-		setRecordID((String)JsonPath.read(document, idPath));
-		setDataProvider((String)JsonPath.read(document, dataProviderPath));
+		setRecordID((String) JsonPath.read(document, idPath));
+		setDataProvider((String) JsonPath.read(document, dataProviderPath));
 		counters = new Counters();
 		for (JsonBranch jp : EdmBranches.getPaths()) {
 			Object value = null;
@@ -62,16 +56,18 @@ public class JsonPathBasedCompletenessCounter {
 				if (value.getClass() == JSONArray.class) {
 					if (!((JSONArray) value).isEmpty()) {
 						counters.increaseInstance(jp.getCategories());
-						if (verbose)
+						if (verbose) {
 							existingFields.add(jp.getLabel());
+						}
 					} else if (verbose) {
 						missingFields.add(jp.getLabel());
 					}
 				} else if (value.getClass() == String.class) {
 					if (StringUtils.isNotBlank((String) value)) {
 						counters.increaseInstance(jp.getCategories());
-						if (verbose)
+						if (verbose) {
 							existingFields.add(jp.getLabel());
+						}
 					} else if (verbose) {
 						emptyFields.add(jp.getLabel());
 					}
@@ -86,14 +82,17 @@ public class JsonPathBasedCompletenessCounter {
 	}
 
 	public String getFullResults(boolean withLabel) {
-		return String.format("%s,%s,%s", 
-			getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel));
+		return String.format("%s,%s,%s",
+				getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel));
 	}
 
 	public String getDataProviderCode() {
-		String dataProviderCode = dataProviders.containsKey(dataProvider)
-				? String.valueOf(dataProviders.get(dataProvider)) 
-				: dataProvider;
+		String dataProviderCode;
+		if (dataProviders != null && dataProviders.containsKey(dataProvider)) {
+			dataProviderCode = String.valueOf(dataProviders.get(dataProvider));
+		} else {
+			dataProviderCode = dataProvider;
+		}
 		return dataProviderCode;
 	}
 
@@ -131,5 +130,9 @@ public class JsonPathBasedCompletenessCounter {
 
 	public void setDataProvider(String dataProvider) {
 		this.dataProvider = dataProvider;
+	}
+
+	public void setDataProviders(Map<String, Integer> dataProviders) {
+		this.dataProviders = dataProviders;
 	}
 }

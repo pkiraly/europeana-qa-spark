@@ -26,7 +26,7 @@ public class DataProvidersFactory {
 
 	private void initialize() {
 		try {
-			System.err.println("1: " + getClass().getClassLoader().getResource(".").toURI());
+			System.err.println("1: " + getClass().getClassLoader().getResource("data-providers.txt").toURI());
 			Path path = Paths.get(getClass().getClassLoader().getResource("data-providers.txt").toURI());
 			List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
 			dataProviders = new HashMap<>();

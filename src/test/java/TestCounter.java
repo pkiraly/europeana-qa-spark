@@ -1,4 +1,5 @@
 
+import com.nsdr.spark.DataProvidersFactory;
 import com.nsdr.spark.JsonPathBasedCompletenessCounter;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -53,6 +54,7 @@ public class TestCounter {
 		Path path = Paths.get(getClass().getResource("test.json").toURI());
 		List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
 		JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
+		counter.setDataProviders(new DataProvidersFactory().getDataProviders());
 		counter.count(lines.get(0));
 		assertEquals("Österreichische Nationalbibliothek - Austrian National Library", counter.getDataProvider());
 		assertEquals("2", counter.getDataProviderCode());

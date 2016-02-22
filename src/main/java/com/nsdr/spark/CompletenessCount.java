@@ -30,13 +30,16 @@ public class CompletenessCount {
 		}
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
+
+		final JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
+		counter.setDataProviders(new DataProvidersFactory().getDataProviders());
+
 		JavaRDD<String> inputFile = context.textFile(args[0]);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
-			public String call(String arg0) throws Exception {
-				JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
+			public String call(String jsonString) throws Exception {
 				try {
-					counter.count(arg0);
+					counter.count(jsonString);
 					return counter.getFullResults(withLabel);
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());
