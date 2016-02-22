@@ -43,8 +43,7 @@ public class CompletenessCount {
 
 		JavaRDD<String> sparkMentions = inputFile.map(filterLinesWithSpark);
 		PrintWriter writer = new PrintWriter(args[1]);
-		writer.println(sparkMentions.count());
+		writer.println(sparkMentions.collect());
 		writer.close();
-
 	}
 }
