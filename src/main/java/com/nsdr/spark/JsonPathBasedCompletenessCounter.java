@@ -14,12 +14,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public class JsonPathBasedCompletenessCounter {
 
-	private final String recordID;
+	private String recordID;
 	private Counters counters;
 	private List<String> missingFields;
 	private List<String> emptyFields;
 	private List<String> existingFields;
 	private boolean verbose = false;
+	private String id = "$.identifier";
+	private String set = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
 
 	public JsonPathBasedCompletenessCounter() {
 		this.recordID = null;
@@ -36,6 +38,8 @@ public class JsonPathBasedCompletenessCounter {
 			emptyFields = new ArrayList<>();
 			existingFields = new ArrayList<>();
 		}
+		System.err.println(JsonPath.read(document, id));
+		System.err.println(JsonPath.read(document, set));
 		counters = new Counters();
 		for (JsonBranch jp : EdmBranches.getPaths()) {
 			Object value = null;
