@@ -32,11 +32,12 @@ public class CompletenessCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 		JavaRDD<String> inputFile = context.textFile(args[0]);
 		Function<String, String> baseCounts = new Function<String, String>() {
+			@Override
 			public String call(String arg0) throws Exception {
 				JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
 				try {
 					counter.count(arg0);
-					return counter.getCounters().getResultsAsCSV(withLabel);
+					return counter.getFullResults(withLabel);
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());
 				}

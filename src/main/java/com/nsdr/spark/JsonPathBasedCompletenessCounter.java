@@ -15,13 +15,14 @@ import org.apache.commons.lang.StringUtils;
 public class JsonPathBasedCompletenessCounter {
 
 	private String recordID;
+	private String dataProvider;
 	private Counters counters;
 	private List<String> missingFields;
 	private List<String> emptyFields;
 	private List<String> existingFields;
 	private boolean verbose = false;
-	private String id = "$.identifier";
-	private String set = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
+	private static final String idPath = "$.identifier";
+	private static final String dataProviderPath = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
 
 	public JsonPathBasedCompletenessCounter() {
 		this.recordID = null;
@@ -38,8 +39,8 @@ public class JsonPathBasedCompletenessCounter {
 			emptyFields = new ArrayList<>();
 			existingFields = new ArrayList<>();
 		}
-		System.err.println(JsonPath.read(document, id));
-		System.err.println(JsonPath.read(document, set));
+		setRecordID((String)JsonPath.read(document, idPath));
+		setDataProvider((String)JsonPath.read(document, dataProviderPath));
 		counters = new Counters();
 		for (JsonBranch jp : EdmBranches.getPaths()) {
 			Object value = null;
@@ -76,6 +77,10 @@ public class JsonPathBasedCompletenessCounter {
 		}
 	}
 
+	public String getFullResults(boolean withLabel) {
+		return String.format("%s,%s,%s", dataProvider, recordID, counters.getResultsAsCSV(withLabel));
+	}
+
 	public Counters getCounters() {
 		return counters;
 	}
@@ -96,4 +101,19 @@ public class JsonPathBasedCompletenessCounter {
 		return existingFields;
 	}
 
+	public String getRecordID() {
+		return recordID;
+	}
+
+	public void setRecordID(String recordID) {
+		this.recordID = recordID;
+	}
+
+	public String getDataProvider() {
+		return dataProvider;
+	}
+
+	public void setDataProvider(String dataProvider) {
+		this.dataProvider = dataProvider;
+	}
 }
