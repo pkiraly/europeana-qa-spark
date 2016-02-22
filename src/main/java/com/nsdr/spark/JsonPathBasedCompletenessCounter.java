@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minidev.json.JSONArray;
@@ -43,7 +44,7 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 			existingFields = new ArrayList<>();
 		}
 		setRecordID((String) JsonPath.read(document, idPath));
-		setDataProvider((String) JsonPath.read(document, dataProviderPath));
+		setDataProvider(extractString(JsonPath.read(document, dataProviderPath)));
 		counters = new Counters();
 		for (JsonBranch jp : EdmBranches.getPaths()) {
 			Object value = null;
@@ -89,7 +90,9 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 
 	public String getDataProviderCode() {
 		String dataProviderCode;
-		if (dataProviders != null && dataProviders.containsKey(dataProvider)) {
+		if (dataProvider == null) {
+			dataProviderCode = "0";
+		} else if (dataProviders != null && dataProviders.containsKey(dataProvider)) {
 			dataProviderCode = String.valueOf(dataProviders.get(dataProvider));
 		} else {
 			dataProviderCode = dataProvider;
@@ -135,5 +138,19 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 
 	public void setDataProviders(Map<String, Integer> dataProviders) {
 		this.dataProviders = dataProviders;
+	}
+
+	private String extractString(Object value) {
+		String extracted = null;
+		if (value.getClass() == String.class) {
+			extracted = (String) value;
+		} else if (value.getClass() == LinkedHashMap.class) {
+			Map<String, String> map = (LinkedHashMap<String, String>)value;
+			for (String val : map.values()) {
+				extracted = val;
+				break;
+			}
+		}
+		return extracted;
 	}
 }
