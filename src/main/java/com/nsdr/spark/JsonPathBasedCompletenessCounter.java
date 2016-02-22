@@ -3,6 +3,7 @@ package com.nsdr.spark;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class JsonPathBasedCompletenessCounter {
+public class JsonPathBasedCompletenessCounter implements Serializable {
 
 	private String recordID;
 	private String dataProvider;
