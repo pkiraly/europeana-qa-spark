@@ -1,5 +1,6 @@
 package com.nsdr.spark;
 
+import com.jayway.jsonpath.InvalidJsonException;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -33,28 +34,17 @@ public class CompletenessCount {
 		Function<String, String> baseCounts = new Function<String, String>() {
 			public String call(String arg0) throws Exception {
 				JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
-				counter.count(arg0);
-				return counter.getCounters().getResultsAsCSV(withLabel);
-				/*
-				 context.write(new Text(String.format("\"%s\",%s", metadata.getDataProvider(),
-				 metadata.getId().replace("http://data.europeana.eu/item/", ""))),
-				 new Text());
-				 */
+				try {
+					counter.count(arg0);
+					return counter.getCounters().getResultsAsCSV(withLabel);
+				} catch (InvalidJsonException e) {
+					System.err.println(e.getLocalizedMessage());
+				}
+				return null;
 			}
 		};
 
 		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
 		baseCountsRDD.saveAsTextFile(args[1]);
-		/*
-		 PrintWriter writer = new PrintWriter(args[1]);
-		 writer.println(baseCountsRDD.collect());
-		 writer.close();
-		
-		 List<Tuple2<String>> output = baseCountsRDD.collect();
-		 for (Tuple2<?,?> tuple : output) {
-		 System.out.println(tuple._1() + ": " + tuple._2());
-		 }
-		 */
-
 	}
 }
