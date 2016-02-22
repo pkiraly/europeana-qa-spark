@@ -2,10 +2,12 @@ package com.nsdr.spark;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.List;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
+import scala.Tuple2;
 
 /**
  *
@@ -28,7 +30,7 @@ public class CompletenessCount {
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 		JavaRDD<String> inputFile = context.textFile(args[0]);
-		Function<String, String> filterLinesWithSpark = new Function<String, String>() {
+		Function<String, String> baseCounts = new Function<String, String>() {
 			public String call(String arg0) throws Exception {
 				JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
 				counter.count(arg0);
@@ -41,9 +43,18 @@ public class CompletenessCount {
 			}
 		};
 
-		JavaRDD<String> sparkMentions = inputFile.map(filterLinesWithSpark);
-		PrintWriter writer = new PrintWriter(args[1]);
-		writer.println(sparkMentions.collect());
-		writer.close();
+		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
+		baseCountsRDD.saveAsTextFile(args[1]);
+		/*
+		 PrintWriter writer = new PrintWriter(args[1]);
+		 writer.println(baseCountsRDD.collect());
+		 writer.close();
+		
+		 List<Tuple2<String>> output = baseCountsRDD.collect();
+		 for (Tuple2<?,?> tuple : output) {
+		 System.out.println(tuple._1() + ": " + tuple._2());
+		 }
+		 */
+
 	}
 }
