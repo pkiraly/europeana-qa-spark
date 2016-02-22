@@ -55,5 +55,8 @@ public class TestCounter {
 		JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
 		counter.count(lines.get(0));
 		assertEquals("Österreichische Nationalbibliothek - Austrian National Library", counter.getDataProvider());
+		assertEquals("2", counter.getDataProviderCode());
 	}
+	
+	
 }

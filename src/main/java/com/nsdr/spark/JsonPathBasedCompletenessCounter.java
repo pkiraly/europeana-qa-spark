@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 
@@ -16,6 +17,7 @@ public class JsonPathBasedCompletenessCounter {
 
 	private String recordID;
 	private String dataProvider;
+	private static Map<String, Integer> dataProviders;
 	private Counters counters;
 	private List<String> missingFields;
 	private List<String> emptyFields;
@@ -26,10 +28,16 @@ public class JsonPathBasedCompletenessCounter {
 
 	public JsonPathBasedCompletenessCounter() {
 		this.recordID = null;
+		initializeDataProviders();
 	}
 
 	public JsonPathBasedCompletenessCounter(String recordID) {
 		this.recordID = recordID;
+		initializeDataProviders();
+	}
+	
+	private void initializeDataProviders() {
+		dataProviders = new DataProvidersFactory().getDataProviders();
 	}
 
 	public void count(String jsonString) {
@@ -78,7 +86,15 @@ public class JsonPathBasedCompletenessCounter {
 	}
 
 	public String getFullResults(boolean withLabel) {
-		return String.format("%s,%s,%s", dataProvider, recordID, counters.getResultsAsCSV(withLabel));
+		return String.format("%s,%s,%s", 
+			getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel));
+	}
+
+	public String getDataProviderCode() {
+		String dataProviderCode = dataProviders.containsKey(dataProvider)
+				? String.valueOf(dataProviders.get(dataProvider)) 
+				: dataProvider;
+		return dataProviderCode;
 	}
 
 	public Counters getCounters() {
