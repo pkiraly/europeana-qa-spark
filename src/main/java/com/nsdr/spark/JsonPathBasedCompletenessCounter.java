@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class JsonPathBasedCompletenessCounter implements Serializable {
 
+	private String inputFileName;
 	private String recordID;
 	private String dataProvider;
 	private Map<String, Integer> dataProviders;
@@ -86,7 +87,7 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 
 	public String getFullResults(boolean withLabel) {
 		return String.format("%s,%s,%s",
-				getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel));
+				  getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel));
 	}
 
 	public String getDataProviderCode() {
@@ -146,7 +147,7 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		if (value.getClass() == String.class) {
 			extracted = (String) value;
 		} else if (value.getClass() == LinkedHashMap.class) {
-			Map<String, String> map = (LinkedHashMap<String, String>)value;
+			Map<String, String> map = (LinkedHashMap<String, String>) value;
 			for (String val : map.values()) {
 				extracted = val;
 				break;
@@ -154,4 +155,13 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		}
 		return extracted;
 	}
+
+	void setInputFileName(String inputFileName) {
+		this.inputFileName = inputFileName;
+	}
+
+	public String getInputFileName() {
+		return inputFileName;
+	}
+
 }

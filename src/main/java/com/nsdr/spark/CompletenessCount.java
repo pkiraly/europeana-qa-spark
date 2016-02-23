@@ -27,15 +27,17 @@ public class CompletenessCount {
 			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
-		logger.info("Input file is " + args[0]);
-		System.err.println("Input file is " + args[0]);
+		String inputFileName = args[0];
+		logger.info("Input file is " + inputFileName);
+		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
 		counter.setDataProviders(new DataProvidersFactory().getDataProviders());
+		counter.setInputFileName(inputFileName);
 
-		JavaRDD<String> inputFile = context.textFile(args[0]);
+		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
@@ -44,6 +46,8 @@ public class CompletenessCount {
 					return counter.getFullResults(withLabel);
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());
+					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.", 
+							  counter.getInputFileName(), jsonString, e.getLocalizedMessage()));
 				}
 				return "";
 			}
