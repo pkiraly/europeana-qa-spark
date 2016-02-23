@@ -138,7 +138,7 @@ Zeeuwse Bibliotheek
 Gemeentearchief Weert
 Ayuntamiento de Murcia. Archivo Municipal.
 Uppsala University
-Ośrodek \"Brama Grodzka - Teatr NN\"
+Ośrodek "Brama Grodzka - Teatr NN"
 Nationalmuseum, Sweden
 Fitzwilliam Museum
 SMB-digital
@@ -189,7 +189,7 @@ Akershusbasen
 Biblioteka Cyfrowa - Regionalia Ziemi Łódzkiej
 Nationaal Archief, Den Haag
 Euregionaal Historisch Centrum Sittard-Geleen (ehc.sittard-geleen.eu)
-\"Lucian Blaga\" Central University Library of Cluj-Napoca
+"Lucian Blaga" Central University Library of Cluj-Napoca
 Fondazione Luigi Micheletti
 Archaeology Data Service
 Spielzeugmuseum Nürnberg / \t http://www.museen.nuernberg.de/spielzeugmuseum/index.html
@@ -265,7 +265,7 @@ Preiser Records; Austria
 CODA Apeldoorn
 Hispania Epigraphica Online - HEpOl
 The Military Archives of Sweden
-Zachodniopomorska Biblioteka Cyfrowa \"Pomerania\"
+Zachodniopomorska Biblioteka Cyfrowa "Pomerania"
 Radomska Biblioteka Cyfrowa
 EDR - Epigraphic Database Romae
 Den Gamle By
@@ -690,7 +690,7 @@ SNM - Múzeum Bojnice v Bojniciach
 Łódzka Regionalna Biblioteka Cyfrowa
 Fundación Integra
 Slovenská národná knižnica - Slovak National Library in Martin
-Music Library of Greece \"Lilian Voudouri\" - Friends of Music Society /Μεγάλη Μουσική Βιβλιοθήκη της Ελλάδος «Λίλιαν Βουδούρη» - Σύλλογος Οι Φίλοι της Μουσικής
+Music Library of Greece "Lilian Voudouri" - Friends of Music Society /Μεγάλη Μουσική Βιβλιοθήκη της Ελλάδος «Λίλιαν Βουδούρη» - Σύλλογος Οι Φίλοι της Μουσικής
 Aulestad
 Direção Regional da Cultura dos Açores
 Het Stadsmus, Hasselt
@@ -873,8 +873,8 @@ TVR
 Eesti Tuletõrjemuuseum
 Museu Nacional d'Art de Catalunya
 RBINS
-Biblioteca Județeană \"Alexandru D. Xenopol\" Arad
-Museo di Chimica \"Primo Levi\"- Sapienza University Rome
+Biblioteca Județeană "Alexandru D. Xenopol" Arad
+Museo di Chimica "Primo Levi"- Sapienza University Rome
 Regione Marche / SchedeRA:MC
 Danish Broadcasting Corporation
 MUDE - Museu do Design e da Moda, Colecção Francisco Capelo
@@ -937,7 +937,7 @@ Centre Virtuel de la Connaissance sur l’Europe
 Archivi delle arti applicate italiane del XX secolo
 Elkar; Spain
 Εθνικό Κέντρο Τεκμηρίωσης (ΕΚΤ)
-Biblioteca Judeţeană \"Panait Istrati\" Brăila
+Biblioteca Judeţeană "Panait Istrati" Brăila
 Gradska knjižnica Rijeka
 Rockheim
 Cinecittà Luce
@@ -1061,7 +1061,7 @@ Herman Ottó Múzeum - Miskolc
 Museum of Archaeology and Anthropology (University of Cambridge), Cambridge, UK
 Déri Múzeum - Debrecen
 Det Lokalhistoriske Arkiv i Herning
-Nederlands Bakkerijmuseum \"Het Warme Land\"
+Nederlands Bakkerijmuseum "Het Warme Land"
 Namdalsmuseet
 Storyville Records
 Maironio lietuvių literatūros muziejus / Maironis Lithuanian Literature Museum
@@ -1086,7 +1086,7 @@ Sparkassenstiftung Schleswig-Holstein
 Screen Archive South East
 Slezské zemské muzeum
 EMA Records
-Етнографічна колекція \"Кровець\"
+Етнографічна колекція "Кровець"
 Księgozbiór Wirtualny Federacji Bibliotek Kościelnych FIDES
 Diözesanarchiv St. Pölten
 Kildenett.no
@@ -1183,7 +1183,7 @@ Halton Library Service Image website
 Lindesnes Bygdemuseum
 Landeshauptstadt Dresden
 Museo del Vicino Oriente- Sapienza University Rome
-National Research Foundation \"Eleftherios K. Venizelos\" / Εθνικό Ίδρυμα Ελευθέριος Κ. Βενιζέλος
+National Research Foundation "Eleftherios K. Venizelos" / Εθνικό Ίδρυμα Ελευθέριος Κ. Βενιζέλος
 Vest-Agder-museet
 Classical Masters
 Erbario - Museo di Botanica- Sapienza University Rome
@@ -1228,9 +1228,9 @@ Berger museum
 Archivos de la Fundación Bernardo Aladrén
 Universitat Autònoma de Barcelona
 Museo di Mineralogia- Sapienza University Rome
-Biblioteca Judeţeană \"G. T. Kirileanu\" Neamţ
+Biblioteca Judeţeană "G. T. Kirileanu" Neamţ
 Valstybinis Vilniaus Gaono žydų muziejus
-Music Library of Greece \"Lilian Voudouri\" - Friends of Music Society / Μεγάλη Μουσική Βιβλιοθήκη της Ελλάδος «Λίλιαν Βουδούρη» - Σύλλογος Οι Φίλοι της Μουσικής
+Music Library of Greece "Lilian Voudouri" - Friends of Music Society / Μεγάλη Μουσική Βιβλιοθήκη της Ελλάδος «Λίλιαν Βουδούρη» - Σύλλογος Οι Φίλοι της Μουσικής
 Museo Salvatore Ferragamo
 Heemkundig Museum Woutershof Heusden Zolder
 Openbaar Kunstbezit Vlaanderen
@@ -1279,7 +1279,7 @@ CIMEC - Institute for Cultural Memory
 Universitätsbibliothek Kiel
 VRT
 Seminar fuer Wirtschafts- und Unternehmensgeschichte, Universität Köln
-University library \"Svetozar Markovic\", Belgrade / Univerzitetska biblioteka \"Svetozar Markovic\", Beograd
+University library "Svetozar Markovic", Belgrade / Univerzitetska biblioteka "Svetozar Markovic", Beograd
 La Maison du Spectacle La Bellone, BELLONE, Brussels, Belgium
 Knjižnica Mirana Jarca Novo mesto
 Moviebox Birmingham Ltd
@@ -1327,7 +1327,7 @@ Historisch Centrum Limburg (rhcl.nl)\n
 Cyfrowa Biblioteka Diecezjalna w Sandomierzu
 Università degli Studi di Padova | University of Padua
 Vindolanda Tablets Online
-Mākslas muzejs \"Rīgas Birža\"
+Mākslas muzejs "Rīgas Birža"
 Beelden van Gelderland
 Boston Public Library (archive.org)
 Museum of Modern and Contemporary Art, Rijeka - Kultura.hr
@@ -1490,7 +1490,7 @@ Musée de la Castre
 Université libre de Bruxelles
 Århus Kommunes Biblioteker. Brabrand-Årslev Lokalhistoriske Arkiv
 Musée de la Musique Mécanique
-Biblioteca Judeţeană \"Octavian Goga\" Cluj
+Biblioteca Judeţeană "Octavian Goga" Cluj
 The National Architectural Heritage Board
 The National Museum of Slovenia 
 Tehniški muzej Slovenije, Parmova 33, 1001 Ljubljana
@@ -1532,9 +1532,9 @@ Kerkfabriek Sint-Jan Baptist, Tongeren
 Arkiv i Nordland
 Πολιτιστικό Ίδρυμα Ομίλου Πειραιώς; Piraeus Bank Group Cultural Foundation; Piop collections
 National Museum of Contemporary Art / Εθνικό Μουσείο Σύγχρονης Τέχνης
-Library of the \"Lucian Blaga\" University of Sibiu
+Library of the "Lucian Blaga" University of Sibiu
 Röhsska museet
-Biblioteca Județeană \"Octavian Goga\" Cluj
+Biblioteca Județeană "Octavian Goga" Cluj
 Musée du Palais Lascaris
 Heaven Music
 Norsk barnemuseum
@@ -1673,7 +1673,7 @@ Prelinger Library (archive.org)
 Menart
 Norsk Reiselivsmuseum
 Latvijas Kara muzejs
-\"Octavian Goga\" Cluj County Library
+"Octavian Goga" Cluj County Library
 Magenta
 Verzetsmuseum Amsterdam
 Саратовский государственный художественный музей имени А.Н. Радищева / Saratov State Art Museum after A.N. Radishev
@@ -1686,7 +1686,7 @@ Horizon West Music
 Kainós Producciones
 Museum of Greek Folk Art / Μουσείο Ελληνικής Λαϊκής Τέχνης
 Latvijas Nacionālā bibliotēka - National Library of Latvia
-\"Lucian Blaga\" University of Sibiu
+"Lucian Blaga" University of Sibiu
 Archivo de la palabra de Castilla La Mancha
 Hayat Production; Bosnia and Herzegovina
 Earth Sciences - University of Toronto (archive.org)
@@ -1892,7 +1892,7 @@ Kerkfabriek Onze-Lieve-Vrouw ten Hemelopneming, Kwaadmechelen
 Mestna knjižnica Piran
 Ameritz Music Ltd.
 Kerkfabriek Onze-Lieve-Vrouw Onbevlekt Ontvangen, Aalst
-Biblioteca Judeţeană \"Alexandru şi Aristia Aman\" Craiova
+Biblioteca Judeţeană "Alexandru şi Aristia Aman" Craiova
 Generalitat de Catalunya. Arxiu Comarcal de l'Anoia
 Kerkfabriek Sint-Stefanus, Millen
 Rojas Jūras zvejniecības muzejs
@@ -2362,8 +2362,8 @@ Royal Museum for Central Africa; Belgium
 Stormarnsches Dorfmuseum 
 Absolute Music
 Amores Grup de Percussió
-Biblioteca Judeţeană \"Astra\" Sibiu
-Biblioteca Judeţeană \"Nicolae Iorga\" Ploieşti
+Biblioteca Judeţeană "Astra" Sibiu
+Biblioteca Judeţeană "Nicolae Iorga" Ploieşti
 Chosen Few Emerald Entertainment/LB Records Inc.
 Galletti-Boston; Italy
 Hepta Trad
@@ -2479,7 +2479,7 @@ Menart / Music Net
 The Johns Hopkins University Sheridan Libraries (archive.org)
 Trysil folkebibliotek
 Bamboo Gardens And Music
-Biblioteca Judeţeană \"I. S. Bădescu\" Sălaj
+Biblioteca Judeţeană "I. S. Bădescu" Sălaj
 Fania
 Kerkfabriek Heilig Hart, Merem
 Montrose Productions
@@ -2544,7 +2544,7 @@ Poki Records
 ProClassica
 Simplyred.com; United Kingdom
 Worpt Productions
-Žemaičių muziejus „Alka“ / Samogitian Museum \"Alka\"
+Žemaičių muziejus „Alka“ / Samogitian Museum "Alka"
 Aman Library
 Arkivverket
 Autoproduit
@@ -2588,7 +2588,7 @@ Foehn Records; Spain
 Fruitcake
 Generalitat de Catalunya. Arxiu Comarcal del Pallàrs Sobirà
 Hamaya International Cameroun
-Heemkundig Genootschap \"van Witthem\" Beersel
+Heemkundig Genootschap "van Witthem" Beersel
 Hō'oli Productions
 Internet Culturale - Biblioteca Universitaria Alessandrina
 LoudMouthMusic
@@ -2649,7 +2649,7 @@ FMU
 Galaktika Magazin
 Ginger Girl Records
 Goriški literarni klub GOvoRICA
-Historisch Museum \"De Scheper\"
+Historisch Museum "De Scheper"
 Hollier
 ILK Music/VME
 Kerkfabriek Maagd der Armen, Mariaheide
@@ -3325,7 +3325,7 @@ Vintage Films Ltd.
 Vision Records
 Widerøes Flyveselskap AS
 Østfold fylkesbibliotek
-Столична община - район \"Кремиковци\"
+Столична община - район "Кремиковци"
 1 in 7 Recordings
 American Entomological Society
 Arbeiderbladet
@@ -3854,3 +3854,86 @@ overnattingsstader
 Østfold Historielag
 Østsamisk museum
 Картографска збирка Аћимовић
+Across Limits
+Archiwum Państwowe w Olsztynie
+Arxiu Històric de Girona
+BAM Portal / Bibliotheksservice - Zentrum Baden - Württemberg
+BAM Portal / Technoseum
+BAM Portal / Universitätsbibliothek Heidelberg
+bg
+Biblioteca de Comerç i Turisme de la Generalitat de Catalunya
+Biblioteca de l'Esport de la Generalitat de Catalunya
+Biblioteca Virtual Sierra-Pambley
+cs
+CulturaItaliaInternet Culturale
+CulturaItaliaInternet Culturale / biblioteca nazionale centrale - firenze
+CulturaItaliaInternet Culturale / biblioteca nazionale marciana - venezia
+CulturaItaliaInternet Culturale / istituzione casa della musica. cirpem - parma
+CulturaItaliaMuseiD-Italia
+de
+DIZI
+el
+en
+ETI BioInformatics
+EuropeanaTravel
+Federico Zeri Foundation
+Germanisches Nationalmuseum Nürnberg / Digitaler Porträtindex
+Gleimhaus Halberstadt / Digitaler Porträtindex
+Gobierno de Extremadura
+Gorenjski muzej
+Groeninge Museum Bruges
+he Cyprus Institute - STARC / Byzantine Museum of the Archbishop Makarios III Foundation
+Hellenic Aggregator
+Hellenic Aggregator at Veria Public Library
+Herzog August Bibliothek Wolfenbüttel / Digitaler Porträtindex
+Institut d'Estudis Ilerdencs. Servei d'Arxiu i Llegats
+ISTI-CNR -Istituto di Scienza e Tecnologie dell Informazione
+Jersey Heritage
+John Lenaerts
+Koninklijke Musea voor Kunst en Geschiedenis
+KulturIT
+Kunstsammlungen der Veste Coburg / Digitaler Porträtindex
+Latvijas Nacionālā bibliotēka
+Legermuseum
+Library of Cyprus Univeristy of Technology
+Lippmann+Rau-Stiftung (Lippmann+Rau Foundation); Germany
+Lithuanian Art Museum
+Lithuanian Theatre
+LWL-Museum für Kunst und Kultur (Westfälisches Landesmuseum) / Digitaler Porträtindex
+Mediterranean Archaeological Research Institute-Vrije Universiteit Brussel /           The Cyprus Institute - STARC
+MIMO - Musical Instrument Museums Online
+Museum of Fine Arts Ghent
+Music Library of Greece "Lilian Voudouri" - Friends of Music Society /Μεγάλη Μουσική Βιβλιοθήκη της Ελλάδος «Λίλιαν Βουδούρη» - Σύλλογος Οι Φίλοι της Μουσικής
+MUSIT
+Muziekinstrumentenmuseum
+National Gallery - Alexandros Soutsos Museum
+Niedersächsische Staats- und Universitätsbibliothek Göttingen
+Open Beelden
+Pamiatkový úrad SR
+Pokrajinska in študijska knjižnica Murska Sobota
+PROBADO 3D
+Regionaal Historisch Centrum Vecht en Venen
+Royal Museum of Fine Arts Antwerp
+SAN - Sistema Archivistivo Nazionale
+Slovenské národné múzeum
+slv
+Spielzeugmuseum Nürnberg / 	 http://www.museen.nuernberg.de/spielzeugmuseum/index.html
+Staatliche Graphische Sammlung München / Digitaler Porträtindex
+Staatsbibliothek zu Berlin - Preußischer Kulturbesitz / Digitaler Porträtindex
+Tårnby Stads- og Lokalarkiv
+Technical Chamber of  Greece
+The Cyprus Institute - STARC / Byzantine Museum of the Archbishop Makarios III Foundation
+The Cyprus Institute - STARC / Mediterranean Archaeological Research           Institute-Vrije Universiteit Brussel
+The Cyprus Institute - STARC / Βυζαντινό Μουσείο Ιδρύματος Αρχιεπισκόπου Μακαρίου Γ
+The Great War Archive
+The National Library of Russia
+The National Museum of Slovenia
+The Regional Archives in Härnösand
+Università di Biologna
+Università di Bologna
+Universit� di Bologna
+University library "Svetozar Markovic"
+University of Patras/Library and Information Center
+© Ville de Bourg-en-Bresse
+Zgodovinski arhiv Ljubljana
+Γενική Γραμματεία Πολιτισμού
