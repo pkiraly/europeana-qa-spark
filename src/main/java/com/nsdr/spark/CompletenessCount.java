@@ -28,6 +28,7 @@ public class CompletenessCount {
 			System.exit(0);
 		}
 		logger.info("Input file is " + args[0]);
+		System.err.println("Input file is " + args[0]);
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
@@ -44,7 +45,7 @@ public class CompletenessCount {
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());
 				}
-				return null;
+				return "";
 			}
 		};
 
