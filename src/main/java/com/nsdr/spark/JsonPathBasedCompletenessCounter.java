@@ -1,6 +1,7 @@
 package com.nsdr.spark;
 
 import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.InvalidJsonException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		this.recordID = recordID;
 	}
 
-	public void count(String jsonString) {
+	public void count(String jsonString) throws InvalidJsonException {
 		Object document = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
 		if (verbose) {
 			missingFields = new ArrayList<>();

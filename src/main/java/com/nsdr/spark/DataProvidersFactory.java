@@ -18,6 +18,7 @@ import java.util.logging.Logger;
  */
 public class DataProvidersFactory {
 
+	private static Logger logger = Logger.getLogger(DataProvidersFactory.class.getCanonicalName());
 	private static Map<String, Integer> dataProviders;
 	
 	public DataProvidersFactory() {
@@ -26,7 +27,6 @@ public class DataProvidersFactory {
 
 	private void initialize() {
 		try {
-			System.err.println("1: " + getClass().getClassLoader().getResource("data-providers.txt").toURI());
 			Path path = Paths.get(getClass().getClassLoader().getResource("data-providers.txt").toURI());
 			List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
 			dataProviders = new HashMap<>();
@@ -34,10 +34,8 @@ public class DataProvidersFactory {
 			for (String dataProvider : lines) {
 				dataProviders.put(dataProvider, i++);
 			}
-		} catch (URISyntaxException ex) {
-			Logger.getLogger(DataProvidersFactory.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IOException ex) {
-			Logger.getLogger(DataProvidersFactory.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (URISyntaxException | IOException ex) {
+			logger.severe(ex.getLocalizedMessage());
 		}
 	}
 
