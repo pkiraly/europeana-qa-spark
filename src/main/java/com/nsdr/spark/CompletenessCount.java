@@ -34,8 +34,10 @@ public class CompletenessCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
-		counter.setDataProvidersFactory(new DataProvidersFactory());
-		counter.setDatasetsFactory(new DatasetsFactory());
+		DataProvidersFactory dataProvidersFactory = new DataProvidersFactory();
+		counter.setDataProvidersFactory(dataProvidersFactory);
+		DatasetsFactory datasetsFactory = new DatasetsFactory();
+		counter.setDatasetsFactory(datasetsFactory);
 		counter.setInputFileName(inputFileName);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);

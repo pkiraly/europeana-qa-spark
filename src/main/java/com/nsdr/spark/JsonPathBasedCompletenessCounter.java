@@ -94,8 +94,12 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 	}
 
 	public String getFullResults(boolean withLabel) {
+		return getFullResults(withLabel, false);
+	}
+
+	public String getFullResults(boolean withLabel, boolean compress) {
 		return String.format("%s,%s,%s",
-				  getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel));
+				  getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel, compress));
 	}
 
 	public String getDataProviderCode() {

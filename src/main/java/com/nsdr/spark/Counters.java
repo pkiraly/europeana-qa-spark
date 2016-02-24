@@ -42,20 +42,29 @@ public class Counters {
 	}
 
 	public List<String> getResultsAsList(boolean withLabel) {
+		return getResultsAsList(withLabel, false);
+	}
+
+	public List<String> getResultsAsList(boolean withLabel, boolean compressed) {
 		Map<String, Double> results = getResults();
 		List<String> items = new ArrayList<>();
-		addResultItem(withLabel, items, TOTAL, results.get(TOTAL));
+		addResultItem(withLabel, items, TOTAL, results.get(TOTAL), compressed);
 		for (JsonBranch.Category category : JsonBranch.Category.values()) {
-			addResultItem(withLabel, items, category.name(), results.get(category.name()));
+			addResultItem(withLabel, items, category.name(), results.get(category.name()), compressed);
 		}
 		return items;
 	}
 
-	private void addResultItem(boolean withLabel, List<String> items, String key, Double value) {
+	private void addResultItem(boolean withLabel, List<String> items, String key, Double value, boolean compressed) {
+		String valueAsString = String.format("%f", value);
+		if (compressed) {
+			valueAsString = valueAsString.replaceAll("([0-9])0+$", "$1").replaceAll("\\.0+$", ".0");
+		}
+
 		if (withLabel) {
-			items.add(String.format("\"%s\":%f", key, value));
+			items.add(String.format("\"%s\":%s", key, valueAsString));
 		} else {
-			items.add(String.format("%f", value));
+			items.add(valueAsString);
 		}
 	}
 
@@ -64,7 +73,11 @@ public class Counters {
 	}
 
 	public String getResultsAsCSV(boolean withLabel) {
-		return StringUtils.join(getResultsAsList(withLabel), ",");
+		return getResultsAsCSV(withLabel, false);
+	}
+
+	public String getResultsAsCSV(boolean withLabel, boolean compressed) {
+		return StringUtils.join(getResultsAsList(withLabel, compressed), ",");
 	}
 
 	public void printResults() {

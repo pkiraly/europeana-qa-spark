@@ -86,4 +86,18 @@ public class TestCounter {
 		fail("Should throw an exception if one or more of given numbers are negative");
 	}
 
+	@Test
+	public void testFullResults() {
+		assertEquals("2,92062/BibliographicResource_1000126015451,\"TOTAL\":0.416667,\"MANDATORY\":0.769231,\"DESCRIPTIVENESS\":0.181818,\"SEARCHABILITY\":0.388889,\"CONTEXTUALIZATION\":0.272727,\"IDENTIFICATION\":0.500000,\"BROWSING\":0.357143,\"VIEWING\":0.750000,\"REUSABILITY\":0.416667,\"MULTILINGUALITY\":0.400000", counter.getFullResults(true));
+		assertEquals("2,92062/BibliographicResource_1000126015451,0.416667,0.769231,0.181818,0.388889,0.272727,0.500000,0.357143,0.750000,0.416667,0.400000", counter.getFullResults(false));
+		assertEquals("2,92062/BibliographicResource_1000126015451,0.416667,0.769231,0.181818,0.388889,0.272727,0.5,0.357143,0.75,0.416667,0.4", counter.getFullResults(false, true));
+	}
+
+	@Test
+	public void testRegex() {
+		String value = "0.50000";
+		value = value.replaceAll("([0-9])0+$", "$1").replaceAll("\\.0+$", ".0");
+		assertEquals("0.5", value);
+	}
+
 }
