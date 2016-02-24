@@ -3,6 +3,7 @@ package com.nsdr.spark;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class AbstractManager {
+public class AbstractManager implements Serializable {
 
 	private static Logger logger = Logger.getLogger(AbstractManager.class.getCanonicalName());
 	protected static Map<String, Integer> data;
