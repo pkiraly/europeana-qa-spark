@@ -32,7 +32,6 @@ public class AbstractManager implements Serializable {
 		try {
 			Path path = Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
 			List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
-			data = new LinkedHashMap<>();
 			int i = 1;
 			for (String line : lines) {
 				data.put(line, i++);
@@ -50,10 +49,10 @@ public class AbstractManager implements Serializable {
 	}
 
 	public void save(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
-		PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-		for (Map.Entry<String, Integer> entry : data.entrySet()) {
-			writer.println(String.format("%s;%d", entry.getKey(), entry.getValue()));
+		try (PrintWriter writer = new PrintWriter(fileName, "UTF-8")) {
+			for (Map.Entry<String, Integer> entry : data.entrySet()) {
+				writer.println(String.format("%d;%s", entry.getValue(), entry.getKey()));
+			}
 		}
-		writer.close();
 	}
 }
