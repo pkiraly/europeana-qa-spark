@@ -43,8 +43,10 @@ public class AbstractManager implements Serializable {
 
 	public Integer lookup(String entry) {
 		if (!data.containsKey(entry)) {
+			int oldsize = data.size();
 			data.put(entry, data.size() + 1);
-			logger.info(String.format("new entry: %s (size: %d)", entry, data.size()));
+			logger.info(String.format("new entry: %s (size: %d -> %d)",
+					  entry, oldsize, data.size()));
 		}
 		return data.get(entry);
 	}
