@@ -23,8 +23,8 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 	private String dataProvider;
 	private String dataset;
 
-	private DataProvidersFactory dataProvidersFactory;
-	private DatasetsFactory datasetsFactory;
+	private DataProviderManager dataProviderManager;
+	private DatasetManager datasetsManager;
 
 	private Counters counters;
 	private List<String> missingFields;
@@ -106,8 +106,8 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		String dataProviderCode;
 		if (dataProvider == null) {
 			dataProviderCode = "0";
-		} else if (dataProvidersFactory != null) {
-			dataProviderCode = String.valueOf(dataProvidersFactory.lookup(dataProvider));
+		} else if (dataProviderManager != null) {
+			dataProviderCode = String.valueOf(dataProviderManager.lookup(dataProvider));
 		} else {
 			dataProviderCode = dataProvider;
 		}
@@ -118,8 +118,8 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		String datasetCode;
 		if (dataset == null) {
 			datasetCode = "0";
-		} else if (datasetsFactory != null) {
-			datasetCode = String.valueOf(datasetsFactory.lookup(dataset));
+		} else if (datasetsManager != null) {
+			datasetCode = String.valueOf(datasetsManager.lookup(dataset));
 		} else {
 			datasetCode = dataset;
 		}
@@ -162,12 +162,12 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		this.dataProvider = dataProvider;
 	}
 
-	public void setDataProvidersFactory(DataProvidersFactory dataProvidersFactory) {
-		this.dataProvidersFactory = dataProvidersFactory;
+	public void setDataProviderManager(DataProviderManager dataProviderManager) {
+		this.dataProviderManager = dataProviderManager;
 	}
 
-	public void setDatasetsFactory(DatasetsFactory datasetsFactory) {
-		this.datasetsFactory = datasetsFactory;
+	public void setDatasetManager(DatasetManager datasetsManager) {
+		this.datasetsManager = datasetsManager;
 	}
 
 	private String extractString(Object value) {

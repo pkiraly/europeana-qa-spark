@@ -2,6 +2,8 @@ package com.nsdr.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -34,10 +36,10 @@ public class CompletenessCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
-		DataProvidersFactory dataProvidersFactory = new DataProvidersFactory();
-		counter.setDataProvidersFactory(dataProvidersFactory);
-		DatasetsFactory datasetsFactory = new DatasetsFactory();
-		counter.setDatasetsFactory(datasetsFactory);
+		DataProviderManager dataProviderManager = new DataProviderManager();
+		counter.setDataProviderManager(dataProviderManager);
+		DatasetManager datasetManager = new DatasetManager();
+		counter.setDatasetManager(datasetManager);
 		counter.setInputFileName(inputFileName);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
@@ -59,5 +61,12 @@ public class CompletenessCount {
 
 		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
 		baseCountsRDD.saveAsTextFile(args[1]);
+
+		try {
+			dataProviderManager.save(args[2]);
+			datasetManager.save(args[3]);
+		} catch (UnsupportedEncodingException ex) {
+			logger.severe(ex.getLocalizedMessage());
+		}
 	}
 }
