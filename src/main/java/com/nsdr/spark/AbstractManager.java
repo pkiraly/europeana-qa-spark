@@ -41,11 +41,12 @@ public class AbstractManager implements Serializable {
 		}
 	}
 
-	public Integer lookup(String dataset) {
-		if (!data.containsKey(dataset)) {
-			data.put(dataset, data.size() + 1);
+	public Integer lookup(String entry) {
+		if (!data.containsKey(entry)) {
+			data.put(entry, data.size() + 1);
+			logger.info(String.format("new entry: %s (size: %d)", entry, data.size()));
 		}
-		return data.get(dataset);
+		return data.get(entry);
 	}
 
 	public void save(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
