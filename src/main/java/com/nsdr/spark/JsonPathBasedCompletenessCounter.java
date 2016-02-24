@@ -21,7 +21,11 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 	private String inputFileName;
 	private String recordID;
 	private String dataProvider;
-	private Map<String, Integer> dataProviders;
+	private String dataset;
+
+	private DataProvidersFactory dataProvidersFactory;
+	private DatasetsFactory datasetsFactory;
+
 	private Counters counters;
 	private List<String> missingFields;
 	private List<String> emptyFields;
@@ -29,6 +33,7 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 	private boolean verbose = false;
 	private static final String idPath = "$.identifier";
 	private static final String dataProviderPath = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
+	private static final String datasetPath = "$.sets[0]";
 
 	public JsonPathBasedCompletenessCounter() {
 		this.recordID = null;
@@ -45,8 +50,11 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 			emptyFields = new ArrayList<>();
 			existingFields = new ArrayList<>();
 		}
+
 		setRecordID((String) JsonPath.read(document, idPath));
 		setDataProvider(extractString(JsonPath.read(document, dataProviderPath)));
+		setDataset((String) JsonPath.read(document, datasetPath));
+
 		counters = new Counters();
 		for (JsonBranch jp : EdmBranches.getPaths()) {
 			Object value = null;
@@ -94,12 +102,24 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		String dataProviderCode;
 		if (dataProvider == null) {
 			dataProviderCode = "0";
-		} else if (dataProviders != null && dataProviders.containsKey(dataProvider)) {
-			dataProviderCode = String.valueOf(dataProviders.get(dataProvider));
+		} else if (dataProvidersFactory != null) {
+			dataProviderCode = String.valueOf(dataProvidersFactory.lookup(dataProvider));
 		} else {
 			dataProviderCode = dataProvider;
 		}
 		return dataProviderCode;
+	}
+
+	public String getDatasetCode() {
+		String datasetCode;
+		if (dataset == null) {
+			datasetCode = "0";
+		} else if (datasetsFactory != null) {
+			datasetCode = String.valueOf(datasetsFactory.lookup(dataset));
+		} else {
+			datasetCode = dataset;
+		}
+		return datasetCode;
 	}
 
 	public Counters getCounters() {
@@ -138,8 +158,12 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		this.dataProvider = dataProvider;
 	}
 
-	public void setDataProviders(Map<String, Integer> dataProviders) {
-		this.dataProviders = dataProviders;
+	public void setDataProvidersFactory(DataProvidersFactory dataProvidersFactory) {
+		this.dataProvidersFactory = dataProvidersFactory;
+	}
+
+	public void setDatasetsFactory(DatasetsFactory datasetsFactory) {
+		this.datasetsFactory = datasetsFactory;
 	}
 
 	private String extractString(Object value) {
@@ -164,4 +188,11 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		return inputFileName;
 	}
 
+	public String getDataset() {
+		return dataset;
+	}
+
+	public void setDataset(String dataset) {
+		this.dataset = dataset;
+	}
 }

@@ -1,6 +1,7 @@
 
 import com.jayway.jsonpath.InvalidJsonException;
 import com.nsdr.spark.DataProvidersFactory;
+import com.nsdr.spark.DatasetsFactory;
 import com.nsdr.spark.JsonPathBasedCompletenessCounter;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -40,7 +41,8 @@ public class TestCounter {
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
 		counter = new JsonPathBasedCompletenessCounter();
-		counter.setDataProviders(new DataProvidersFactory().getDataProviders());
+		counter.setDataProvidersFactory(new DataProvidersFactory());
+		counter.setDatasetsFactory(new DatasetsFactory());
 		counter.count(readFirstLine("test.json"));
 	}
 
@@ -63,6 +65,12 @@ public class TestCounter {
 	public void testDataProvider() throws URISyntaxException, IOException {
 		assertEquals("Österreichische Nationalbibliothek - Austrian National Library", counter.getDataProvider());
 		assertEquals("2", counter.getDataProviderCode());
+	}
+
+	@Test
+	public void testDataset() throws URISyntaxException, IOException {
+		assertEquals("92062_Ag_EU_TEL_a0480_Austria", counter.getDataset());
+		assertEquals("1", counter.getDatasetCode());
 	}
 
 	@Rule
