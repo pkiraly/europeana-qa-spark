@@ -18,6 +18,7 @@ public class CompletenessCount {
 
 	private static Logger logger = Logger.getLogger(CompletenessCount.class.getCanonicalName());
 	private static final boolean withLabel = false;
+	private static final boolean compressed = true;
 
 	public static void main(String[] args) throws FileNotFoundException {
 
@@ -49,7 +50,7 @@ public class CompletenessCount {
 				
 				try {
 					counter.count(jsonString);
-					return counter.getFullResults(withLabel);
+					return counter.getFullResults(withLabel, compressed);
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());
 					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.", 
