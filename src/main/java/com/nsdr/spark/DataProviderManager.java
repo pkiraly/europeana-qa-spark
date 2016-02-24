@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 public class DataProviderManager extends AbstractManager {
 
 	private static Logger logger = Logger.getLogger(DataProviderManager.class.getCanonicalName());
-	private static Map<String, Integer> data;
 
 	public DataProviderManager() {
 		super();
