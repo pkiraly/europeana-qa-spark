@@ -24,7 +24,12 @@ public class AbstractManager implements Serializable {
 	private static Logger logger = Logger.getLogger(AbstractManager.class.getCanonicalName());
 	protected static Map<String, Integer> data;
 
+	public AbstractManager() {
+		data = new LinkedHashMap<>();
+	}
+
 	protected void initialize(String fileName) {
+		logger.info("data size: " + data.size());
 		try {
 			Path path = Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
 			List<String> lines = Files.readAllLines(path, Charset.defaultCharset());

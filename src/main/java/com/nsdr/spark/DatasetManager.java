@@ -13,7 +13,9 @@ public class DatasetManager extends AbstractManager {
 	private static Map<String, Integer> data;
 
 	public DatasetManager() {
+		super();
 		initialize("datasets.txt");
+		logger.info("data size: " + data.size());
 	}
 
 	public Map<String, Integer> getDatasets() {
