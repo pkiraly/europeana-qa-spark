@@ -1024,6 +1024,7 @@ Frodsham Historic Images
 Georg-Eckert-Institut für internationale Schulbuchforschung
 Schleswig-Holsteinische Landesbibliothek
 Γενική Γραμματεία Πολιτισμού, Υπουργείο Παιδείας και Θρησκευμάτων, Πολιτισμού και Αθλητισμού 
+Γενική Γραμματεία Πολιτισμού, Υπουργείο Παιδείας και Θρησκευμάτων, Πολιτισμού και Αθλητισμού
 Biblioteka Cyfrowa Uniwersytetu Warmińsko-Mazurskiego
 the online catalogue FABRITIUS of the Royal Museums of Fine Arts of Belgium
 TCB - The Montreux Jazz Label™; Switzerland
@@ -3257,6 +3258,7 @@ Troms fylkeskommune, Kulturarv
 Vers ved vannvegen - Sauherad
 Y2G RECORDS
 Zgodovinski arhiv Ljubljana, enota za Dolenjsko in Belo krajino 
+Zgodovinski arhiv Ljubljana, enota za Dolenjsko in Belo krajino
 Aahang Productions
 Amanojaku; Japan
 Archivo Municipal de Abiego
@@ -3874,7 +3876,7 @@ de
 DIZI
 el
 en
-ETI BioInformatics
+ETI BioInformatics, Leiden, the Netherlands
 EuropeanaTravel
 Federico Zeri Foundation
 Germanisches Nationalmuseum Nürnberg / Digitaler Porträtindex
@@ -3898,7 +3900,7 @@ Legermuseum
 Library of Cyprus Univeristy of Technology
 Lippmann+Rau-Stiftung (Lippmann+Rau Foundation); Germany
 Lithuanian Art Museum
-Lithuanian Theatre
+Lithuanian Theatre, Music and Cinema Museum
 LWL-Museum für Kunst und Kultur (Westfälisches Landesmuseum) / Digitaler Porträtindex
 Mediterranean Archaeological Research Institute-Vrije Universiteit Brussel /           The Cyprus Institute - STARC
 MIMO - Musical Instrument Museums Online
@@ -3925,7 +3927,7 @@ Technical Chamber of  Greece
 The Cyprus Institute - STARC / Byzantine Museum of the Archbishop Makarios III Foundation
 The Cyprus Institute - STARC / Mediterranean Archaeological Research           Institute-Vrije Universiteit Brussel
 The Cyprus Institute - STARC / Βυζαντινό Μουσείο Ιδρύματος Αρχιεπισκόπου Μακαρίου Γ
-The Great War Archive
+The Great War Archive, University of Oxford
 The National Library of Russia
 The National Museum of Slovenia
 The Regional Archives in Härnösand
