@@ -1,5 +1,9 @@
 package com.nsdr.spark;
 
+import com.nsdr.spark.completeness.DatasetManager;
+import com.nsdr.spark.completeness.DataProviderManager;
+import com.nsdr.spark.completeness.Counters;
+import com.nsdr.spark.completeness.CompletenessCounter;
 import com.jayway.jsonpath.InvalidJsonException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -23,7 +27,7 @@ import org.junit.rules.ExpectedException;
  */
 public class TestCounter {
 
-	private JsonPathBasedCompletenessCounter counter;
+	private CompletenessCounter counter;
 
 	public TestCounter() {
 	}
@@ -38,7 +42,7 @@ public class TestCounter {
 
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
-		counter = new JsonPathBasedCompletenessCounter();
+		counter = new CompletenessCounter();
 		counter.setDataProviderManager(new DataProviderManager());
 		counter.setDatasetManager(new DatasetManager());
 		counter.count(readFirstLine("test.json"));

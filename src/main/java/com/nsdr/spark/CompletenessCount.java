@@ -1,9 +1,11 @@
 package com.nsdr.spark;
 
+import com.nsdr.spark.completeness.DatasetManager;
+import com.nsdr.spark.completeness.DataProviderManager;
+import com.nsdr.spark.completeness.CompletenessCounter;
 import com.jayway.jsonpath.InvalidJsonException;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -16,7 +18,7 @@ import org.apache.spark.api.java.function.Function;
  */
 public class CompletenessCount {
 
-	private static Logger logger = Logger.getLogger(CompletenessCount.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(CompletenessCount.class.getCanonicalName());
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
@@ -36,7 +38,7 @@ public class CompletenessCount {
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final JsonPathBasedCompletenessCounter counter = new JsonPathBasedCompletenessCounter();
+		final CompletenessCounter counter = new CompletenessCounter();
 		DataProviderManager dataProviderManager = new DataProviderManager();
 		counter.setDataProviderManager(dataProviderManager);
 		DatasetManager datasetManager = new DatasetManager();

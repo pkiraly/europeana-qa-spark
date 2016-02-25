@@ -1,4 +1,4 @@
-package com.nsdr.spark;
+package com.nsdr.spark.completeness;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidJsonException;
@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class JsonPathBasedCompletenessCounter implements Serializable {
+public class CompletenessCounter implements Serializable {
 
 	private String inputFileName;
 	private String recordID;
@@ -35,11 +35,11 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 	private static final String dataProviderPath = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
 	private static final String datasetPath = "$.sets[0]";
 
-	public JsonPathBasedCompletenessCounter() {
+	public CompletenessCounter() {
 		this.recordID = null;
 	}
 
-	public JsonPathBasedCompletenessCounter(String recordID) {
+	public CompletenessCounter(String recordID) {
 		this.recordID = recordID;
 	}
 
@@ -188,7 +188,7 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		return extracted;
 	}
 
-	void setInputFileName(String inputFileName) {
+	public void setInputFileName(String inputFileName) {
 		this.inputFileName = inputFileName;
 	}
 

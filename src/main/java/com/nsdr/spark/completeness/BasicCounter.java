@@ -1,4 +1,4 @@
-package com.nsdr.spark;
+package com.nsdr.spark.completeness;
 
 /**
  *

@@ -1,5 +1,6 @@
-package com.nsdr.spark;
+package com.nsdr.spark.completeness;
 
+import com.nsdr.spark.completeness.BasicCounter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
