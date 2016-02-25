@@ -109,4 +109,7 @@ public class Counters {
 		}
 	}
 
+	public double[] getStatComponent(JsonBranch.Category category) {
+		return stat.get(category.name());
+	}
 }

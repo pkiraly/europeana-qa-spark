@@ -59,7 +59,11 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 		for (JsonBranch jp : EdmBranches.getPaths()) {
 			Object value = null;
 			try {
-				value = JsonPath.read(document, jp.getJsonPath());
+				if (jp.hasFilter()) {
+					value = JsonPath.read(document, jp.getJsonPath(), jp.getFilter());
+				} else {
+					value = JsonPath.read(document, jp.getJsonPath());
+				}
 			} catch (PathNotFoundException e) {
 				// System.err.println("PathNotFoundException: " + e.getLocalizedMessage());
 			}
@@ -68,19 +72,19 @@ public class JsonPathBasedCompletenessCounter implements Serializable {
 				if (value.getClass() == JSONArray.class) {
 					if (!((JSONArray) value).isEmpty()) {
 						counters.increaseInstance(jp.getCategories());
-						if (verbose) {
+						if (verbose && !jp.hasFilter()) {
 							existingFields.add(jp.getLabel());
 						}
-					} else if (verbose) {
+					} else if (verbose && !jp.hasFilter()) {
 						missingFields.add(jp.getLabel());
 					}
 				} else if (value.getClass() == String.class) {
 					if (StringUtils.isNotBlank((String) value)) {
 						counters.increaseInstance(jp.getCategories());
-						if (verbose) {
+						if (verbose && !jp.hasFilter()) {
 							existingFields.add(jp.getLabel());
 						}
-					} else if (verbose) {
+					} else if (verbose && !jp.hasFilter()) {
 						emptyFields.add(jp.getLabel());
 					}
 				} else {

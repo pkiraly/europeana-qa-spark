@@ -1,5 +1,8 @@
 package com.nsdr.spark;
 
+import com.jayway.jsonpath.Criteria;
+import static com.jayway.jsonpath.Criteria.where;
+import static com.jayway.jsonpath.Filter.filter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,15 +20,20 @@ public class EdmBranches {
 			JsonBranch.Category.MANDATORY));
 		paths.add(new JsonBranch("Proxy/dc:title",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:title']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
+			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
 			JsonBranch.Category.IDENTIFICATION, JsonBranch.Category.MULTILINGUALITY));
+		JsonBranch path = new JsonBranch("Proxy/dc:title|dc:descripion",
+			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')][?]",
+			JsonBranch.Category.MANDATORY);
+		path.setFilter(filter(where("dc:title").exists(true)).or(Criteria.where("dc:description").exists(true)));
+		paths.add(path);
 		paths.add(new JsonBranch("Proxy/dcterms:alternative",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:alternative']",
 			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.IDENTIFICATION,
 			JsonBranch.Category.MULTILINGUALITY));
 		paths.add(new JsonBranch("Proxy/dc:description",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:description']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
+			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
 			JsonBranch.Category.CONTEXTUALIZATION, JsonBranch.Category.IDENTIFICATION, JsonBranch.Category.MULTILINGUALITY));
 		paths.add(new JsonBranch("Proxy/dc:creator",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:creator']",

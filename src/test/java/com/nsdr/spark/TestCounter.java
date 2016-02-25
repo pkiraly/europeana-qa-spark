@@ -1,8 +1,6 @@
+package com.nsdr.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import com.nsdr.spark.DataProviderManager;
-import com.nsdr.spark.DatasetManager;
-import com.nsdr.spark.JsonPathBasedCompletenessCounter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -47,7 +45,7 @@ public class TestCounter {
 	}
 
 	public String readFirstLine(String fileName) throws URISyntaxException, IOException {
-		Path path = Paths.get(getClass().getResource(fileName).toURI());
+		Path path = Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
 		List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
 		return lines.get(0);
 	}
@@ -88,9 +86,9 @@ public class TestCounter {
 
 	@Test
 	public void testFullResults() {
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,\"TOTAL\":0.416667,\"MANDATORY\":0.769231,\"DESCRIPTIVENESS\":0.181818,\"SEARCHABILITY\":0.388889,\"CONTEXTUALIZATION\":0.272727,\"IDENTIFICATION\":0.500000,\"BROWSING\":0.357143,\"VIEWING\":0.750000,\"REUSABILITY\":0.416667,\"MULTILINGUALITY\":0.400000", counter.getFullResults(true));
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.416667,0.769231,0.181818,0.388889,0.272727,0.500000,0.357143,0.750000,0.416667,0.400000", counter.getFullResults(false));
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.416667,0.769231,0.181818,0.388889,0.272727,0.5,0.357143,0.75,0.416667,0.4", counter.getFullResults(false, true));
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,\"TOTAL\":0.432432,\"MANDATORY\":0.833333,\"DESCRIPTIVENESS\":0.181818,\"SEARCHABILITY\":0.388889,\"CONTEXTUALIZATION\":0.272727,\"IDENTIFICATION\":0.500000,\"BROWSING\":0.357143,\"VIEWING\":0.750000,\"REUSABILITY\":0.416667,\"MULTILINGUALITY\":0.400000", counter.getFullResults(true));
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.432432,0.833333,0.181818,0.388889,0.272727,0.500000,0.357143,0.750000,0.416667,0.400000", counter.getFullResults(false));
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.432432,0.833333,0.181818,0.388889,0.272727,0.5,0.357143,0.75,0.416667,0.4", counter.getFullResults(false, true));
 	}
 
 	@Test
@@ -99,5 +97,4 @@ public class TestCounter {
 		value = value.replaceAll("([0-9])0+$", "$1").replaceAll("\\.0+$", ".0");
 		assertEquals("0.5", value);
 	}
-
 }

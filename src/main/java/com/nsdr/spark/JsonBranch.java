@@ -1,5 +1,6 @@
 package com.nsdr.spark;
 
+import com.jayway.jsonpath.Filter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,7 +11,8 @@ import java.util.List;
 public class JsonBranch {
 
 	public enum Category {
-		MANDATORY("mandatory"), DESCRIPTIVENESS("descriptiveness"), 
+
+		MANDATORY("mandatory"), DESCRIPTIVENESS("descriptiveness"),
 		SEARCHABILITY("searchability"), CONTEXTUALIZATION("contextualization"),
 		IDENTIFICATION("identification"), BROWSING("browsing"), VIEWING("viewing"),
 		REUSABILITY("re-usability"), MULTILINGUALITY("multilinguality");
@@ -26,6 +28,7 @@ public class JsonBranch {
 	private String jsonPath;
 	private List<Category> categories;
 	private String solrFieldName;
+	private Filter filter = null;
 
 	public JsonBranch(String label, String jsonPath, String solrFieldName) {
 		this.label = label;
@@ -69,5 +72,17 @@ public class JsonBranch {
 
 	public void setSolrFieldName(String solrFieldName) {
 		this.solrFieldName = solrFieldName;
+	}
+
+	public Filter getFilter() {
+		return filter;
+	}
+
+	public void setFilter(Filter filter) {
+		this.filter = filter;
+	}
+
+	public boolean hasFilter() {
+		return filter != null;
 	}
 }
