@@ -92,9 +92,8 @@ public class TestCounter {
 	}
 
 	@Test
-	public void testRegex() {
-		String value = "0.50000";
-		value = value.replaceAll("([0-9])0+$", "$1").replaceAll("\\.0+$", ".0");
-		assertEquals("0.5", value);
+	public void testCompressNumber() {
+		assertEquals("0.5", Counters.compressNumber("0.50000"));
+		assertEquals("0.0", Counters.compressNumber("0.00000"));
 	}
 }

@@ -13,26 +13,23 @@ import org.apache.commons.lang.StringUtils;
 public class Counters {
 
 	private static final String TOTAL = "TOTAL";
-
-	private Map<String, double[]> stat;
+	private Map<String, BasicCounter> basicCounters;
 
 	public Counters() {
 		initialize();
 	}
 
 	public void calculateResults() {
-		for (String key : stat.keySet()) {
-			if (stat.get(key)[1] != 0.0) {
-				stat.get(key)[2] = (stat.get(key)[1] / stat.get(key)[0]);
-			}
+		for (BasicCounter counter : basicCounters.values()) {
+			counter.calculate();
 		}
 	}
 
 	public Map<String, Double> getResults() {
 		calculateResults();
 		Map<String, Double> result = new HashMap<>();
-		for (String key : stat.keySet()) {
-			result.put(key, stat.get(key)[2]);
+		for (Map.Entry<String, BasicCounter> entry : basicCounters.entrySet()) {
+			result.put(entry.getKey(), entry.getValue().getResult());
 		}
 		return result;
 	}
@@ -58,7 +55,7 @@ public class Counters {
 	private void addResultItem(boolean withLabel, List<String> items, String key, Double value, boolean compressed) {
 		String valueAsString = String.format("%f", value);
 		if (compressed) {
-			valueAsString = valueAsString.replaceAll("([0-9])0+$", "$1").replaceAll("\\.0+$", ".0");
+			valueAsString = compressNumber(valueAsString);
 		}
 
 		if (withLabel) {
@@ -66,6 +63,16 @@ public class Counters {
 		} else {
 			items.add(valueAsString);
 		}
+	}
+
+	/**
+	* Removes the unnecessary 0-s from the end of a number
+	* For example 0.7000 becomes 0.7, 0.00000 becomes 0.0
+	* @param value A string representation of a number
+	* @return The "compressed" representation without zeros at the end
+	*/
+	public static String compressNumber(String value) {
+		return value.replaceAll("([0-9])0+$", "$1").replaceAll("\\.0+$", ".0");
 	}
 
 	public String getResultsAsTSV(boolean withLabel) {
@@ -82,34 +89,34 @@ public class Counters {
 
 	public void printResults() {
 		calculateResults();
-		for (String key : stat.keySet()) {
-			System.err.println(key + ": " + stat.get(key)[2]);
+		for (Map.Entry<String, BasicCounter> entry : basicCounters.entrySet()) {
+			System.err.println(entry.getKey() + ": " + entry.getValue().getResult());
 		}
 	}
 
 	public void increaseInstance(List<JsonBranch.Category> categories) {
-		stat.get(TOTAL)[1]++;
+		basicCounters.get(TOTAL).increaseInstance();
 		for (JsonBranch.Category category : categories) {
-			stat.get(category.name())[1]++;
+			basicCounters.get(category.name()).increaseInstance();
 		}
 	}
 
 	public void increaseTotal(List<JsonBranch.Category> categories) {
-		stat.get(TOTAL)[0]++;
+		basicCounters.get(TOTAL).increaseTotal();
 		for (JsonBranch.Category category : categories) {
-			stat.get(category.name())[0]++;
+			basicCounters.get(category.name()).increaseTotal();
 		}
 	}
 
 	private void initialize() {
-		stat = new HashMap<>();
-		stat.put(TOTAL, new double[]{0.0, 0.0, 0.0});
+		basicCounters = new HashMap<>();
+		basicCounters.put(TOTAL, new BasicCounter());
 		for (JsonBranch.Category category : JsonBranch.Category.values()) {
-			stat.put(category.name(), new double[]{0.0, 0.0, 0.0});
+			basicCounters.put(category.name(), new BasicCounter());
 		}
 	}
 
-	public double[] getStatComponent(JsonBranch.Category category) {
-		return stat.get(category.name());
+	public BasicCounter getStatComponent(JsonBranch.Category category) {
+		return basicCounters.get(category.name());
 	}
 }
