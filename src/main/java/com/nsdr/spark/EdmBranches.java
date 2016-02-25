@@ -15,6 +15,22 @@ public class EdmBranches {
 	private final static List<JsonBranch> paths = new ArrayList<>();
 
 	static {
+		JsonBranch path = new JsonBranch("Proxy/dc:title|dc:descripion",
+			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')][?]",
+			JsonBranch.Category.MANDATORY);
+		path.setFilter(filter(where("dc:title").exists(true)).or(Criteria.where("dc:description").exists(true)));
+		paths.add(path);
+
+		path = new JsonBranch("Proxy/dc:type|dc:subject|dc:coverage|dcterms:temporal|dcterms:spatial",
+			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')][?]",
+			JsonBranch.Category.MANDATORY);
+		path.setFilter(filter(where("dc:type").exists(true))
+				  .or(Criteria.where("dc:subject").exists(true))
+				  .or(Criteria.where("dc:coverage").exists(true))
+				  .or(Criteria.where("dcterms:temporal").exists(true))
+				  .or(Criteria.where("dcterms:spatial").exists(true)));
+		paths.add(path);
+
 		paths.add(new JsonBranch("edm:ProvidedCHO/@about",
 			"$.['edm:ProvidedCHO'][0]['@about']",
 			JsonBranch.Category.MANDATORY));
@@ -22,11 +38,8 @@ public class EdmBranches {
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:title']",
 			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
 			JsonBranch.Category.IDENTIFICATION, JsonBranch.Category.MULTILINGUALITY));
-		JsonBranch path = new JsonBranch("Proxy/dc:title|dc:descripion",
-			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')][?]",
-			JsonBranch.Category.MANDATORY);
-		path.setFilter(filter(where("dc:title").exists(true)).or(Criteria.where("dc:description").exists(true)));
-		paths.add(path);
+
+
 		paths.add(new JsonBranch("Proxy/dcterms:alternative",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:alternative']",
 			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.IDENTIFICATION,
@@ -47,7 +60,7 @@ public class EdmBranches {
 			JsonBranch.Category.SEARCHABILITY));
 		paths.add(new JsonBranch("Proxy/dc:type",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:type']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.CONTEXTUALIZATION,
+			JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.CONTEXTUALIZATION,
 			JsonBranch.Category.IDENTIFICATION, JsonBranch.Category.BROWSING));
 		paths.add(new JsonBranch("Proxy/dc:identifier",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:identifier']",
@@ -57,18 +70,18 @@ public class EdmBranches {
 			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.MULTILINGUALITY));
 		paths.add(new JsonBranch("Proxy/dc:coverage",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:coverage']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.CONTEXTUALIZATION,
+			JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.CONTEXTUALIZATION,
 			JsonBranch.Category.BROWSING));
 		paths.add(new JsonBranch("Proxy/dcterms:temporal",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:temporal']",
 			JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.CONTEXTUALIZATION, JsonBranch.Category.BROWSING));
 		paths.add(new JsonBranch("Proxy/dcterms:spatial",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:spatial']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.CONTEXTUALIZATION,
+			JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.CONTEXTUALIZATION,
 			JsonBranch.Category.BROWSING));
 		paths.add(new JsonBranch("Proxy/dc:subject",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:subject']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
+			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
 			JsonBranch.Category.CONTEXTUALIZATION, JsonBranch.Category.MULTILINGUALITY));
 		paths.add(new JsonBranch("Proxy/dc:date",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:date']",
