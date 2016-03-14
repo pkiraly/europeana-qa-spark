@@ -30,10 +30,10 @@ public class CLI {
 		session = cluster.connect("europeana");
 
 		final CompletenessCounter counter = new CompletenessCounter();
-		DataProviderManager dataProviderManager = new DataProviderManager();
-		counter.setDataProviderManager(dataProviderManager);
-		DatasetManager datasetManager = new DatasetManager();
-		counter.setDatasetManager(datasetManager);
+		// DataProviderManager dataProviderManager = new DataProviderManager();
+		// counter.setDataProviderManager(dataProviderManager);
+		// DatasetManager datasetManager = new DatasetManager();
+		// counter.setDatasetManager(datasetManager);
 
 		String result = null;
 		ResultSet results = session.execute(String.format("SELECT content FROM edm WHERE id = '%s'", id));
