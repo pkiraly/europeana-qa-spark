@@ -43,8 +43,8 @@ public class CLI {
 		ResultSet results = session.execute(String.format("SELECT content FROM edm WHERE id = '%s'", id));
 		for (Row row : results) {
 			String jsonString = row.getString("content");
-			counter.count(jsonString);
 			counter.setVerbose(true);
+			counter.count(jsonString);
 			// result = counter.getFullResults(true, true);
 
 			result = new Result();
