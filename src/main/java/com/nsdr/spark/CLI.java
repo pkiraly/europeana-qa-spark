@@ -6,9 +6,10 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.nsdr.spark.cli.Result;
 import com.nsdr.spark.completeness.CompletenessCounter;
-import com.nsdr.spark.completeness.DataProviderManager;
-import com.nsdr.spark.completeness.DatasetManager;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
@@ -16,10 +17,12 @@ import java.io.FileNotFoundException;
  */
 public class CLI {
 
+	private static final Logger logger = Logger.getLogger(CLI.class.getCanonicalName());
+
 	private static Cluster cluster;
 	private static Session session;
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) {
 
 		if (args.length < 1) {
 			System.err.println("Please provide a record identifier");
@@ -53,6 +56,16 @@ public class CLI {
 			break;
 		}
 
-		System.out.println(result);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString = "";
+		try {
+			jsonInString = mapper.writeValueAsString(result);
+		} catch (IOException ex) {
+			logger.severe(ex.getLocalizedMessage());
+		}
+		System.out.println(jsonInString);
+
+		session.close();
+		cluster.close();
 	}
 }
