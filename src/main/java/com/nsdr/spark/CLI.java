@@ -4,6 +4,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.nsdr.spark.cli.Result;
 import com.nsdr.spark.completeness.CompletenessCounter;
 import com.nsdr.spark.completeness.DataProviderManager;
 import com.nsdr.spark.completeness.DatasetManager;
@@ -35,15 +36,23 @@ public class CLI {
 		// DatasetManager datasetManager = new DatasetManager();
 		// counter.setDatasetManager(datasetManager);
 
-		String result = null;
+		Result result = null;
 		ResultSet results = session.execute(String.format("SELECT content FROM edm WHERE id = '%s'", id));
 		for (Row row : results) {
 			String jsonString = row.getString("content");
 			counter.count(jsonString);
-			result = counter.getFullResults(true, true);
+			counter.setVerbose(true);
+			// result = counter.getFullResults(true, true);
+
+			result = new Result();
+			result.setResults(counter.getCounters().getResults());
+			result.setExistingFields(counter.getExistingFields());
+			result.setMissingFields(counter.getMissingFields());
+			result.setEmptyFields(counter.getEmptyFields());
+
 			break;
 		}
-		
+
 		System.out.println(result);
 	}
 }
