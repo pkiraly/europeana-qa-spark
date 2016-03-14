@@ -13,7 +13,7 @@ import java.io.FileNotFoundException;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class Analyse {
+public class CLI {
 
 	private static Cluster cluster;
 	private static Session session;
