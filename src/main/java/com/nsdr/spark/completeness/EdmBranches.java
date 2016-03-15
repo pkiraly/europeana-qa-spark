@@ -15,10 +15,12 @@ public class EdmBranches {
 	private final static List<JsonBranch> paths = new ArrayList<>();
 
 	static {
+		/*
 		JsonBranch path = new JsonBranch("Proxy/dc:title|dc:descripion",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')][?]",
 			JsonBranch.Category.MANDATORY);
-		path.setFilter(filter(where("dc:title").exists(true)).or(Criteria.where("dc:description").exists(true)));
+		path.setFilter(filter(where("dc:title").exists(true))
+				  .or(Criteria.where("dc:description").exists(true)));
 		paths.add(path);
 
 		path = new JsonBranch("Proxy/dc:type|dc:subject|dc:coverage|dcterms:temporal|dcterms:spatial",
@@ -30,6 +32,7 @@ public class EdmBranches {
 				  .or(Criteria.where("dcterms:temporal").exists(true))
 				  .or(Criteria.where("dcterms:spatial").exists(true)));
 		paths.add(path);
+		*/
 
 		paths.add(new JsonBranch("edm:ProvidedCHO/@about",
 			"$.['edm:ProvidedCHO'][0]['@about']",
@@ -38,8 +41,6 @@ public class EdmBranches {
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:title']",
 			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY,
 			JsonBranch.Category.IDENTIFICATION, JsonBranch.Category.MULTILINGUALITY));
-
-
 		paths.add(new JsonBranch("Proxy/dcterms:alternative",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:alternative']",
 			JsonBranch.Category.DESCRIPTIVENESS, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.IDENTIFICATION,
@@ -126,7 +127,7 @@ public class EdmBranches {
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['edm:type']",
 			JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.BROWSING));
 		paths.add(new JsonBranch("Proxy/edm:rights",
-			"$.['ore:Aggregation'][0]['edm:rights']",
+			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['edm:rights']",
 			JsonBranch.Category.MANDATORY, JsonBranch.Category.REUSABILITY));
 		paths.add(new JsonBranch("Aggregation/edm:rights",
 			"$.['ore:Aggregation'][0]['edm:rights']",
@@ -139,10 +140,10 @@ public class EdmBranches {
 			JsonBranch.Category.MANDATORY, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.IDENTIFICATION));
 		paths.add(new JsonBranch("Aggregation/edm:isShownAt",
 			"$.['ore:Aggregation'][0]['edm:isShownAt']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.BROWSING, JsonBranch.Category.VIEWING));
+			JsonBranch.Category.BROWSING, JsonBranch.Category.VIEWING));
 		paths.add(new JsonBranch("Aggregation/edm:isShownBy",
 			"$.['ore:Aggregation'][0]['edm:isShownBy']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.BROWSING, JsonBranch.Category.VIEWING, JsonBranch.Category.REUSABILITY));
+			JsonBranch.Category.BROWSING, JsonBranch.Category.VIEWING, JsonBranch.Category.REUSABILITY));
 		paths.add(new JsonBranch("Aggregation/edm:object",
 			"$.['ore:Aggregation'][0]['edm:object']",
 			JsonBranch.Category.VIEWING, JsonBranch.Category.REUSABILITY));

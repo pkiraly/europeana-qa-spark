@@ -34,6 +34,13 @@ public class CompletenessCounter implements Serializable {
 	private static final String idPath = "$.identifier";
 	private static final String dataProviderPath = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
 	private static final String datasetPath = "$.sets[0]";
+	private static List<FieldGroup> fieldGroups = new ArrayList<>();
+
+	static {
+		fieldGroups.add(new FieldGroup(JsonBranch.Category.MANDATORY, "Proxy/dc:title", "Proxy/dc:description"));
+		fieldGroups.add(new FieldGroup(JsonBranch.Category.MANDATORY, "Proxy/dc:type", "Proxy/dc:subject", "Proxy/dc:coverage", "Proxy/dcterms:temporal", "Proxy/dcterms:spatial"));
+		fieldGroups.add(new FieldGroup(JsonBranch.Category.MANDATORY, "Aggregation/edm:isShownAt", "Aggregation/edm:isShownBy"));
+	}
 
 	public CompletenessCounter() {
 		this.recordID = null;
@@ -56,43 +63,69 @@ public class CompletenessCounter implements Serializable {
 		setDataset((String) JsonPath.read(document, datasetPath));
 
 		counters = new Counters();
-		for (JsonBranch jp : EdmBranches.getPaths()) {
-			Object value = null;
-			try {
-				if (jp.hasFilter()) {
-					value = JsonPath.read(document, jp.getJsonPath(), jp.getFilter());
-				} else {
-					value = JsonPath.read(document, jp.getJsonPath());
+		for (JsonBranch jsonBranch : EdmBranches.getPaths()) {
+			evaluateJsonBranch(jsonBranch, document);
+		}
+
+		for (FieldGroup fieldGroup : fieldGroups) {
+			boolean existing = false;
+			for (String field : fieldGroup.getFields()) {
+				if (counters.getExistenceMap().get(field) == true) {
+					existing = true;
+					break;
 				}
-			} catch (PathNotFoundException e) {
-				// System.err.println("PathNotFoundException: " + e.getLocalizedMessage());
 			}
-			counters.increaseTotal(jp.getCategories());
-			if (value != null) {
-				if (value.getClass() == JSONArray.class) {
-					if (!((JSONArray) value).isEmpty()) {
-						counters.increaseInstance(jp.getCategories());
-						if (verbose && !jp.hasFilter()) {
-							existingFields.add(jp.getLabel());
-						}
-					} else if (verbose && !jp.hasFilter()) {
-						missingFields.add(jp.getLabel());
+			counters.increaseInstance(fieldGroup.getCategory(), existing);
+		}
+	}
+
+	public void evaluateJsonBranch(JsonBranch jsonBranch, Object document) {
+		Object value = null;
+		try {
+			if (jsonBranch.hasFilter()) {
+				value = JsonPath.read(document, jsonBranch.getJsonPath(), jsonBranch.getFilter());
+			} else {
+				value = JsonPath.read(document, jsonBranch.getJsonPath());
+			}
+		} catch (PathNotFoundException e) {
+			// System.err.println("PathNotFoundException: " + e.getLocalizedMessage());
+		}
+		counters.increaseTotal(jsonBranch.getCategories());
+		if (value != null) {
+			if (value.getClass() == JSONArray.class) {
+				if (!((JSONArray) value).isEmpty()) {
+					counters.increaseInstance(jsonBranch.getCategories());
+					counters.addExistence(jsonBranch.getLabel(), true);
+					if (verbose && !jsonBranch.hasFilter()) {
+						existingFields.add(jsonBranch.getLabel());
 					}
-				} else if (value.getClass() == String.class) {
-					if (StringUtils.isNotBlank((String) value)) {
-						counters.increaseInstance(jp.getCategories());
-						if (verbose && !jp.hasFilter()) {
-							existingFields.add(jp.getLabel());
-						}
-					} else if (verbose && !jp.hasFilter()) {
-						emptyFields.add(jp.getLabel());
+				} else if (!jsonBranch.hasFilter()) {
+					counters.addExistence(jsonBranch.getLabel(), false);
+					if (verbose) {
+						missingFields.add(jsonBranch.getLabel());
 					}
-				} else {
-					System.err.println(jp.getLabel() + " value.getClass(): " + value.getClass());
-					System.err.println(jp.getLabel() + ": " + value);
 				}
-			} else if (verbose) {
-				missingFields.add(jp.getLabel());
+			} else if (value.getClass() == String.class) {
+				if (StringUtils.isNotBlank((String) value)) {
+					counters.increaseInstance(jsonBranch.getCategories());
+					counters.addExistence(jsonBranch.getLabel(), true);
+					if (verbose && !jsonBranch.hasFilter()) {
+						existingFields.add(jsonBranch.getLabel());
+					}
+				} else if (!jsonBranch.hasFilter()) {
+					counters.addExistence(jsonBranch.getLabel(), false);
+					if (verbose) {
+						emptyFields.add(jsonBranch.getLabel());
+					}
+				}
+			} else {
+				System.err.println(jsonBranch.getLabel() + " value.getClass(): " + value.getClass());
+				System.err.println(jsonBranch.getLabel() + ": " + value);
+			}
+		} else {
+			counters.addExistence(jsonBranch.getLabel(), false);
+			if (verbose) {
+				missingFields.add(jsonBranch.getLabel());
 			}
 		}
 	}
@@ -103,7 +136,7 @@ public class CompletenessCounter implements Serializable {
 
 	public String getFullResults(boolean withLabel, boolean compress) {
 		return String.format("%s,%s,%s,%s",
-				getDatasetCode(), getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel, compress));
+				  getDatasetCode(), getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel, compress));
 	}
 
 	public String getDataProviderCode() {

@@ -1,8 +1,9 @@
 package com.nsdr.spark.completeness;
 
-import com.nsdr.spark.completeness.BasicCounter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -15,12 +16,14 @@ public class Counters {
 
 	private static final String TOTAL = "TOTAL";
 	private Map<String, BasicCounter> basicCounters;
+	private final Map<String, Boolean> existenceList = new LinkedHashMap<>();
 
 	public Counters() {
 		initialize();
 	}
 
 	public void calculateResults() {
+		System.err.println(basicCounters.get(TOTAL).toString());
 		for (BasicCounter counter : basicCounters.values()) {
 			counter.calculate();
 		}
@@ -102,6 +105,12 @@ public class Counters {
 		}
 	}
 
+	public void increaseInstance(JsonBranch.Category category, boolean increase) {
+		basicCounters.get(category.name()).increaseTotal();
+		if (increase)
+			basicCounters.get(category.name()).increaseInstance();
+	}
+
 	public void increaseTotal(List<JsonBranch.Category> categories) {
 		basicCounters.get(TOTAL).increaseTotal();
 		for (JsonBranch.Category category : categories) {
@@ -119,5 +128,21 @@ public class Counters {
 
 	public BasicCounter getStatComponent(JsonBranch.Category category) {
 		return basicCounters.get(category.name());
+	}
+
+	public void addExistence(String fieldName, Boolean existence) {
+		existenceList.put(fieldName, existence);
+	}
+	
+	public Map<String, Boolean> getExistenceMap() {
+		return existenceList;
+	}
+
+	public List<Integer> getExistenceList() {
+		List<Integer> values = new LinkedList<>();
+		for (boolean val : existenceList.values()) {
+			values.add((val) ?  1 : 0);
+		}
+		return values;
 	}
 }

@@ -37,4 +37,9 @@ public class BasicCounter {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		calculate();
+		return "BasicCounter{" + "total=" + total + ", instance=" + instance + ", result=" + result + '}';
+	}
 }
