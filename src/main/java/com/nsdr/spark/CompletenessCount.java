@@ -44,6 +44,7 @@ public class CompletenessCount {
 		DatasetManager datasetManager = new DatasetManager();
 		counter.setDatasetManager(datasetManager);
 		counter.setInputFileName(inputFileName);
+		counter.doReturnFieldExistenceList(true);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
@@ -51,6 +52,7 @@ public class CompletenessCount {
 			public String call(String jsonString) throws Exception {
 				
 				try {
+					
 					counter.count(jsonString);
 					return counter.getFullResults(withLabel, compressed);
 				} catch (InvalidJsonException e) {
