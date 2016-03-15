@@ -30,7 +30,10 @@ public class CompletenessCounter implements Serializable {
 	private List<String> missingFields;
 	private List<String> emptyFields;
 	private List<String> existingFields;
+
 	private boolean verbose = false;
+	private boolean returnFieldExistenceList = false;
+
 	private static final String idPath = "$.identifier";
 	private static final String dataProviderPath = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
 	private static final String datasetPath = "$.sets[0]";
@@ -135,8 +138,12 @@ public class CompletenessCounter implements Serializable {
 	}
 
 	public String getFullResults(boolean withLabel, boolean compress) {
-		return String.format("%s,%s,%s,%s",
-				  getDatasetCode(), getDataProviderCode(), recordID, counters.getResultsAsCSV(withLabel, compress));
+		String result = String.format("%s,%s,%s,%s",
+				  getDatasetCode(), getDataProviderCode(), recordID,
+				  counters.getResultsAsCSV(withLabel, compress));
+		if (returnFieldExistenceList == true)
+			result += ',' + counters.getExistenceList(withLabel);
+		return result;
 	}
 
 	public String getDataProviderCode() {
@@ -236,4 +243,9 @@ public class CompletenessCounter implements Serializable {
 	public void setDataset(String dataset) {
 		this.dataset = dataset;
 	}
+
+	public void doReturnFieldExistenceList(boolean returnFieldExistenceList) {
+		this.returnFieldExistenceList = returnFieldExistenceList;
+	}
+
 }

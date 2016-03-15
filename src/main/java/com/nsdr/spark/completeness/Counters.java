@@ -23,7 +23,6 @@ public class Counters {
 	}
 
 	public void calculateResults() {
-		System.err.println(basicCounters.get(TOTAL).toString());
 		for (BasicCounter counter : basicCounters.values()) {
 			counter.calculate();
 		}
@@ -136,6 +135,18 @@ public class Counters {
 	
 	public Map<String, Boolean> getExistenceMap() {
 		return existenceList;
+	}
+
+	public String getExistenceList(boolean withLabel) {
+		List<String> items = new ArrayList<>();
+		for (Map.Entry<String, Boolean> entry : existenceList.entrySet()) {
+			String item = "";
+			if (withLabel)
+				item += String.format("\"%s\":", entry.getKey());
+			item += (entry.getValue() == true) ? "1" : "0";
+			items.add(item);
+		}
+		return StringUtils.join(items, ',');
 	}
 
 	public List<Integer> getExistenceList() {
