@@ -126,9 +126,11 @@ public class EdmBranches {
 		paths.add(new JsonBranch("Proxy/edm:type",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['edm:type']",
 			JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.BROWSING));
+		/*
 		paths.add(new JsonBranch("Proxy/edm:rights",
 			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['edm:rights']",
 			JsonBranch.Category.MANDATORY, JsonBranch.Category.REUSABILITY));
+		*/
 		paths.add(new JsonBranch("Aggregation/edm:rights",
 			"$.['ore:Aggregation'][0]['edm:rights']",
 			JsonBranch.Category.MANDATORY, JsonBranch.Category.REUSABILITY));
