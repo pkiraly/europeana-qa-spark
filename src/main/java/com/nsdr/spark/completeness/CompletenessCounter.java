@@ -5,6 +5,7 @@ import com.jayway.jsonpath.InvalidJsonException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JsonProvider;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -21,6 +22,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -284,7 +286,7 @@ public class CompletenessCounter implements Serializable {
 		String url = String.format(SOLR_SEARCH_PATH, getRecordID()).replace("\"", "%22");
 		HttpMethod method = new GetMethod(url);
 		HttpMethodParams params = new HttpMethodParams();
-		params.setIntParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024*1024);
+		params.setIntParameter(HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024 * 1024);
 		method.setParams(params);
 		try {
 			int statusCode = httpClient.executeMethod(method);
@@ -293,8 +295,12 @@ public class CompletenessCounter implements Serializable {
 			}
 
 			// Read the response body.
-			// InputStream is = method.getResponseBodyAsStream();
-			byte[] responseBody = method.getResponseBody();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			IOUtils.copy(method.getResponseBodyAsStream(), baos);
+			byte[] responseBody = baos.toByteArray();
+
+			// byte[] responseBody = method.getResponseBody();
+
 			String jsonString = new String(responseBody, Charset.forName("UTF-8"));
 			TfIdfExtractor extractor = new TfIdfExtractor();
 			tfIdfResult = extractor.extract(jsonString, getRecordID());
