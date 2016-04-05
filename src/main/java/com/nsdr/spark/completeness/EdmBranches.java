@@ -1,8 +1,5 @@
 package com.nsdr.spark.completeness;
 
-import com.jayway.jsonpath.Criteria;
-import static com.jayway.jsonpath.Criteria.where;
-import static com.jayway.jsonpath.Filter.filter;
 import java.util.ArrayList;
 import java.util.List;
 

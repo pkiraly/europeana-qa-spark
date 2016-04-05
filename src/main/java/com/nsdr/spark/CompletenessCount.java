@@ -45,19 +45,18 @@ public class CompletenessCount {
 		counter.setDatasetManager(datasetManager);
 		counter.setInputFileName(inputFileName);
 		counter.doReturnFieldExistenceList(true);
+		counter.doReturnTfIdfList(true);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
-				
 				try {
-					
 					counter.count(jsonString);
 					return counter.getFullResults(withLabel, compressed);
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());
-					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.", 
+					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
 							  counter.getInputFileName(), jsonString, e.getLocalizedMessage()));
 				}
 				return "";

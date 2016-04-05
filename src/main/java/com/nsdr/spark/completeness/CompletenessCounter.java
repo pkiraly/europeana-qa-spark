@@ -4,12 +4,21 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidJsonException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import net.minidev.json.JSONArray;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -17,6 +26,8 @@ import org.apache.commons.lang.StringUtils;
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
 public class CompletenessCounter implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(CompletenessCounter.class.getCanonicalName());
 
 	private String inputFileName;
 	private String recordID;
@@ -33,16 +44,25 @@ public class CompletenessCounter implements Serializable {
 
 	private boolean verbose = false;
 	private boolean returnFieldExistenceList = false;
+	private boolean returnTfIdf = false;
 
 	private static final String idPath = "$.identifier";
 	private static final String dataProviderPath = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
 	private static final String datasetPath = "$.sets[0]";
 	private static List<FieldGroup> fieldGroups = new ArrayList<>();
 
+	private static final String SOLR_SEARCH_PATH = "http://localhost:8983/solr/europeana/tvrh/?q=id:\"%s\""
+			  + "&version=2.2&indent=on&qt=tvrh&tv=true&tv.all=true&f.includes.tv.tf=true"
+			  + "&tv.fl=dc_title_txt,dc_description_txt,dcterms_alternative_txt"
+			  + "&wt=json&json.nl=map&rows=1000&fl=id";
+	private static final HttpClient httpClient = new HttpClient();
+	private static final JsonProvider jsonProvider = Configuration.defaultConfiguration().jsonProvider();
+
 	static {
 		fieldGroups.add(new FieldGroup(JsonBranch.Category.MANDATORY, "Proxy/dc:title", "Proxy/dc:description"));
 		fieldGroups.add(new FieldGroup(JsonBranch.Category.MANDATORY, "Proxy/dc:type", "Proxy/dc:subject", "Proxy/dc:coverage", "Proxy/dcterms:temporal", "Proxy/dcterms:spatial"));
 		fieldGroups.add(new FieldGroup(JsonBranch.Category.MANDATORY, "Aggregation/edm:isShownAt", "Aggregation/edm:isShownBy"));
+
 	}
 
 	public CompletenessCounter() {
@@ -54,7 +74,7 @@ public class CompletenessCounter implements Serializable {
 	}
 
 	public void count(String jsonString) throws InvalidJsonException {
-		Object document = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
+		Object document = jsonProvider.parse(jsonString);
 		if (verbose) {
 			missingFields = new ArrayList<>();
 			emptyFields = new ArrayList<>();
@@ -80,6 +100,8 @@ public class CompletenessCounter implements Serializable {
 			}
 			counters.increaseInstance(fieldGroup.getCategory(), existing);
 		}
+
+		counters.setTfIdfList(getTdIdf());
 	}
 
 	public void evaluateJsonBranch(JsonBranch jsonBranch, Object document) {
@@ -141,8 +163,12 @@ public class CompletenessCounter implements Serializable {
 		String result = String.format("%s,%s,%s,%s",
 				  getDatasetCode(), getDataProviderCode(), recordID,
 				  counters.getResultsAsCSV(withLabel, compress));
-		if (returnFieldExistenceList == true)
+		if (returnFieldExistenceList == true) {
 			result += ',' + counters.getExistenceList(withLabel);
+		}
+		if (returnTfIdf == true) {
+			result += ',' + counters.getTfIdfList(withLabel);
+		}
 		return result;
 	}
 
@@ -246,6 +272,36 @@ public class CompletenessCounter implements Serializable {
 
 	public void doReturnFieldExistenceList(boolean returnFieldExistenceList) {
 		this.returnFieldExistenceList = returnFieldExistenceList;
+	}
+
+	public void doReturnTfIdfList(boolean returnTfIdf) {
+		this.returnTfIdf = returnTfIdf;
+	}
+
+	private Map<String, Double> getTdIdf() {
+		Map<String, Double> tfIdfResult = null;
+		String url = String.format(SOLR_SEARCH_PATH, getRecordID()).replace("\"", "%22");
+		HttpMethod method = new GetMethod(url);
+		try {
+			int statusCode = httpClient.executeMethod(method);
+			if (statusCode != HttpStatus.SC_OK) {
+				logger.severe("Method failed: " + method.getStatusLine());
+			}
+
+			// Read the response body.
+			byte[] responseBody = method.getResponseBody();
+			String jsonString = new String(responseBody, Charset.forName("UTF-8"));
+			TfIdfExtractor extractor = new TfIdfExtractor();
+			tfIdfResult = extractor.extract(jsonString, getRecordID());
+		} catch (HttpException e) {
+			logger.severe("Fatal protocol violation: " + e.getMessage());
+		} catch (IOException e) {
+			logger.severe("Fatal transport error: " + e.getMessage());
+		} finally {
+			method.releaseConnection();
+		}
+
+		return tfIdfResult;
 	}
 
 }

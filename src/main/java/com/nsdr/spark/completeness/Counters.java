@@ -17,6 +17,7 @@ public class Counters {
 	private static final String TOTAL = "TOTAL";
 	private Map<String, BasicCounter> basicCounters;
 	private final Map<String, Boolean> existenceList = new LinkedHashMap<>();
+	private Map<String, Double> tfIdfList;
 
 	public Counters() {
 		initialize();
@@ -132,7 +133,7 @@ public class Counters {
 	public void addExistence(String fieldName, Boolean existence) {
 		existenceList.put(fieldName, existence);
 	}
-	
+
 	public Map<String, Boolean> getExistenceMap() {
 		return existenceList;
 	}
@@ -156,4 +157,21 @@ public class Counters {
 		}
 		return values;
 	}
+
+	void setTfIdfList(Map<String, Double> tdIdf) {
+		this.tfIdfList = tdIdf;
+	}
+
+	public String getTfIdfList(boolean withLabel) {
+		List<String> items = new ArrayList<>();
+		for (Map.Entry<String, Double> entry : tfIdfList.entrySet()) {
+			String item = "";
+			if (withLabel)
+				item += String.format("\"%s\":", entry.getKey());
+			item += entry.getValue().toString();
+			items.add(item);
+		}
+		return StringUtils.join(items, ',');
+	}
+
 }
