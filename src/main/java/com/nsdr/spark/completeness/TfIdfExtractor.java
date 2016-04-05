@@ -35,8 +35,14 @@ public class TfIdfExtractor {
 				Map terms = (LinkedHashMap) value.get(solrField);
 				for (String term : (Set<String>) terms.keySet()) {
 					Map termInfo = (LinkedHashMap) terms.get(term);
-					BigDecimal tfIdf = (BigDecimal) termInfo.get("tf-idf");
-					sum += tfIdf.doubleValue();
+					Object tfIdfVal = termInfo.get("tf-idf");
+					double tfIdf;
+					if (tfIdfVal.getClass().getCanonicalName().equals("java.math.BigDecimal")) {
+						tfIdf = ((BigDecimal) tfIdfVal).doubleValue();
+					} else {
+						tfIdf = (Double) tfIdfVal;
+					}
+					sum += tfIdf;
 					count++;
 				}
 			}
