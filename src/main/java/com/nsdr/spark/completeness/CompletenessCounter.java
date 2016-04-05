@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -281,6 +282,8 @@ public class CompletenessCounter implements Serializable {
 		Map<String, Double> tfIdfResult = null;
 		String url = String.format(SOLR_SEARCH_PATH, getRecordID()).replace("\"", "%22");
 		HttpMethod method = new GetMethod(url);
+		method.getParams().setIntParameter(
+				HttpMethodParams.BUFFER_WARN_TRIGGER_LIMIT, 1024*1024);
 		try {
 			int statusCode = httpClient.executeMethod(method);
 			if (statusCode != HttpStatus.SC_OK) {

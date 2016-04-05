@@ -168,7 +168,7 @@ public class Counters {
 			String item = "";
 			if (withLabel)
 				item += String.format("\"%s\":", entry.getKey());
-			item += entry.getValue().toString();
+			item += String.format("%.8f", entry.getValue());
 			items.add(item);
 		}
 		return StringUtils.join(items, ',');
