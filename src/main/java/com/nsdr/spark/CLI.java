@@ -5,8 +5,9 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.nsdr.spark.cli.Result;
-import com.nsdr.spark.completeness.CompletenessCounter;
-import java.io.FileNotFoundException;
+import com.nsdr.spark.completeness.CompletenessCalculator;
+import com.nsdr.spark.completeness.Counters;
+import com.nsdr.spark.completeness.TfIdfCalculator;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -17,7 +18,7 @@ import org.codehaus.jackson.map.ObjectMapper;
  */
 public class CLI {
 
-	private static final Logger logger = Logger.getLogger(CLI.class.getCanonicalName());
+	private static final Logger LOGGER = Logger.getLogger(CLI.class.getCanonicalName());
 
 	private static Cluster cluster;
 	private static Session session;
@@ -33,7 +34,10 @@ public class CLI {
 		cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
 		session = cluster.connect("europeana");
 
-		final CompletenessCounter counter = new CompletenessCounter();
+		final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
+		completenessCalculator.setVerbose(true);
+		
+		final TfIdfCalculator tfIdfCalculator = new TfIdfCalculator();
 		// DataProviderManager dataProviderManager = new DataProviderManager();
 		// counter.setDataProviderManager(dataProviderManager);
 		// DatasetManager datasetManager = new DatasetManager();
@@ -43,15 +47,19 @@ public class CLI {
 		ResultSet results = session.execute(String.format("SELECT content FROM edm WHERE id = '%s'", id));
 		for (Row row : results) {
 			String jsonString = row.getString("content");
-			counter.setVerbose(true);
-			counter.count(jsonString);
+			Counters counters = new Counters();
+			counters.doReturnFieldExistenceList(true);
+			counters.doReturnTfIdfList(true);
+
+			completenessCalculator.calculate(jsonString, counters);
+			tfIdfCalculator.calculate(jsonString, counters);
 			// result = counter.getFullResults(true, true);
 
 			result = new Result();
-			result.setResults(counter.getCounters().getResults());
-			result.setExistingFields(counter.getExistingFields());
-			result.setMissingFields(counter.getMissingFields());
-			result.setEmptyFields(counter.getEmptyFields());
+			result.setResults(counters.getResults());
+			result.setExistingFields(completenessCalculator.getExistingFields());
+			result.setMissingFields(completenessCalculator.getMissingFields());
+			result.setEmptyFields(completenessCalculator.getEmptyFields());
 
 			break;
 		}
@@ -61,7 +69,7 @@ public class CLI {
 		try {
 			jsonInString = mapper.writeValueAsString(result);
 		} catch (IOException ex) {
-			logger.severe(ex.getLocalizedMessage());
+			LOGGER.severe(ex.getLocalizedMessage());
 		}
 		System.out.println(jsonInString);
 

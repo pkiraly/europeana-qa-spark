@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class AbstractManager implements Serializable {
 
-	private static Logger logger = Logger.getLogger(AbstractManager.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(AbstractManager.class.getCanonicalName());
 	protected Map<String, Integer> data;
 
 	public AbstractManager() {

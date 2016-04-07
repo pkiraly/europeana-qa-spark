@@ -15,9 +15,14 @@ import org.apache.commons.lang.StringUtils;
 public class Counters {
 
 	private static final String TOTAL = "TOTAL";
+	private String recordId;
+	private Map<String, Object> fields = new LinkedHashMap<>();
 	private Map<String, BasicCounter> basicCounters;
 	private final Map<String, Boolean> existenceList = new LinkedHashMap<>();
 	private Map<String, Double> tfIdfList;
+
+	private boolean returnFieldExistenceList = false;
+	private boolean returnTfIdf = false;
 
 	public Counters() {
 		initialize();
@@ -70,11 +75,11 @@ public class Counters {
 	}
 
 	/**
-	* Removes the unnecessary 0-s from the end of a number
-	* For example 0.7000 becomes 0.7, 0.00000 becomes 0.0
-	* @param value A string representation of a number
-	* @return The "compressed" representation without zeros at the end
-	*/
+	 * Removes the unnecessary 0-s from the end of a number
+	 * For example 0.7000 becomes 0.7, 0.00000 becomes 0.0
+	 * @param value A string representation of a number
+	 * @return The "compressed" representation without zeros at the end
+	 */
 	public static String compressNumber(String value) {
 		return value.replaceAll("([0-9])0+$", "$1").replaceAll("\\.0+$", ".0");
 	}
@@ -107,8 +112,9 @@ public class Counters {
 
 	public void increaseInstance(JsonBranch.Category category, boolean increase) {
 		basicCounters.get(category.name()).increaseTotal();
-		if (increase)
+		if (increase) {
 			basicCounters.get(category.name()).increaseInstance();
+		}
 	}
 
 	public void increaseTotal(List<JsonBranch.Category> categories) {
@@ -142,8 +148,9 @@ public class Counters {
 		List<String> items = new ArrayList<>();
 		for (Map.Entry<String, Boolean> entry : existenceList.entrySet()) {
 			String item = "";
-			if (withLabel)
+			if (withLabel) {
 				item += String.format("\"%s\":", entry.getKey());
+			}
 			item += (entry.getValue() == true) ? "1" : "0";
 			items.add(item);
 		}
@@ -153,7 +160,7 @@ public class Counters {
 	public List<Integer> getExistenceList() {
 		List<Integer> values = new LinkedList<>();
 		for (boolean val : existenceList.values()) {
-			values.add((val) ?  1 : 0);
+			values.add((val) ? 1 : 0);
 		}
 		return values;
 	}
@@ -166,12 +173,54 @@ public class Counters {
 		List<String> items = new ArrayList<>();
 		for (Map.Entry<String, Double> entry : tfIdfList.entrySet()) {
 			String item = "";
-			if (withLabel)
+			if (withLabel) {
 				item += String.format("\"%s\":", entry.getKey());
+			}
 			item += String.format("%.8f", entry.getValue());
 			items.add(item);
 		}
 		return StringUtils.join(items, ',');
+	}
+
+	public String getRecordId() {
+		return recordId;
+	}
+
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
+	}
+
+	public void setField(String key, Object value) {
+		fields.put(key, value);
+	}
+
+	public Object getField(String key) {
+		return fields.get(key);
+	}
+
+	public String getFullResults(boolean withLabel) {
+		return getFullResults(withLabel, false);
+	}
+
+	public String getFullResults(boolean withLabel, boolean compress) {
+		String result = String.format("%s,%s,%s,%s",
+				fields.get("datasetCode"), fields.get("dataProviderCode"), recordId,
+				getResultsAsCSV(withLabel, compress));
+		if (returnFieldExistenceList == true) {
+			result += ',' + getExistenceList(withLabel);
+		}
+		if (returnTfIdf == true) {
+			result += ',' + getTfIdfList(withLabel);
+		}
+		return result;
+	}
+
+	public void doReturnFieldExistenceList(boolean returnFieldExistenceList) {
+		this.returnFieldExistenceList = returnFieldExistenceList;
+	}
+
+	public void doReturnTfIdfList(boolean returnTfIdf) {
+		this.returnTfIdf = returnTfIdf;
 	}
 
 }

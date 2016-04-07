@@ -2,8 +2,10 @@ package com.nsdr.spark;
 
 import com.nsdr.spark.completeness.DatasetManager;
 import com.nsdr.spark.completeness.DataProviderManager;
-import com.nsdr.spark.completeness.CompletenessCounter;
+import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.jayway.jsonpath.InvalidJsonException;
+import com.nsdr.spark.completeness.Counters;
+import com.nsdr.spark.completeness.TfIdfCalculator;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -38,26 +40,31 @@ public class CompletenessCount {
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final CompletenessCounter counter = new CompletenessCounter();
+		final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
 		DataProviderManager dataProviderManager = new DataProviderManager();
-		counter.setDataProviderManager(dataProviderManager);
+		completenessCalculator.setDataProviderManager(dataProviderManager);
 		DatasetManager datasetManager = new DatasetManager();
-		counter.setDatasetManager(datasetManager);
-		counter.setInputFileName(inputFileName);
-		counter.doReturnFieldExistenceList(true);
-		counter.doReturnTfIdfList(true);
+		completenessCalculator.setDatasetManager(datasetManager);
+		completenessCalculator.setInputFileName(inputFileName);
+
+		final TfIdfCalculator tfidfCalculator = new TfIdfCalculator();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
 				try {
-					counter.count(jsonString);
-					return counter.getFullResults(withLabel, compressed);
+					Counters counters = new Counters();
+					counters.doReturnFieldExistenceList(true);
+					counters.doReturnTfIdfList(true);
+
+					completenessCalculator.calculate(jsonString, counters);
+					tfidfCalculator.calculate(jsonString, counters);
+					return counters.getFullResults(withLabel, compressed);
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());
 					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
-							  counter.getInputFileName(), jsonString, e.getLocalizedMessage()));
+							  completenessCalculator.getInputFileName(), jsonString, e.getLocalizedMessage()));
 				}
 				return "";
 			}

@@ -3,7 +3,7 @@ package com.nsdr.spark;
 import com.nsdr.spark.completeness.DatasetManager;
 import com.nsdr.spark.completeness.DataProviderManager;
 import com.nsdr.spark.completeness.Counters;
-import com.nsdr.spark.completeness.CompletenessCounter;
+import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.jayway.jsonpath.InvalidJsonException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -29,7 +29,8 @@ import org.junit.rules.ExpectedException;
  */
 public class TestCounter {
 
-	private CompletenessCounter counter;
+	private CompletenessCalculator completenessCalculator;
+	private Counters counters;
 
 	public TestCounter() {
 	}
@@ -44,10 +45,11 @@ public class TestCounter {
 
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
-		counter = new CompletenessCounter();
-		counter.setDataProviderManager(new DataProviderManager());
-		counter.setDatasetManager(new DatasetManager());
-		counter.count(readFirstLine("test.json"));
+		counters = new Counters();
+		completenessCalculator = new CompletenessCalculator();
+		completenessCalculator.setDataProviderManager(new DataProviderManager());
+		completenessCalculator.setDatasetManager(new DatasetManager());
+		completenessCalculator.calculate(readFirstLine("test.json"), counters);
 	}
 
 	public String readFirstLine(String fileName) throws URISyntaxException, IOException {
@@ -62,19 +64,19 @@ public class TestCounter {
 
 	@Test
 	public void testId() throws URISyntaxException, IOException {
-		assertEquals("92062/BibliographicResource_1000126015451", counter.getRecordID());
+		assertEquals("92062/BibliographicResource_1000126015451", counters.getRecordId());
 	}
 
 	@Test
 	public void testDataProvider() throws URISyntaxException, IOException {
-		assertEquals("Österreichische Nationalbibliothek - Austrian National Library", counter.getDataProvider());
-		assertEquals("2", counter.getDataProviderCode());
+		assertEquals("Österreichische Nationalbibliothek - Austrian National Library", counters.getField("dataProvider"));
+		assertEquals("2", counters.getField("dataProviderCode"));
 	}
 
 	@Test
 	public void testDataset() throws URISyntaxException, IOException {
-		assertEquals("92062_Ag_EU_TEL_a0480_Austria", counter.getDataset());
-		assertEquals("1", counter.getDatasetCode());
+		assertEquals("92062_Ag_EU_TEL_a0480_Austria", counters.getField("dataset"));
+		assertEquals("1", counters.getField("datasetCode"));
 	}
 
 	@Rule
@@ -86,22 +88,21 @@ public class TestCounter {
 		thrown.expect(InvalidJsonException.class);
 		thrown.expectMessage("Unexpected character (:) at position 28");
 
-		counter.count(readFirstLine("invalid.json"));
+		completenessCalculator.calculate(readFirstLine("invalid.json"), counters);
 		fail("Should throw an exception if one or more of given numbers are negative");
 	}
 
 	@Test
 	public void testFullResults() {
-		counter.doReturnFieldExistenceList(false);
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,\"TOTAL\":0.400000,\"MANDATORY\":1.000000,\"DESCRIPTIVENESS\":0.181818,\"SEARCHABILITY\":0.388889,\"CONTEXTUALIZATION\":0.272727,\"IDENTIFICATION\":0.500000,\"BROWSING\":0.357143,\"VIEWING\":0.750000,\"REUSABILITY\":0.363636,\"MULTILINGUALITY\":0.400000", counter.getFullResults(true));
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.400000,1.000000,0.181818,0.388889,0.272727,0.500000,0.357143,0.750000,0.363636,0.400000", counter.getFullResults(false));
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.4,1.0,0.181818,0.388889,0.272727,0.5,0.357143,0.75,0.363636,0.4", counter.getFullResults(false, true));
+		counters.doReturnFieldExistenceList(false);
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,\"TOTAL\":0.400000,\"MANDATORY\":1.000000,\"DESCRIPTIVENESS\":0.181818,\"SEARCHABILITY\":0.388889,\"CONTEXTUALIZATION\":0.272727,\"IDENTIFICATION\":0.500000,\"BROWSING\":0.357143,\"VIEWING\":0.750000,\"REUSABILITY\":0.363636,\"MULTILINGUALITY\":0.400000", counters.getFullResults(true));
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.400000,1.000000,0.181818,0.388889,0.272727,0.500000,0.357143,0.750000,0.363636,0.400000", counters.getFullResults(false));
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.4,1.0,0.181818,0.388889,0.272727,0.5,0.357143,0.75,0.363636,0.4", counters.getFullResults(false, true));
 
-		counter.doReturnFieldExistenceList(true);
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,\"TOTAL\":0.400000,\"MANDATORY\":1.000000,\"DESCRIPTIVENESS\":0.181818,\"SEARCHABILITY\":0.388889,\"CONTEXTUALIZATION\":0.272727,\"IDENTIFICATION\":0.500000,\"BROWSING\":0.357143,\"VIEWING\":0.750000,\"REUSABILITY\":0.363636,\"MULTILINGUALITY\":0.400000,\"edm:ProvidedCHO/@about\":1,\"Proxy/dc:title\":1,\"Proxy/dcterms:alternative\":0,\"Proxy/dc:description\":0,\"Proxy/dc:creator\":0,\"Proxy/dc:publisher\":0,\"Proxy/dc:contributor\":0,\"Proxy/dc:type\":1,\"Proxy/dc:identifier\":1,\"Proxy/dc:language\":0,\"Proxy/dc:coverage\":0,\"Proxy/dcterms:temporal\":0,\"Proxy/dcterms:spatial\":0,\"Proxy/dc:subject\":1,\"Proxy/dc:date\":0,\"Proxy/dcterms:created\":0,\"Proxy/dcterms:issued\":0,\"Proxy/dcterms:extent\":0,\"Proxy/dcterms:medium\":0,\"Proxy/dcterms:provenance\":0,\"Proxy/dcterms:hasPart\":0,\"Proxy/dcterms:isPartOf\":1,\"Proxy/dc:format\":0,\"Proxy/dc:source\":0,\"Proxy/dc:rights\":1,\"Proxy/dc:relation\":0,\"Proxy/edm:isNextInSequence\":0,\"Proxy/edm:type\":1,\"Aggregation/edm:rights\":1,\"Aggregation/edm:provider\":1,\"Aggregation/edm:dataProvider\":1,\"Aggregation/edm:isShownAt\":1,\"Aggregation/edm:isShownBy\":1,\"Aggregation/edm:object\":1,\"Aggregation/edm:hasView\":0", counter.getFullResults(true));
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.400000,1.000000,0.181818,0.388889,0.272727,0.500000,0.357143,0.750000,0.363636,0.400000,1,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0", counter.getFullResults(false));
-		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.4,1.0,0.181818,0.388889,0.272727,0.5,0.357143,0.75,0.363636,0.4,1,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0", counter.getFullResults(false, true));
-
+		counters.doReturnFieldExistenceList(true);
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,\"TOTAL\":0.400000,\"MANDATORY\":1.000000,\"DESCRIPTIVENESS\":0.181818,\"SEARCHABILITY\":0.388889,\"CONTEXTUALIZATION\":0.272727,\"IDENTIFICATION\":0.500000,\"BROWSING\":0.357143,\"VIEWING\":0.750000,\"REUSABILITY\":0.363636,\"MULTILINGUALITY\":0.400000,\"edm:ProvidedCHO/@about\":1,\"Proxy/dc:title\":1,\"Proxy/dcterms:alternative\":0,\"Proxy/dc:description\":0,\"Proxy/dc:creator\":0,\"Proxy/dc:publisher\":0,\"Proxy/dc:contributor\":0,\"Proxy/dc:type\":1,\"Proxy/dc:identifier\":1,\"Proxy/dc:language\":0,\"Proxy/dc:coverage\":0,\"Proxy/dcterms:temporal\":0,\"Proxy/dcterms:spatial\":0,\"Proxy/dc:subject\":1,\"Proxy/dc:date\":0,\"Proxy/dcterms:created\":0,\"Proxy/dcterms:issued\":0,\"Proxy/dcterms:extent\":0,\"Proxy/dcterms:medium\":0,\"Proxy/dcterms:provenance\":0,\"Proxy/dcterms:hasPart\":0,\"Proxy/dcterms:isPartOf\":1,\"Proxy/dc:format\":0,\"Proxy/dc:source\":0,\"Proxy/dc:rights\":1,\"Proxy/dc:relation\":0,\"Proxy/edm:isNextInSequence\":0,\"Proxy/edm:type\":1,\"Aggregation/edm:rights\":1,\"Aggregation/edm:provider\":1,\"Aggregation/edm:dataProvider\":1,\"Aggregation/edm:isShownAt\":1,\"Aggregation/edm:isShownBy\":1,\"Aggregation/edm:object\":1,\"Aggregation/edm:hasView\":0", counters.getFullResults(true));
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.400000,1.000000,0.181818,0.388889,0.272727,0.500000,0.357143,0.750000,0.363636,0.400000,1,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0", counters.getFullResults(false));
+		assertEquals("1,2,92062/BibliographicResource_1000126015451,0.4,1.0,0.181818,0.388889,0.272727,0.5,0.357143,0.75,0.363636,0.4,1,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0", counters.getFullResults(false, true));
 	}
 
 	@Test
@@ -112,12 +113,12 @@ public class TestCounter {
 
 	@Test
 	public void testExistenceMap() throws URISyntaxException, IOException {
-		counter = new CompletenessCounter();
-		counter.setDataProviderManager(new DataProviderManager());
-		counter.setDatasetManager(new DatasetManager());
-		counter.setVerbose(true);
-		counter.count(readFirstLine("test.json"));
-		Map<String, Boolean> map = counter.getCounters().getExistenceMap();
+		completenessCalculator = new CompletenessCalculator();
+		completenessCalculator.setDataProviderManager(new DataProviderManager());
+		completenessCalculator.setDatasetManager(new DatasetManager());
+		completenessCalculator.setVerbose(true);
+		completenessCalculator.calculate(readFirstLine("test.json"), counters);
+		Map<String, Boolean> map = counters.getExistenceMap();
 		assertEquals(35, map.size());
 
 		int existingFieldCounter = 0;
@@ -167,13 +168,13 @@ public class TestCounter {
 
 	@Test
 	public void testExistenceList() throws URISyntaxException, IOException {
-		counter = new CompletenessCounter();
-		counter.setDataProviderManager(new DataProviderManager());
-		counter.setDatasetManager(new DatasetManager());
-		counter.setVerbose(true);
-		counter.count(readFirstLine("test.json"));
+		completenessCalculator = new CompletenessCalculator();
+		completenessCalculator.setDataProviderManager(new DataProviderManager());
+		completenessCalculator.setDatasetManager(new DatasetManager());
+		completenessCalculator.setVerbose(true);
+		completenessCalculator.calculate(readFirstLine("test.json"), counters);
 		List<Integer> expected = Arrays.asList(new Integer[]{1,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0});
-		assertEquals(35, counter.getCounters().getExistenceList().size());
-		assertEquals(expected, counter.getCounters().getExistenceList());
+		assertEquals(35, counters.getExistenceList().size());
+		assertEquals(expected, counters.getExistenceList());
 	}
 }
