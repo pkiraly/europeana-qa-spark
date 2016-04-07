@@ -40,6 +40,11 @@ public class Counters {
 		for (Map.Entry<String, BasicCounter> entry : basicCounters.entrySet()) {
 			result.put(entry.getKey(), entry.getValue().getResult());
 		}
+
+		if (returnTfIdf == true) {
+			result.putAll(tfIdfList);
+		}
+
 		return result;
 	}
 
