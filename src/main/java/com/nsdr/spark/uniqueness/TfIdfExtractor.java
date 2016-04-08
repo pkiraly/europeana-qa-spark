@@ -4,8 +4,8 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +37,8 @@ public class TfIdfExtractor {
 		String path = String.format("$.termVectors.['%s']", recordId);
 		Map value = (LinkedHashMap) JsonPath.read(document, path);
 		for (String field : termFields.keySet()) {
-			termsCollection.put(field, new LinkedList<TfIdf>());
+			if (doCollectTerms)
+				termsCollection.put(field, new ArrayList<TfIdf>());
 			String solrField = termFields.get(field);
 			double sum = 0;
 			double count = 0;
@@ -45,10 +46,12 @@ public class TfIdfExtractor {
 				Map terms = (LinkedHashMap) value.get(solrField);
 				for (String term : (Set<String>) terms.keySet()) {
 					Map termInfo = (LinkedHashMap) terms.get(term);
-					int tf = getInt(termInfo.get("tf"));
-					int df = getInt(termInfo.get("df"));
 					double tfIdf = getDouble(termInfo.get("tf-idf"));
-					termsCollection.get(field).add(new TfIdf(term, tf, df, tfIdf));
+					if (doCollectTerms) {
+						int tf = getInt(termInfo.get("tf"));
+						int df = getInt(termInfo.get("df"));
+						termsCollection.get(field).add(new TfIdf(term, tf, df, tfIdf));
+					}
 					sum += tfIdf;
 					count++;
 				}

@@ -26,7 +26,7 @@ public class TfIdf {
 		this.term = term;
 	}
 
-	public double getTf() {
+	public int getTf() {
 		return tf;
 	}
 
@@ -34,7 +34,7 @@ public class TfIdf {
 		this.tf = tf;
 	}
 
-	public double getDf() {
+	public int getDf() {
 		return df;
 	}
 
@@ -46,7 +46,7 @@ public class TfIdf {
 		return tfIdf;
 	}
 
-	public void setTfIdf(int tfIdf) {
+	public void setTfIdf(double tfIdf) {
 		this.tfIdf = tfIdf;
 	}
 
