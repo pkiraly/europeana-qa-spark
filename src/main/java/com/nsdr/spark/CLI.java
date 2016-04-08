@@ -6,8 +6,8 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.nsdr.spark.cli.Result;
 import com.nsdr.spark.completeness.CompletenessCalculator;
-import com.nsdr.spark.completeness.Counters;
-import com.nsdr.spark.completeness.TfIdfCalculator;
+import com.nsdr.spark.counters.Counters;
+import com.nsdr.spark.uniqueness.TfIdfCalculator;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -60,6 +60,7 @@ public class CLI {
 			result.setExistingFields(completenessCalculator.getExistingFields());
 			result.setMissingFields(completenessCalculator.getMissingFields());
 			result.setEmptyFields(completenessCalculator.getEmptyFields());
+			result.setTermsCollection(tfIdfCalculator.getTermsCollection());
 
 			break;
 		}

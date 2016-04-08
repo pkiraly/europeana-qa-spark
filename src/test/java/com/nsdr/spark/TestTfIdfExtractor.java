@@ -3,7 +3,7 @@ package com.nsdr.spark;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.nsdr.spark.completeness.TfIdfExtractor;
+import com.nsdr.spark.uniqueness.TfIdfExtractor;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;

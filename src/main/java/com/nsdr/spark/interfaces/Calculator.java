@@ -1,6 +1,6 @@
 package com.nsdr.spark.interfaces;
 
-import com.nsdr.spark.completeness.Counters;
+import com.nsdr.spark.counters.Counters;
 
 /**
  *

@@ -2,7 +2,7 @@ package com.nsdr.spark;
 
 import com.nsdr.spark.completeness.DatasetManager;
 import com.nsdr.spark.completeness.DataProviderManager;
-import com.nsdr.spark.completeness.Counters;
+import com.nsdr.spark.counters.Counters;
 import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.jayway.jsonpath.InvalidJsonException;
 import java.io.IOException;

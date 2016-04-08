@@ -1,5 +1,7 @@
-package com.nsdr.spark.completeness;
+package com.nsdr.spark.counters;
 
+import com.nsdr.spark.completeness.JsonBranch;
+import com.nsdr.spark.counters.BasicCounter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -170,7 +172,7 @@ public class Counters {
 		return values;
 	}
 
-	void setTfIdfList(Map<String, Double> tdIdf) {
+	public void setTfIdfList(Map<String, Double> tdIdf) {
 		this.tfIdfList = tdIdf;
 	}
 

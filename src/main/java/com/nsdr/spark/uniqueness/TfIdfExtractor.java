@@ -1,10 +1,12 @@
-package com.nsdr.spark.completeness;
+package com.nsdr.spark.uniqueness;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,20 +16,28 @@ import java.util.Set;
  */
 public class TfIdfExtractor {
 
-	private static final Map<String, String> termFields = new LinkedHashMap<>();
 	private static final JsonProvider jsonProvider = Configuration.defaultConfiguration().jsonProvider();
+	private static final Map<String, String> termFields = new LinkedHashMap<>();
 	static {
 		termFields.put("dc:title", "dc_title_txt");
 		termFields.put("dcterms:alternative", "dcterms_alternative_txt");
 		termFields.put("dc:description", "dc_description_txt");
 	}
 
+	private Map<String, List<TfIdf>> termsCollection;
+
 	public Map<String, Double> extract(String jsonString, String recordId) {
+		return extract(jsonString, recordId, false);
+	}
+
+	public Map<String, Double> extract(String jsonString, String recordId, boolean doCollectTerms) {
 		Map<String, Double> results = new LinkedHashMap<>();
+		termsCollection = new LinkedHashMap<>();
 		Object document = jsonProvider.parse(jsonString);
 		String path = String.format("$.termVectors.['%s']", recordId);
 		Map value = (LinkedHashMap) JsonPath.read(document, path);
 		for (String field : termFields.keySet()) {
+			termsCollection.put(field, new LinkedList<TfIdf>());
 			String solrField = termFields.get(field);
 			double sum = 0;
 			double count = 0;
@@ -35,13 +45,10 @@ public class TfIdfExtractor {
 				Map terms = (LinkedHashMap) value.get(solrField);
 				for (String term : (Set<String>) terms.keySet()) {
 					Map termInfo = (LinkedHashMap) terms.get(term);
-					Object tfIdfVal = termInfo.get("tf-idf");
-					double tfIdf;
-					if (tfIdfVal.getClass().getCanonicalName().equals("java.math.BigDecimal")) {
-						tfIdf = ((BigDecimal) tfIdfVal).doubleValue();
-					} else {
-						tfIdf = (Double) tfIdfVal;
-					}
+					double tf = getDouble(termInfo.get("tf"));
+					double df = getDouble(termInfo.get("df"));
+					double tfIdf = getDouble(termInfo.get("tf-idf"));
+					termsCollection.get(field).add(new TfIdf(term, tf, df, tfIdf));
 					sum += tfIdf;
 					count++;
 				}
@@ -51,5 +58,19 @@ public class TfIdfExtractor {
 			results.put(field + ":avg", avg);
 		}
 		return results;
+	}
+
+	public Map<String, List<TfIdf>> getTermsCollection() {
+		return termsCollection;
+	}
+
+	public Double getDouble(Object value) {
+		double doubleValue;
+		if (value.getClass().getCanonicalName().equals("java.math.BigDecimal")) {
+			doubleValue = ((BigDecimal) value).doubleValue();
+		} else {
+			doubleValue = (Double) value;
+		}
+		return doubleValue;
 	}
 }

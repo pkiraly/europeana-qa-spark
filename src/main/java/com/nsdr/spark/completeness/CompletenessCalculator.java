@@ -1,5 +1,6 @@
 package com.nsdr.spark.completeness;
 
+import com.nsdr.spark.counters.Counters;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidJsonException;
 import com.jayway.jsonpath.JsonPath;

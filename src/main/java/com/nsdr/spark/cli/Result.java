@@ -1,5 +1,6 @@
 package com.nsdr.spark.cli;
 
+import com.nsdr.spark.uniqueness.TfIdf;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ public class Result {
 	private List<String> missingFields;
 	private List<String> emptyFields;
 	private Map<String, Double> results;
+	private Map<String, List<TfIdf>> termsCollection;
 
 	public Result() {
 	}
@@ -48,5 +50,12 @@ public class Result {
 		this.results = results;
 	}
 
-	
+	public Map<String, List<TfIdf>> getTermsCollection() {
+		return termsCollection;
+	}
+
+	public void setTermsCollection(Map<String, List<TfIdf>> termsCollection) {
+		this.termsCollection = termsCollection;
+	}
+
 }

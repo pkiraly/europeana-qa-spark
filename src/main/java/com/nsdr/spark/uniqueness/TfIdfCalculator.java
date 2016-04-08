@@ -1,10 +1,12 @@
-package com.nsdr.spark.completeness;
+package com.nsdr.spark.uniqueness;
 
+import com.nsdr.spark.counters.Counters;
 import com.nsdr.spark.interfaces.Calculator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpClient;
@@ -28,14 +30,19 @@ public class TfIdfCalculator implements Calculator, Serializable {
 			  + "&tv.fl=dc_title_txt,dc_description_txt,dcterms_alternative_txt"
 			  + "&wt=json&json.nl=map&rows=1000&fl=id";
 	private static final HttpClient httpClient = new HttpClient();
+	private Map<String, List<TfIdf>> termsCollection;
 
 	@Override
 	public void calculate(String jsonString, Counters counters) {
-		counters.setTfIdfList(getTdIdf(counters.getRecordId()));
+		String solrJsonResponse = getSolrResponse(counters.getRecordId());
+		TfIdfExtractor extractor = new TfIdfExtractor();
+		counters.setTfIdfList(extractor.extract(solrJsonResponse, counters.getRecordId()));
+		termsCollection = extractor.getTermsCollection();
 	}
 
-	private Map<String, Double> getTdIdf(String recordId) {
-		Map<String, Double> tfIdfResult = null;
+	private String getSolrResponse(String recordId) {
+		String jsonString = null;
+
 		String url = String.format(SOLR_SEARCH_PATH, recordId).replace("\"", "%22");
 		HttpMethod method = new GetMethod(url);
 		HttpMethodParams params = new HttpMethodParams();
@@ -51,9 +58,7 @@ public class TfIdfCalculator implements Calculator, Serializable {
 			IOUtils.copy(method.getResponseBodyAsStream(), baos);
 			byte[] responseBody = baos.toByteArray();
 
-			String jsonString = new String(responseBody, Charset.forName("UTF-8"));
-			TfIdfExtractor extractor = new TfIdfExtractor();
-			tfIdfResult = extractor.extract(jsonString, recordId);
+			jsonString = new String(responseBody, Charset.forName("UTF-8"));
 		} catch (HttpException e) {
 			logger.severe("Fatal protocol violation: " + e.getMessage());
 		} catch (IOException e) {
@@ -62,7 +67,10 @@ public class TfIdfCalculator implements Calculator, Serializable {
 			method.releaseConnection();
 		}
 
-		return tfIdfResult;
+		return jsonString;
 	}
-	
+
+	public Map<String, List<TfIdf>> getTermsCollection() {
+		return termsCollection;
+	}
 }
