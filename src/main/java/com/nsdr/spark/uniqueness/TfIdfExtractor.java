@@ -68,6 +68,8 @@ public class TfIdfExtractor {
 		double doubleValue;
 		if (value.getClass().getCanonicalName().equals("java.math.BigDecimal")) {
 			doubleValue = ((BigDecimal) value).doubleValue();
+		} else if (value.getClass().getCanonicalName().equals("java.lang.Integer")) {
+			doubleValue = ((Integer) value).doubleValue();
 		} else {
 			doubleValue = (Double) value;
 		}
