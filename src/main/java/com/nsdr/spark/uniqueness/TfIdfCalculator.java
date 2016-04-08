@@ -31,12 +31,13 @@ public class TfIdfCalculator implements Calculator, Serializable {
 			  + "&wt=json&json.nl=map&rows=1000&fl=id";
 	private static final HttpClient httpClient = new HttpClient();
 	private Map<String, List<TfIdf>> termsCollection;
+	private boolean doCollectTerms = false;
 
 	@Override
 	public void calculate(String jsonString, Counters counters) {
 		String solrJsonResponse = getSolrResponse(counters.getRecordId());
 		TfIdfExtractor extractor = new TfIdfExtractor();
-		counters.setTfIdfList(extractor.extract(solrJsonResponse, counters.getRecordId()));
+		counters.setTfIdfList(extractor.extract(solrJsonResponse, counters.getRecordId(), doCollectTerms));
 		termsCollection = extractor.getTermsCollection();
 	}
 
@@ -72,5 +73,9 @@ public class TfIdfCalculator implements Calculator, Serializable {
 
 	public Map<String, List<TfIdf>> getTermsCollection() {
 		return termsCollection;
+	}
+
+	public void setDoCollectTerms(boolean doCollectTerms) {
+		this.doCollectTerms = doCollectTerms;
 	}
 }

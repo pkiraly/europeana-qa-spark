@@ -38,6 +38,7 @@ public class CLI {
 		completenessCalculator.setVerbose(true);
 		
 		final TfIdfCalculator tfIdfCalculator = new TfIdfCalculator();
+		tfIdfCalculator.setDoCollectTerms(true);
 		// DataProviderManager dataProviderManager = new DataProviderManager();
 		// counter.setDataProviderManager(dataProviderManager);
 		// DatasetManager datasetManager = new DatasetManager();
