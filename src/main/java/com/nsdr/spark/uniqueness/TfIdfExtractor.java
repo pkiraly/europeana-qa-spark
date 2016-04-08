@@ -45,8 +45,8 @@ public class TfIdfExtractor {
 				Map terms = (LinkedHashMap) value.get(solrField);
 				for (String term : (Set<String>) terms.keySet()) {
 					Map termInfo = (LinkedHashMap) terms.get(term);
-					double tf = getDouble(termInfo.get("tf"));
-					double df = getDouble(termInfo.get("df"));
+					int tf = getInt(termInfo.get("tf"));
+					int df = getInt(termInfo.get("df"));
 					double tfIdf = getDouble(termInfo.get("tf-idf"));
 					termsCollection.get(field).add(new TfIdf(term, tf, df, tfIdf));
 					sum += tfIdf;
@@ -74,5 +74,17 @@ public class TfIdfExtractor {
 			doubleValue = (Double) value;
 		}
 		return doubleValue;
+	}
+
+	public Integer getInt(Object value) {
+		int intValue;
+		if (value.getClass().getCanonicalName().equals("java.math.BigDecimal")) {
+			intValue = ((BigDecimal) value).intValue();
+		} else if (value.getClass().getCanonicalName().equals("java.lang.Integer")) {
+			intValue = (Integer) value;
+		} else {
+			intValue = (Integer) value;
+		}
+		return intValue;
 	}
 }

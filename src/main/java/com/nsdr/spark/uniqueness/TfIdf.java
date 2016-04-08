@@ -7,11 +7,11 @@ package com.nsdr.spark.uniqueness;
 public class TfIdf {
 
 	private String term;
-	private double tf;
-	private double df;
+	private int tf;
+	private int df;
 	private double tfIdf;
 
-	public TfIdf(String term, double tf, double df, double tfIdf) {
+	public TfIdf(String term, int tf, int df, double tfIdf) {
 		this.term = term;
 		this.tf = tf;
 		this.df = df;
@@ -30,7 +30,7 @@ public class TfIdf {
 		return tf;
 	}
 
-	public void setTf(double tf) {
+	public void setTf(int tf) {
 		this.tf = tf;
 	}
 
@@ -38,7 +38,7 @@ public class TfIdf {
 		return df;
 	}
 
-	public void setDf(double df) {
+	public void setDf(int df) {
 		this.df = df;
 	}
 
@@ -46,7 +46,7 @@ public class TfIdf {
 		return tfIdf;
 	}
 
-	public void setTfIdf(double tfIdf) {
+	public void setTfIdf(int tfIdf) {
 		this.tfIdf = tfIdf;
 	}
 
