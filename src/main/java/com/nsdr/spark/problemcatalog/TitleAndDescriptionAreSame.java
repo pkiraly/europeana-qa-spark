@@ -22,6 +22,7 @@ public class TitleAndDescriptionAreSame extends ProblemDetector implements Seria
 	public TitleAndDescriptionAreSame(ProblemCatalog problemCatalog) {
 		this.problemCatalog = problemCatalog;
 		this.problemCatalog.attach(this);
+		logger.info("problemCatalog is null? " + (problemCatalog == null));
 	}
 
 	@Override

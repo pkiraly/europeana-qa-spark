@@ -26,6 +26,7 @@ public class EmptyStrings extends ProblemDetector implements Serializable {
 	public EmptyStrings(ProblemCatalog problemCatalog) {
 		this.problemCatalog = problemCatalog;
 		this.problemCatalog.attach(this);
+		logger.info("problemCatalog is null? " + (problemCatalog == null));
 	}
 
 	@Override
