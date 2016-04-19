@@ -54,9 +54,9 @@ public class CompletenessCount {
 		final TfIdfCalculator tfidfCalculator = new TfIdfCalculator();
 
 		final ProblemCatalog problemCatalog = new ProblemCatalog();
-		new EmptyStrings(problemCatalog);
 		new LongSubject(problemCatalog);
 		new TitleAndDescriptionAreSame(problemCatalog);
+		new EmptyStrings(problemCatalog);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {

@@ -5,6 +5,7 @@ import com.nsdr.spark.util.JsonUtils;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * See for example:
@@ -12,6 +13,8 @@ import java.util.Map;
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
 public class LongSubject extends ProblemDetector implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(LongSubject.class.getCanonicalName());
 
 	private final String NAME = "LongSubject";
 	private final String PATH = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:subject']";
@@ -24,6 +27,7 @@ public class LongSubject extends ProblemDetector implements Serializable {
 
 	@Override
 	public void update(Map<String, Double> results) {
+		logger.info("problemCatalog is null? " + (problemCatalog == null));
 		double value = 0;
 		Object subjectObj = JsonPath.read(problemCatalog.getJsonDocument(), PATH);
 		if (subjectObj != null) {

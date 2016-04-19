@@ -5,12 +5,15 @@ import com.nsdr.spark.util.JsonUtils;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
 public class TitleAndDescriptionAreSame extends ProblemDetector implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(TitleAndDescriptionAreSame.class.getCanonicalName());
 
 	private final String NAME = "TitleAndDescriptionAreSame";
 	private final String title = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:title']";
@@ -23,8 +26,9 @@ public class TitleAndDescriptionAreSame extends ProblemDetector implements Seria
 
 	@Override
 	public void update(Map<String, Double> results) {
-		Object titlesObj = JsonPath.read(problemCatalog.getJsonDocument(), title);
+		logger.info("problemCatalog is null? " + (problemCatalog == null));
 		double value = 0;
+		Object titlesObj = JsonPath.read(problemCatalog.getJsonDocument(), title);
 		if (titlesObj != null) {
 			Object descriptionObj = JsonPath.read(problemCatalog.getJsonDocument(), description);
 			if (descriptionObj != null) {

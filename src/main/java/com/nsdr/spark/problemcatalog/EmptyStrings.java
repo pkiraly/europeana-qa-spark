@@ -6,12 +6,15 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
 public class EmptyStrings extends ProblemDetector implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(EmptyStrings.class.getCanonicalName());
 
 	private final String NAME = "EmptyStrings";
 	private final List<String> paths = Arrays.asList(
@@ -27,6 +30,7 @@ public class EmptyStrings extends ProblemDetector implements Serializable {
 
 	@Override
 	public void update(Map<String, Double> results) {
+		logger.info("problemCatalog is null? " + (problemCatalog == null));
 		double value = 0;
 		for (String path : paths) {
 			Object subjectObj = JsonPath.read(problemCatalog.getJsonDocument(), path);

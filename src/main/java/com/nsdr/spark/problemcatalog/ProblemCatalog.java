@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,6 +18,7 @@ import java.util.Map;
 public class ProblemCatalog implements Calculator, Serializable {
 
 	private static final JsonProvider JSON_PROVIDER = Configuration.defaultConfiguration().jsonProvider();
+	private static final Logger logger = Logger.getLogger(ProblemCatalog.class.getCanonicalName());
 
 	private List<ProblemDetector> problems = new ArrayList<>();
 	private String jsonString;
@@ -45,6 +47,7 @@ public class ProblemCatalog implements Calculator, Serializable {
 	public void calculate(String jsonString, Counters counters) {
 		this.jsonString = jsonString;
 		this.jsonDocument = JSON_PROVIDER.parse(jsonString);
+		logger.info("jsonDocument is null? " + (jsonDocument == null));
 		this.results = new LinkedHashMap<>();
 		notifyAllObservers();
 		counters.setProblemList(results);
