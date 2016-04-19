@@ -2,6 +2,7 @@ package com.nsdr.spark.problemcatalog;
 
 import com.jayway.jsonpath.JsonPath;
 import com.nsdr.spark.util.JsonUtils;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import java.util.Map;
  * http://www.europeana.eu/portal/record/07602/5CFC6E149961A1630BAD5C65CE3A683DEB6285A0.json
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class LongSubject extends ProblemDetector {
+public class LongSubject extends ProblemDetector implements Serializable {
 
 	private final String NAME = "LongSubject";
 	private final String PATH = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:subject']";

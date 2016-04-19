@@ -2,6 +2,7 @@ package com.nsdr.spark.problemcatalog;
 
 import com.jayway.jsonpath.JsonPath;
 import com.nsdr.spark.util.JsonUtils;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class EmptyStrings extends ProblemDetector {
+public class EmptyStrings extends ProblemDetector implements Serializable {
 
 	private final String NAME = "EmptyStrings";
 	private final List<String> paths = Arrays.asList(

@@ -2,6 +2,7 @@ package com.nsdr.spark.problemcatalog;
 
 import com.jayway.jsonpath.JsonPath;
 import com.nsdr.spark.util.JsonUtils;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class TitleAndDescriptionAreSame extends ProblemDetector {
+public class TitleAndDescriptionAreSame extends ProblemDetector implements Serializable {
 
 	private final String NAME = "TitleAndDescriptionAreSame";
 	private final String title = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:title']";
