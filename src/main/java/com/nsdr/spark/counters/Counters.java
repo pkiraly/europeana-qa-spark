@@ -197,14 +197,17 @@ public class Counters {
 		this.problemList = problemList;
 	}
 
-	public String getProblemList(boolean withLabel) {
+	public String getProblemList(boolean withLabel, boolean compress) {
 		List<String> items = new ArrayList<>();
 		for (Map.Entry<String, Double> entry : problemList.entrySet()) {
 			String item = "";
 			if (withLabel) {
 				item += String.format("\"%s\":", entry.getKey());
 			}
-			item += String.format("%.8f", entry.getValue());
+			String nr = String.format("%.8f", entry.getValue());
+			if (compress)
+				nr = compressNumber(nr);
+			item += nr;
 			items.add(item);
 		}
 		return StringUtils.join(items, ',');
@@ -241,7 +244,7 @@ public class Counters {
 			result += ',' + getTfIdfList(withLabel);
 		}
 		if (returnProblems == true) {
-			result += ',' + getProblemList(withLabel);
+			result += ',' + getProblemList(withLabel, compress);
 		}
 		return result;
 	}
