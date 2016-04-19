@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -49,6 +50,7 @@ public class ProblemCatalog implements Calculator, Serializable {
 		this.jsonDocument = JSON_PROVIDER.parse(jsonString);
 		this.results = new LinkedHashMap<>();
 		notifyAllObservers();
+		logger.info(StringUtils.join(results.keySet(), ","));
 		counters.setProblemList(results);
 	}
 }
