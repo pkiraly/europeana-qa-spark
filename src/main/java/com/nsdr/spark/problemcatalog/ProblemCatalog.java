@@ -39,7 +39,7 @@ public class ProblemCatalog implements Calculator, Serializable {
 
 	public void notifyAllObservers() {
 		for (ProblemDetector observer : problems) {
-			observer.update(results);
+			observer.update(jsonDocument, results);
 		}
 	}
 

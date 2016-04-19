@@ -10,5 +10,5 @@ public abstract class ProblemDetector {
 
 	protected ProblemCatalog problemCatalog;
 
-	public abstract void update(Map<String, Double> results);
+	public abstract void update(Object jsonDocument, Map<String, Double> results);
 }

@@ -26,12 +26,12 @@ public class TitleAndDescriptionAreSame extends ProblemDetector implements Seria
 	}
 
 	@Override
-	public void update(Map<String, Double> results) {
+	public void update(Object jsonDocument, Map<String, Double> results) {
 		logger.info("problemCatalog is null? " + (problemCatalog == null));
 		double value = 0;
-		Object titlesObj = JsonPath.read(problemCatalog.getJsonDocument(), title);
+		Object titlesObj = JsonPath.read(jsonDocument, title);
 		if (titlesObj != null) {
-			Object descriptionObj = JsonPath.read(problemCatalog.getJsonDocument(), description);
+			Object descriptionObj = JsonPath.read(jsonDocument, description);
 			if (descriptionObj != null) {
 				List<String> titles = JsonUtils.extractList(titlesObj);
 				if (titles.size() > 0) {
