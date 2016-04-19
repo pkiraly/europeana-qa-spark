@@ -50,7 +50,7 @@ public class ProblemCatalog implements Calculator, Serializable {
 		this.jsonDocument = JSON_PROVIDER.parse(jsonString);
 		this.results = new LinkedHashMap<>();
 		notifyAllObservers();
-		logger.info(StringUtils.join(results.keySet(), ","));
+		logger.info(StringUtils.join(results.values(), ","));
 		counters.setProblemList(results);
 	}
 }

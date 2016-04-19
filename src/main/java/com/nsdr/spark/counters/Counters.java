@@ -240,6 +240,9 @@ public class Counters {
 		if (returnTfIdf == true) {
 			result += ',' + getTfIdfList(withLabel);
 		}
+		if (returnProblems == true) {
+			result += ',' + getProblemList(withLabel);
+		}
 		return result;
 	}
 
