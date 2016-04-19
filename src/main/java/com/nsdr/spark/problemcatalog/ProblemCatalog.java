@@ -47,7 +47,6 @@ public class ProblemCatalog implements Calculator, Serializable {
 	public void calculate(String jsonString, Counters counters) {
 		this.jsonString = jsonString;
 		this.jsonDocument = JSON_PROVIDER.parse(jsonString);
-		logger.info("jsonDocument is null? " + (jsonDocument == null));
 		this.results = new LinkedHashMap<>();
 		notifyAllObservers();
 		counters.setProblemList(results);

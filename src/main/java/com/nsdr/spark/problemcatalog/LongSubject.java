@@ -28,7 +28,6 @@ public class LongSubject extends ProblemDetector implements Serializable {
 
 	@Override
 	public void update(Object jsonDocument, Map<String, Double> results) {
-		logger.info("problemCatalog is null? " + (problemCatalog == null));
 		double value = 0;
 		Object subjectObj = JsonPath.read(jsonDocument, PATH);
 		if (subjectObj != null) {

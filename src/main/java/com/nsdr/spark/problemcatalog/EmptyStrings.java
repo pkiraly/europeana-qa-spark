@@ -31,7 +31,6 @@ public class EmptyStrings extends ProblemDetector implements Serializable {
 
 	@Override
 	public void update(Object jsonDocument, Map<String, Double> results) {
-		logger.info("problemCatalog is null? " + (problemCatalog == null));
 		double value = 0;
 		for (String path : paths) {
 			Object subjectObj = JsonPath.read(jsonDocument, path);
