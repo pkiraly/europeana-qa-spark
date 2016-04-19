@@ -1,7 +1,6 @@
 package com.nsdr.spark.counters;
 
 import com.nsdr.spark.completeness.JsonBranch;
-import com.nsdr.spark.counters.BasicCounter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,9 +21,11 @@ public class Counters {
 	private Map<String, BasicCounter> basicCounters;
 	private final Map<String, Boolean> existenceList = new LinkedHashMap<>();
 	private Map<String, Double> tfIdfList;
+	private Map<String, Double> problemList;
 
 	private boolean returnFieldExistenceList = false;
 	private boolean returnTfIdf = false;
+	private boolean returnProblems = false;
 
 	public Counters() {
 		initialize();
@@ -46,6 +47,9 @@ public class Counters {
 		if (returnTfIdf == true) {
 			result.putAll(tfIdfList);
 		}
+		
+		if (returnProblems == true)
+			result.putAll(problemList);
 
 		return result;
 	}
@@ -189,6 +193,23 @@ public class Counters {
 		return StringUtils.join(items, ',');
 	}
 
+	public void setProblemList(Map<String, Double> problemList) {
+		this.problemList = problemList;
+	}
+
+	public String getProblemList(boolean withLabel) {
+		List<String> items = new ArrayList<>();
+		for (Map.Entry<String, Double> entry : problemList.entrySet()) {
+			String item = "";
+			if (withLabel) {
+				item += String.format("\"%s\":", entry.getKey());
+			}
+			item += String.format("%.8f", entry.getValue());
+			items.add(item);
+		}
+		return StringUtils.join(items, ',');
+	}
+
 	public String getRecordId() {
 		return recordId;
 	}
@@ -228,6 +249,10 @@ public class Counters {
 
 	public void doReturnTfIdfList(boolean returnTfIdf) {
 		this.returnTfIdf = returnTfIdf;
+	}
+
+	public void doReturnProblemList(boolean returnProblems) {
+		this.returnProblems = returnProblems;
 	}
 
 }

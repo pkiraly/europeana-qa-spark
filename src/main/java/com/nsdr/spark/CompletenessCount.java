@@ -5,6 +5,10 @@ import com.nsdr.spark.completeness.DataProviderManager;
 import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.jayway.jsonpath.InvalidJsonException;
 import com.nsdr.spark.counters.Counters;
+import com.nsdr.spark.problemcatalog.EmptyStrings;
+import com.nsdr.spark.problemcatalog.LongSubject;
+import com.nsdr.spark.problemcatalog.ProblemCatalog;
+import com.nsdr.spark.problemcatalog.TitleAndDescriptionAreSame;
 import com.nsdr.spark.uniqueness.TfIdfCalculator;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
@@ -49,6 +53,11 @@ public class CompletenessCount {
 
 		final TfIdfCalculator tfidfCalculator = new TfIdfCalculator();
 
+		final ProblemCatalog problemCatalog = new ProblemCatalog();
+		new EmptyStrings(problemCatalog);
+		new LongSubject(problemCatalog);
+		new TitleAndDescriptionAreSame(problemCatalog);
+
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
@@ -57,9 +66,12 @@ public class CompletenessCount {
 					Counters counters = new Counters();
 					counters.doReturnFieldExistenceList(true);
 					counters.doReturnTfIdfList(true);
+					counters.doReturnProblemList(true);
 
 					completenessCalculator.calculate(jsonString, counters);
 					tfidfCalculator.calculate(jsonString, counters);
+					problemCatalog.calculate(jsonString, counters);
+
 					return counters.getFullResults(withLabel, compressed);
 				} catch (InvalidJsonException e) {
 					System.err.println(e.getLocalizedMessage());

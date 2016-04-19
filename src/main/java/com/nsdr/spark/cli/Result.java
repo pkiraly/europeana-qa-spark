@@ -57,5 +57,4 @@ public class Result {
 	public void setTermsCollection(Map<String, List<TfIdf>> termsCollection) {
 		this.termsCollection = termsCollection;
 	}
-
 }
