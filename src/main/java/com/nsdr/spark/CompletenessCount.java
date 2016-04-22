@@ -65,6 +65,7 @@ public class CompletenessCount {
 				try {
 					Counters counters = new Counters();
 					counters.doReturnFieldExistenceList(true);
+					counters.doReturnFieldInstanceList(true);
 					counters.doReturnTfIdfList(true);
 					counters.doReturnProblemList(true);
 

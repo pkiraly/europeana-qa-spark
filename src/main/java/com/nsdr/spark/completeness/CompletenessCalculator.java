@@ -104,11 +104,20 @@ public class CompletenessCalculator implements Calculator, Serializable {
 				if (!((JSONArray) value).isEmpty()) {
 					counters.increaseInstance(jsonBranch.getCategories());
 					counters.addExistence(jsonBranch.getLabel(), true);
+					if (((JSONArray) value).get(0).getClass() == JSONArray.class) {
+						JSONArray values = (JSONArray)((JSONArray) value).get(0);
+						// System.err.println(jsonBranch.getLabel() + ": " + values.size());
+						counters.addInstance(jsonBranch.getLabel(), values.size());
+					} else {
+						// System.err.println(jsonBranch.getLabel() + " " + ((JSONArray) value).get(0));
+						counters.addInstance(jsonBranch.getLabel(), 1);
+					}
 					if (verbose && !jsonBranch.hasFilter()) {
 						existingFields.add(jsonBranch.getLabel());
 					}
 				} else if (!jsonBranch.hasFilter()) {
 					counters.addExistence(jsonBranch.getLabel(), false);
+					counters.addInstance(jsonBranch.getLabel(), 0);
 					if (verbose) {
 						missingFields.add(jsonBranch.getLabel());
 					}
@@ -117,11 +126,13 @@ public class CompletenessCalculator implements Calculator, Serializable {
 				if (StringUtils.isNotBlank((String) value)) {
 					counters.increaseInstance(jsonBranch.getCategories());
 					counters.addExistence(jsonBranch.getLabel(), true);
+					counters.addInstance(jsonBranch.getLabel(), 1);
 					if (verbose && !jsonBranch.hasFilter()) {
 						existingFields.add(jsonBranch.getLabel());
 					}
 				} else if (!jsonBranch.hasFilter()) {
 					counters.addExistence(jsonBranch.getLabel(), false);
+					counters.addInstance(jsonBranch.getLabel(), 0);
 					if (verbose) {
 						emptyFields.add(jsonBranch.getLabel());
 					}
@@ -132,6 +143,7 @@ public class CompletenessCalculator implements Calculator, Serializable {
 			}
 		} else {
 			counters.addExistence(jsonBranch.getLabel(), false);
+			counters.addInstance(jsonBranch.getLabel(), 0);
 			if (verbose) {
 				missingFields.add(jsonBranch.getLabel());
 			}

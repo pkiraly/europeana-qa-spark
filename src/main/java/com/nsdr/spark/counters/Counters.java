@@ -20,10 +20,12 @@ public class Counters {
 	private Map<String, Object> fields = new LinkedHashMap<>();
 	private Map<String, BasicCounter> basicCounters;
 	private final Map<String, Boolean> existenceList = new LinkedHashMap<>();
+	private final Map<String, Integer> instanceList = new LinkedHashMap<>();
 	private Map<String, Double> tfIdfList;
 	private Map<String, Double> problemList;
 
 	private boolean returnFieldExistenceList = false;
+	private boolean returnFieldInstanceList = false;
 	private boolean returnTfIdf = false;
 	private boolean returnProblems = false;
 
@@ -176,6 +178,35 @@ public class Counters {
 		return values;
 	}
 
+	public void addInstance(String fieldName, Integer count) {
+		instanceList.put(fieldName, count);
+	}
+
+	public Map<String, Integer> getInstanceMap() {
+		return instanceList;
+	}
+
+	public String getInstanceList(boolean withLabel) {
+		List<String> items = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : instanceList.entrySet()) {
+			String item = "";
+			if (withLabel) {
+				item += String.format("\"%s\":", entry.getKey());
+			}
+			item += entry.getValue();
+			items.add(item);
+		}
+		return StringUtils.join(items, ',');
+	}
+
+	public List<Integer> getInstanceList() {
+		List<Integer> values = new LinkedList<>();
+		for (Integer val : instanceList.values()) {
+			values.add(val);
+		}
+		return values;
+	}
+
 	public void setTfIdfList(Map<String, Double> tdIdf) {
 		this.tfIdfList = tdIdf;
 	}
@@ -240,6 +271,9 @@ public class Counters {
 		if (returnFieldExistenceList == true) {
 			result += ',' + getExistenceList(withLabel);
 		}
+		if (returnFieldInstanceList == true) {
+			result += ',' + getInstanceList(withLabel);
+		}
 		if (returnTfIdf == true) {
 			result += ',' + getTfIdfList(withLabel);
 		}
@@ -251,6 +285,10 @@ public class Counters {
 
 	public void doReturnFieldExistenceList(boolean returnFieldExistenceList) {
 		this.returnFieldExistenceList = returnFieldExistenceList;
+	}
+
+	public void doReturnFieldInstanceList(boolean returnFieldInstanceList) {
+		this.returnFieldInstanceList = returnFieldInstanceList;
 	}
 
 	public void doReturnTfIdfList(boolean returnTfIdf) {
