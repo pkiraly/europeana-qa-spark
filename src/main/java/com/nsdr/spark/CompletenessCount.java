@@ -66,11 +66,11 @@ public class CompletenessCount {
 					Counters counters = new Counters();
 					counters.doReturnFieldExistenceList(true);
 					counters.doReturnFieldInstanceList(true);
-					counters.doReturnTfIdfList(true);
+					counters.doReturnTfIdfList(false);
 					counters.doReturnProblemList(true);
 
 					completenessCalculator.calculate(jsonString, counters);
-					tfidfCalculator.calculate(jsonString, counters);
+					// tfidfCalculator.calculate(jsonString, counters);
 					problemCatalog.calculate(jsonString, counters);
 
 					return counters.getFullResults(withLabel, compressed);
