@@ -6,9 +6,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
- *
+ * example: 2023702/35D943DF60D779EC9EF31F5DFF4E337385AC7C37
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
 public class TitleAndDescriptionAreSame extends ProblemDetector implements Serializable {
@@ -22,7 +23,6 @@ public class TitleAndDescriptionAreSame extends ProblemDetector implements Seria
 	public TitleAndDescriptionAreSame(ProblemCatalog problemCatalog) {
 		this.problemCatalog = problemCatalog;
 		this.problemCatalog.attach(this);
-		logger.info("problemCatalog is null? " + (problemCatalog == null));
 	}
 
 	@Override
