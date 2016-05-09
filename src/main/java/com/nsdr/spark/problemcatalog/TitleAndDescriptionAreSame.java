@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * example: 2023702/35D943DF60D779EC9EF31F5DFF4E337385AC7C37
