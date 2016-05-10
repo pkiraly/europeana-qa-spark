@@ -1,6 +1,7 @@
 package com.nsdr.spark.problemcatalog;
 
 import com.jayway.jsonpath.Configuration;
+import com.nsdr.spark.model.JsonPathCache;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -48,12 +49,13 @@ public class TestLongSubject {
 		Path path = Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
 		List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
 		String jsonString = lines.get(0);
-		Object document = Configuration.defaultConfiguration()
-				  .jsonProvider().parse(jsonString);
+		JsonPathCache cache = new JsonPathCache(jsonString);
+
 		ProblemCatalog problemCatalog = new ProblemCatalog();
 		ProblemDetector detector = new LongSubject(problemCatalog);
 		Map<String, Double> results = new HashMap<>();
-		detector.update(document, results);
-		assertEquals((Double)2.0, (Double)results.get("LongSubject"));
+
+		detector.update(cache, results);
+		assertEquals((Double)1.0, (Double)results.get("LongSubject"));
 	}
 }

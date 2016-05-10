@@ -1,5 +1,7 @@
 package com.nsdr.spark.model;
 
+import java.util.Objects;
+
 /**
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
@@ -56,4 +58,39 @@ public class EdmFieldInstance {
 	public String toString() {
 		return "EdmFieldInstance{" + "value=" + value + ", language=" + language + ", resource=" + resource + '}';
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 19 * hash + Objects.hashCode(this.value);
+		hash = 19 * hash + Objects.hashCode(this.language);
+		hash = 19 * hash + Objects.hashCode(this.resource);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final EdmFieldInstance other = (EdmFieldInstance) obj;
+		if (!Objects.equals(this.value, other.value)) {
+			return false;
+		}
+		if (!Objects.equals(this.language, other.language)) {
+			return false;
+		}
+		if (!Objects.equals(this.resource, other.resource)) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 }

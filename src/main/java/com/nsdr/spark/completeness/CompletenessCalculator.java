@@ -3,18 +3,16 @@ package com.nsdr.spark.completeness;
 import com.nsdr.spark.counters.Counters;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidJsonException;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.nsdr.spark.interfaces.Calculator;
+import com.nsdr.spark.model.EdmFieldInstance;
+import com.nsdr.spark.model.JsonPathCache;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import net.minidev.json.JSONArray;
-import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -57,22 +55,22 @@ public class CompletenessCalculator implements Calculator, Serializable {
 	}
 
 	@Override
-	public void calculate(String jsonString, Counters counters) throws InvalidJsonException {
-		Object document = JSON_PROVIDER.parse(jsonString);
+	public void calculate(JsonPathCache cache, Counters counters) throws InvalidJsonException {
+		// Object document = JSON_PROVIDER.parse(jsonString);
 		if (verbose) {
 			missingFields = new ArrayList<>();
 			emptyFields = new ArrayList<>();
 			existingFields = new ArrayList<>();
 		}
 
-		counters.setRecordId((String) JsonPath.read(document, ID_PATH));
-		counters.setField("dataProvider", extractString(JsonPath.read(document, DATA_PROVIDER_PATH)));
-		counters.setField("dataProviderCode", getDataProviderCode(extractString(JsonPath.read(document, DATA_PROVIDER_PATH))));
-		counters.setField("dataset", (String) JsonPath.read(document, DATASET_PATH));
-		counters.setField("datasetCode", getDatasetCode((String) JsonPath.read(document, DATASET_PATH)));
+		counters.setRecordId(cache.get(ID_PATH).get(0).getValue());
+		counters.setField("dataProvider", cache.get(DATA_PROVIDER_PATH).get(0).getValue());
+		counters.setField("dataProviderCode", getDataProviderCode(cache.get(DATA_PROVIDER_PATH).get(0).getValue()));
+		counters.setField("dataset", cache.get(DATASET_PATH).get(0).getValue());
+		counters.setField("datasetCode", getDatasetCode(cache.get(DATASET_PATH).get(0).getValue()));
 
 		for (JsonBranch jsonBranch : EdmBranches.getPaths()) {
-			evaluateJsonBranch(jsonBranch, document, counters);
+			evaluateJsonBranch(jsonBranch, cache, counters);
 		}
 
 		for (FieldGroup fieldGroup : FIELD_GROUPS) {
@@ -87,59 +85,15 @@ public class CompletenessCalculator implements Calculator, Serializable {
 		}
 	}
 
-	public void evaluateJsonBranch(JsonBranch jsonBranch, Object document, Counters counters) {
-		Object value = null;
-		try {
-			if (jsonBranch.hasFilter()) {
-				value = JsonPath.read(document, jsonBranch.getJsonPath(), jsonBranch.getFilter());
-			} else {
-				value = JsonPath.read(document, jsonBranch.getJsonPath());
-			}
-		} catch (PathNotFoundException e) {
-			// System.err.println("PathNotFoundException: " + e.getLocalizedMessage());
-		}
+	public void evaluateJsonBranch(JsonBranch jsonBranch, JsonPathCache cache, Counters counters) {
+		List<EdmFieldInstance> values = cache.get(jsonBranch.getJsonPath());
 		counters.increaseTotal(jsonBranch.getCategories());
-		if (value != null) {
-			if (value.getClass() == JSONArray.class) {
-				if (!((JSONArray) value).isEmpty()) {
-					counters.increaseInstance(jsonBranch.getCategories());
-					counters.addExistence(jsonBranch.getLabel(), true);
-					if (((JSONArray) value).get(0).getClass() == JSONArray.class) {
-						JSONArray values = (JSONArray)((JSONArray) value).get(0);
-						// System.err.println(jsonBranch.getLabel() + ": " + values.size());
-						counters.addInstance(jsonBranch.getLabel(), values.size());
-					} else {
-						// System.err.println(jsonBranch.getLabel() + " " + ((JSONArray) value).get(0));
-						counters.addInstance(jsonBranch.getLabel(), 1);
-					}
-					if (verbose && !jsonBranch.hasFilter()) {
-						existingFields.add(jsonBranch.getLabel());
-					}
-				} else if (!jsonBranch.hasFilter()) {
-					counters.addExistence(jsonBranch.getLabel(), false);
-					counters.addInstance(jsonBranch.getLabel(), 0);
-					if (verbose) {
-						missingFields.add(jsonBranch.getLabel());
-					}
-				}
-			} else if (value.getClass() == String.class) {
-				if (StringUtils.isNotBlank((String) value)) {
-					counters.increaseInstance(jsonBranch.getCategories());
-					counters.addExistence(jsonBranch.getLabel(), true);
-					counters.addInstance(jsonBranch.getLabel(), 1);
-					if (verbose && !jsonBranch.hasFilter()) {
-						existingFields.add(jsonBranch.getLabel());
-					}
-				} else if (!jsonBranch.hasFilter()) {
-					counters.addExistence(jsonBranch.getLabel(), false);
-					counters.addInstance(jsonBranch.getLabel(), 0);
-					if (verbose) {
-						emptyFields.add(jsonBranch.getLabel());
-					}
-				}
-			} else {
-				System.err.println(jsonBranch.getLabel() + " value.getClass(): " + value.getClass());
-				System.err.println(jsonBranch.getLabel() + ": " + value);
+		if (values != null && !values.isEmpty()) {
+			counters.increaseInstance(jsonBranch.getCategories());
+			counters.addExistence(jsonBranch.getLabel(), true);
+			counters.addInstance(jsonBranch.getLabel(), values.size());
+			if (verbose) {
+				existingFields.add(jsonBranch.getLabel());
 			}
 		} else {
 			counters.addExistence(jsonBranch.getLabel(), false);

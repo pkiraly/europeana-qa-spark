@@ -70,17 +70,7 @@ public class JsonUtils {
 				if (outerVal.getClass() == String.class) {
 					extracted.add(new EdmFieldInstance((String) outerVal));
 				} else if (outerVal.getClass() == JSONArray.class) {
-					JSONArray array2 = (JSONArray) outerVal;
-					for (int j = 0, l2 = array2.size(); j < l2; j++) {
-						Object innerVal = array2.get(j);
-						if (innerVal.getClass() == String.class) {
-							extracted.add(new EdmFieldInstance((String) innerVal));
-						} else if (innerVal.getClass() == LinkedHashMap.class) {
-							extracted.add(hashToFieldInstance(innerVal));
-						} else {
-							logger.severe("unhandled array2 type: " + getType(array2.get(j)));
-						}
-					}
+					extracted.addAll(extractInnerArray(outerVal));
 				} else if (outerVal.getClass() == LinkedHashMap.class) {
 					extracted.add(hashToFieldInstance(outerVal));
 				} else {
@@ -89,6 +79,22 @@ public class JsonUtils {
 			}
 		} else {
 			logger.severe("unhandled object type: " + getType(value));
+		}
+		return extracted;
+	}
+
+	private static List<EdmFieldInstance> extractInnerArray(Object outerVal) {
+		List<EdmFieldInstance> extracted = new ArrayList<>();
+		JSONArray array = (JSONArray) outerVal;
+		for (int j = 0, l2 = array.size(); j < l2; j++) {
+			Object innerVal = array.get(j);
+			if (innerVal.getClass() == String.class) {
+				extracted.add(new EdmFieldInstance((String) innerVal));
+			} else if (innerVal.getClass() == LinkedHashMap.class) {
+				extracted.add(hashToFieldInstance(innerVal));
+			} else {
+				logger.severe("unhandled inner array type: " + getType(array.get(j)));
+			}
 		}
 		return extracted;
 	}

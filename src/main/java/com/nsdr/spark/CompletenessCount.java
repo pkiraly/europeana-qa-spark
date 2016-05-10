@@ -5,6 +5,7 @@ import com.nsdr.spark.completeness.DataProviderManager;
 import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.jayway.jsonpath.InvalidJsonException;
 import com.nsdr.spark.counters.Counters;
+import com.nsdr.spark.model.JsonPathCache;
 import com.nsdr.spark.problemcatalog.EmptyStrings;
 import com.nsdr.spark.problemcatalog.LongSubject;
 import com.nsdr.spark.problemcatalog.ProblemCatalog;
@@ -63,15 +64,16 @@ public class CompletenessCount {
 			@Override
 			public String call(String jsonString) throws Exception {
 				try {
+					JsonPathCache cache = new JsonPathCache(jsonString);
 					Counters counters = new Counters();
 					counters.doReturnFieldExistenceList(true);
 					counters.doReturnFieldInstanceList(true);
 					counters.doReturnTfIdfList(false);
 					counters.doReturnProblemList(true);
 
-					completenessCalculator.calculate(jsonString, counters);
+					completenessCalculator.calculate(cache, counters);
 					// tfidfCalculator.calculate(jsonString, counters);
-					problemCatalog.calculate(jsonString, counters);
+					problemCatalog.calculate(cache, counters);
 
 					return counters.getFullResults(withLabel, compressed);
 				} catch (InvalidJsonException e) {

@@ -1,11 +1,12 @@
 package com.nsdr.spark.problemcatalog;
 
-import com.jayway.jsonpath.JsonPath;
-import com.nsdr.spark.util.JsonUtils;
+import com.nsdr.spark.model.EdmFieldInstance;
+import com.nsdr.spark.model.JsonPathCache;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * See for example:
@@ -26,14 +27,14 @@ public class LongSubject extends ProblemDetector implements Serializable {
 	}
 
 	@Override
-	public void update(Object jsonDocument, Map<String, Double> results) {
+	public void update(JsonPathCache cache, Map<String, Double> results) {
 		double value = 0;
-		Object subjectObj = JsonPath.read(jsonDocument, PATH);
-		if (subjectObj != null) {
-			List<String> subjects = JsonUtils.extractList(subjectObj);
+		List<EdmFieldInstance> subjects = cache.get(PATH);
+		if (subjects != null && !subjects.isEmpty()) {
 			if (subjects.size() > 0) {
-				for (String subject : subjects) {
-					if (subject.length() > MAX_LENGTH) {
+				for (EdmFieldInstance subject : subjects) {
+					if (StringUtils.isNotBlank(subject.getValue())
+							&& subject.getValue().length() > MAX_LENGTH) {
 						value += 1;
 					}
 				}

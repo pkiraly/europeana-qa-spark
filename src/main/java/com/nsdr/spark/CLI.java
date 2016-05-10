@@ -7,6 +7,7 @@ import com.datastax.driver.core.Session;
 import com.nsdr.spark.cli.Result;
 import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.nsdr.spark.counters.Counters;
+import com.nsdr.spark.model.JsonPathCache;
 import com.nsdr.spark.uniqueness.TfIdfCalculator;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -52,8 +53,9 @@ public class CLI {
 			counters.doReturnFieldExistenceList(true);
 			counters.doReturnTfIdfList(true);
 
-			completenessCalculator.calculate(jsonString, counters);
-			tfIdfCalculator.calculate(jsonString, counters);
+			JsonPathCache cache = new JsonPathCache(jsonString);
+			completenessCalculator.calculate(cache, counters);
+			tfIdfCalculator.calculate(cache, counters);
 			// result = counter.getFullResults(true, true);
 
 			result = new Result();

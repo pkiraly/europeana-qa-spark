@@ -4,6 +4,7 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.nsdr.spark.counters.Counters;
 import com.nsdr.spark.interfaces.Calculator;
+import com.nsdr.spark.model.JsonPathCache;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,6 +24,7 @@ public class ProblemCatalog implements Calculator, Serializable {
 	private List<ProblemDetector> problems = new ArrayList<>();
 	private String jsonString;
 	private Object jsonDocument;
+	private JsonPathCache cache;
 	private Map<String, Double> results;
 
 	public String getJsonString() {
@@ -39,14 +41,13 @@ public class ProblemCatalog implements Calculator, Serializable {
 
 	public void notifyAllObservers() {
 		for (ProblemDetector observer : problems) {
-			observer.update(jsonDocument, results);
+			observer.update(cache, results);
 		}
 	}
 
 	@Override
-	public void calculate(String jsonString, Counters counters) {
-		this.jsonString = jsonString;
-		this.jsonDocument = JSON_PROVIDER.parse(jsonString);
+	public void calculate(JsonPathCache cache, Counters counters) {
+		this.cache = cache;
 		this.results = new LinkedHashMap<>();
 		notifyAllObservers();
 		counters.setProblemList(results);

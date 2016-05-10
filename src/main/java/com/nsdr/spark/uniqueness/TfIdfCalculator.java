@@ -2,6 +2,7 @@ package com.nsdr.spark.uniqueness;
 
 import com.nsdr.spark.counters.Counters;
 import com.nsdr.spark.interfaces.Calculator;
+import com.nsdr.spark.model.JsonPathCache;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,7 +35,7 @@ public class TfIdfCalculator implements Calculator, Serializable {
 	private boolean doCollectTerms = false;
 
 	@Override
-	public void calculate(String jsonString, Counters counters) {
+	public void calculate(JsonPathCache cache, Counters counters) {
 		String solrJsonResponse = getSolrResponse(counters.getRecordId());
 		TfIdfExtractor extractor = new TfIdfExtractor();
 		counters.setTfIdfList(extractor.extract(solrJsonResponse, counters.getRecordId(), doCollectTerms));

@@ -23,13 +23,14 @@ import static org.junit.Assert.*;
 public class TestJsonPathCache {
 
 	Object jsonDoc;
+	String jsonString;
 
 	public TestJsonPathCache() throws IOException, URISyntaxException {
 		String fileName = "problem-catalog/long-subject.json";
 		Path path = Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
 		List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
-		String jsonString = lines.get(0);
-		jsonDoc = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
+		jsonString = lines.get(0);
+		// jsonDoc = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
 	}
 
 	@BeforeClass
@@ -52,8 +53,8 @@ public class TestJsonPathCache {
 	public void testSimpleValue() throws IOException, URISyntaxException {
 		String jsonPath = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:title']";
 
-		JsonPathCache cache = new JsonPathCache();
-		List<EdmFieldInstance> instances = cache.get(jsonDoc, jsonPath);
+		JsonPathCache cache = new JsonPathCache(jsonString);
+		List<EdmFieldInstance> instances = cache.get(jsonPath);
 
 		assertNotNull(instances);
 		assertEquals(1, instances.size());
@@ -66,8 +67,8 @@ public class TestJsonPathCache {
 	public void testNonexistingField() throws IOException, URISyntaxException {
 		String jsonPath = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dc:title2']";
 
-		JsonPathCache cache = new JsonPathCache();
-		List<EdmFieldInstance> instances = cache.get(jsonDoc, jsonPath);
+		JsonPathCache cache = new JsonPathCache(jsonString);
+		List<EdmFieldInstance> instances = cache.get(jsonPath);
 
 		assertNull(instances);
 	}
@@ -76,8 +77,8 @@ public class TestJsonPathCache {
 	public void testResourceField() throws IOException, URISyntaxException {
 		String jsonPath = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:isReferencedBy']";
 
-		JsonPathCache cache = new JsonPathCache();
-		List<EdmFieldInstance> instances = cache.get(jsonDoc, jsonPath);
+		JsonPathCache cache = new JsonPathCache(jsonString);
+		List<EdmFieldInstance> instances = cache.get(jsonPath);
 
 		assertNotNull(instances);
 		assertEquals(2, instances.size());
@@ -91,8 +92,8 @@ public class TestJsonPathCache {
 	public void testAbout() throws IOException, URISyntaxException {
 		String jsonPath = "$.['edm:ProvidedCHO'][0]['@about']";
 
-		JsonPathCache cache = new JsonPathCache();
-		List<EdmFieldInstance> instances = cache.get(jsonDoc, jsonPath);
+		JsonPathCache cache = new JsonPathCache(jsonString);
+		List<EdmFieldInstance> instances = cache.get(jsonPath);
 
 		assertNotNull(instances);
 		assertEquals(1, instances.size());
@@ -101,15 +102,14 @@ public class TestJsonPathCache {
 		assertNull(instances.get(0).getLanguage());
 		assertNull(instances.get(0).getResource());
 	}
-	
+
 	@Test
 	public void testLanguage() throws URISyntaxException, IOException {
-		jsonDoc = TestUtils.buildDoc("problem-catalog/same-title-and-description.json");
+		jsonString = TestUtils.readFirstLine("problem-catalog/same-title-and-description.json");
 		String jsonPath = "$.['edm:Place'][0]['skos:prefLabel']";
 
-		
-		JsonPathCache cache = new JsonPathCache();
-		List<EdmFieldInstance> instances = cache.get(jsonDoc, jsonPath);
+		JsonPathCache cache = new JsonPathCache(jsonString);
+		List<EdmFieldInstance> instances = cache.get(jsonPath);
 
 		assertNotNull(instances);
 		assertEquals(117, instances.size());

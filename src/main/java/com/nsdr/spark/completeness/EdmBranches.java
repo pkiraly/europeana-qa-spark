@@ -12,24 +12,6 @@ public class EdmBranches {
 	private final static List<JsonBranch> paths = new ArrayList<>();
 
 	static {
-		/*
-		JsonBranch path = new JsonBranch("Proxy/dc:title|dc:descripion",
-			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')][?]",
-			JsonBranch.Category.MANDATORY);
-		path.setFilter(filter(where("dc:title").exists(true))
-				  .or(Criteria.where("dc:description").exists(true)));
-		paths.add(path);
-
-		path = new JsonBranch("Proxy/dc:type|dc:subject|dc:coverage|dcterms:temporal|dcterms:spatial",
-			"$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')][?]",
-			JsonBranch.Category.MANDATORY);
-		path.setFilter(filter(where("dc:type").exists(true))
-				  .or(Criteria.where("dc:subject").exists(true))
-				  .or(Criteria.where("dc:coverage").exists(true))
-				  .or(Criteria.where("dcterms:temporal").exists(true))
-				  .or(Criteria.where("dcterms:spatial").exists(true)));
-		paths.add(path);
-		*/
 
 		paths.add(new JsonBranch("edm:ProvidedCHO/@about",
 			"$.['edm:ProvidedCHO'][0]['@about']",

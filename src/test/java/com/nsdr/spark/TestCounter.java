@@ -5,6 +5,7 @@ import com.nsdr.spark.completeness.DataProviderManager;
 import com.nsdr.spark.counters.Counters;
 import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.jayway.jsonpath.InvalidJsonException;
+import com.nsdr.spark.model.JsonPathCache;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -49,7 +50,9 @@ public class TestCounter {
 		completenessCalculator = new CompletenessCalculator();
 		completenessCalculator.setDataProviderManager(new DataProviderManager());
 		completenessCalculator.setDatasetManager(new DatasetManager());
-		completenessCalculator.calculate(readFirstLine("test.json"), counters);
+
+		JsonPathCache cache = new JsonPathCache(readFirstLine("test.json"));
+		completenessCalculator.calculate(cache, counters);
 	}
 
 	public String readFirstLine(String fileName) throws URISyntaxException, IOException {
@@ -88,8 +91,9 @@ public class TestCounter {
 		thrown.expect(InvalidJsonException.class);
 		thrown.expectMessage("Unexpected character (:) at position 28");
 
-		completenessCalculator.calculate(readFirstLine("invalid.json"), counters);
-		fail("Should throw an exception if one or more of given numbers are negative");
+		JsonPathCache cache = new JsonPathCache(readFirstLine("invalid.json"));
+		completenessCalculator.calculate(cache, counters);
+		fail("Should throw an exception if the JSON string is invalid.");
 	}
 
 	@Test
@@ -117,7 +121,9 @@ public class TestCounter {
 		completenessCalculator.setDataProviderManager(new DataProviderManager());
 		completenessCalculator.setDatasetManager(new DatasetManager());
 		completenessCalculator.setVerbose(true);
-		completenessCalculator.calculate(readFirstLine("test.json"), counters);
+
+		JsonPathCache cache = new JsonPathCache(readFirstLine("test.json"));
+		completenessCalculator.calculate(cache, counters);
 		Map<String, Boolean> map = counters.getExistenceMap();
 		assertEquals(35, map.size());
 
@@ -172,7 +178,8 @@ public class TestCounter {
 		completenessCalculator.setDataProviderManager(new DataProviderManager());
 		completenessCalculator.setDatasetManager(new DatasetManager());
 		completenessCalculator.setVerbose(true);
-		completenessCalculator.calculate(readFirstLine("test.json"), counters);
+		JsonPathCache cache = new JsonPathCache(readFirstLine("test.json"));
+		completenessCalculator.calculate(cache, counters);
 		List<Integer> expected = Arrays.asList(new Integer[]{1,1,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,0});
 		assertEquals(35, counters.getExistenceList().size());
 		assertEquals(expected, counters.getExistenceList());

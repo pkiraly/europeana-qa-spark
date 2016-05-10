@@ -1,6 +1,8 @@
 package com.nsdr.spark.problemcatalog;
 
 import com.jayway.jsonpath.JsonPath;
+import com.nsdr.spark.model.EdmFieldInstance;
+import com.nsdr.spark.model.JsonPathCache;
 import com.nsdr.spark.util.JsonUtils;
 import java.io.Serializable;
 import java.util.List;
@@ -25,17 +27,15 @@ public class TitleAndDescriptionAreSame extends ProblemDetector implements Seria
 	}
 
 	@Override
-	public void update(Object jsonDocument, Map<String, Double> results) {
+	public void update(JsonPathCache cache, Map<String, Double> results) {
 		double value = 0;
-		Object titlesObj = JsonPath.read(jsonDocument, title);
-		if (titlesObj != null) {
-			Object descriptionObj = JsonPath.read(jsonDocument, description);
-			if (descriptionObj != null) {
-				List<String> titles = JsonUtils.extractList(titlesObj);
+		List<EdmFieldInstance> titles = cache.get(title);
+		if (titles != null && !titles.isEmpty()) {
+			List<EdmFieldInstance> descriptions = cache.get(description);
+			if (descriptions != null && !descriptions.isEmpty()) {
 				if (titles.size() > 0) {
-					List<String> descriptions = JsonUtils.extractList(descriptionObj);
 					if (descriptions.size() > 0) {
-						for (String title : titles) {
+						for (EdmFieldInstance title : titles) {
 							if (descriptions.contains(title)) {
 								value = 1;
 								break;

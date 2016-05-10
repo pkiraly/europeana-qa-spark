@@ -28,7 +28,6 @@ public class JsonBranch {
 	private String jsonPath;
 	private List<Category> categories;
 	private String solrFieldName;
-	private Filter filter = null;
 
 	public JsonBranch(String label, String jsonPath, String solrFieldName) {
 		this.label = label;
@@ -72,17 +71,5 @@ public class JsonBranch {
 
 	public void setSolrFieldName(String solrFieldName) {
 		this.solrFieldName = solrFieldName;
-	}
-
-	public Filter getFilter() {
-		return filter;
-	}
-
-	public void setFilter(Filter filter) {
-		this.filter = filter;
-	}
-
-	public boolean hasFilter() {
-		return filter != null;
 	}
 }

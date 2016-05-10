@@ -1,5 +1,6 @@
 package com.nsdr.spark.problemcatalog;
 
+import com.nsdr.spark.model.JsonPathCache;
 import java.util.Map;
 
 /**
@@ -10,5 +11,5 @@ public abstract class ProblemDetector {
 
 	protected ProblemCatalog problemCatalog;
 
-	public abstract void update(Object jsonDocument, Map<String, Double> results);
+	public abstract void update(JsonPathCache cache, Map<String, Double> results);
 }

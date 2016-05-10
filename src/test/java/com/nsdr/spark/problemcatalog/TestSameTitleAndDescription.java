@@ -1,6 +1,8 @@
 package com.nsdr.spark.problemcatalog;
 
 import com.jayway.jsonpath.Configuration;
+import com.nsdr.spark.TestUtils;
+import com.nsdr.spark.model.JsonPathCache;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -44,16 +46,14 @@ public class TestSameTitleAndDescription {
 
 	@Test
 	public void hello() throws IOException, URISyntaxException {
-		String fileName = "problem-catalog/same-title-and-description.json";
-		Path path = Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
-		List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
-		String jsonString = lines.get(0);
-		Object document = Configuration.defaultConfiguration()
-				  .jsonProvider().parse(jsonString);
+		String jsonString = TestUtils.readFirstLine("problem-catalog/same-title-and-description.json");
+		JsonPathCache cache = new JsonPathCache(jsonString);
+
 		ProblemCatalog problemCatalog = new ProblemCatalog();
 		ProblemDetector detector = new TitleAndDescriptionAreSame(problemCatalog);
 		Map<String, Double> results = new HashMap<>();
-		detector.update(document, results);
+
+		detector.update(cache, results);
 		assertEquals((Double)1.0, (Double)results.get("TitleAndDescriptionAreSame"));
 	}
 }
