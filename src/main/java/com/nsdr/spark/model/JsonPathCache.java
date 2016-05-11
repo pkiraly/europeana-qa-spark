@@ -17,6 +17,7 @@ public class JsonPathCache {
 
 	private final Object jsonDocument;
 	private final Map<String, List<EdmFieldInstance>> cache = new HashMap<>();
+	private String recordId;
 
 	public JsonPathCache(String jsonString) throws InvalidJsonException {
 		this.jsonDocument = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
@@ -31,7 +32,7 @@ public class JsonPathCache {
 		try {
 			Object value = JsonPath.read(jsonDocument, jsonPath);
 			if (value != null) {
-				instances = JsonUtils.extractFieldInstanceList(value);
+				instances = JsonUtils.extractFieldInstanceList(value, recordId);
 			}
 		} catch (PathNotFoundException e) {
 			//
@@ -44,5 +45,13 @@ public class JsonPathCache {
 			set(jsonPath);
 		}
 		return cache.get(jsonPath);
+	}
+
+	public String getRecordId() {
+		return recordId;
+	}
+
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
 	}
 }
