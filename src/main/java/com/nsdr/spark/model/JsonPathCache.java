@@ -32,7 +32,7 @@ public class JsonPathCache {
 		try {
 			Object value = JsonPath.read(jsonDocument, jsonPath);
 			if (value != null) {
-				instances = JsonUtils.extractFieldInstanceList(value, recordId);
+				instances = JsonUtils.extractFieldInstanceList(value, recordId, jsonPath);
 			}
 		} catch (PathNotFoundException e) {
 			//

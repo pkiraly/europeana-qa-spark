@@ -56,7 +56,7 @@ public class JsonUtils {
 		return extracted;
 	}
 
-	public static List<EdmFieldInstance> extractFieldInstanceList(Object value, String recordId) {
+	public static List<EdmFieldInstance> extractFieldInstanceList(Object value, String recordId, String jsonPath) {
 		List<EdmFieldInstance> extracted = new ArrayList<>();
 		if (value.getClass() == String.class) {
 			extracted.add(new EdmFieldInstance((String) value));
@@ -70,20 +70,26 @@ public class JsonUtils {
 				if (outerVal.getClass() == String.class) {
 					extracted.add(new EdmFieldInstance((String) outerVal));
 				} else if (outerVal.getClass() == JSONArray.class) {
-					extracted.addAll(extractInnerArray(outerVal, recordId));
+					extracted.addAll(extractInnerArray(outerVal, recordId, jsonPath));
 				} else if (outerVal.getClass() == LinkedHashMap.class) {
-					extracted.add(hashToFieldInstance(outerVal, recordId));
+					extracted.add(hashToFieldInstance(outerVal, recordId, jsonPath));
 				} else {
-					logger.severe(String.format("Unhandled outerArray type: %s, [record ID: %s]", getType(outerVal), recordId));
+					logger.severe(String.format(
+						"Unhandled outerArray type: %s, [record ID: %s, path: %s]",
+						getType(outerVal), recordId, jsonPath
+					));
 				}
 			}
 		} else {
-			logger.severe(String.format("Unhandled object type: %s, [record ID: %s]", getType(value), recordId));
+			logger.severe(String.format(
+				"Unhandled object type: %s, [record ID: %s, path: %s]",
+				getType(value), recordId, jsonPath
+			));
 		}
 		return extracted;
 	}
 
-	private static List<EdmFieldInstance> extractInnerArray(Object outerVal, String recordId) {
+	private static List<EdmFieldInstance> extractInnerArray(Object outerVal, String recordId, String jsonPath) {
 		List<EdmFieldInstance> extracted = new ArrayList<>();
 		JSONArray array = (JSONArray) outerVal;
 		for (int j = 0, l2 = array.size(); j < l2; j++) {
@@ -91,15 +97,18 @@ public class JsonUtils {
 			if (innerVal.getClass() == String.class) {
 				extracted.add(new EdmFieldInstance((String) innerVal));
 			} else if (innerVal.getClass() == LinkedHashMap.class) {
-				extracted.add(hashToFieldInstance(innerVal, recordId));
+				extracted.add(hashToFieldInstance(innerVal, recordId, jsonPath));
 			} else {
-				logger.severe(String.format("Unhandled inner array type: %s, [record ID: %s]", getType(array.get(j)), recordId));
+				logger.severe(String.format(
+					"Unhandled inner array type: %s, [record ID: %s, path: %s]",
+					getType(array.get(j)), recordId, jsonPath
+				));
 			}
 		}
 		return extracted;
 	}
 
-	public static EdmFieldInstance hashToFieldInstance(Object innerVal, String recordId) {
+	public static EdmFieldInstance hashToFieldInstance(Object innerVal, String recordId, String jsonPath) {
 		Map<String, String> map = (LinkedHashMap<String, String>) innerVal;
 		EdmFieldInstance instance = new EdmFieldInstance();
 		for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -110,7 +119,10 @@ public class JsonUtils {
 			} else if (entry.getKey().equals("@lang")) {
 				instance.setLanguage(map.get("@lang"));
 			} else {
-				logger.severe(String.format("Other type of map: %s, [record ID: %s]", map, recordId));
+				logger.severe(String.format(
+					"Other type of map: %s, [record ID: %s, path: %s]",
+					map, recordId, jsonPath
+				));
 			}
 		}
 		return instance;
