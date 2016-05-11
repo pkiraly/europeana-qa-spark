@@ -98,6 +98,8 @@ public class JsonUtils {
 				extracted.add(new EdmFieldInstance((String) innerVal));
 			} else if (innerVal.getClass() == LinkedHashMap.class) {
 				extracted.add(hashToFieldInstance(innerVal, recordId, jsonPath));
+			} else if (innerVal.getClass() == JSONArray.class) {
+				extracted.addAll(extractInnerArray(innerVal, recordId, jsonPath));
 			} else {
 				logger.severe(String.format(
 					"Unhandled inner array type: %s, [record ID: %s, path: %s]",

@@ -119,4 +119,20 @@ public class TestJsonPathCache {
 		
 	}
 
+	@Test
+	public void testArrayInInnerArray() throws URISyntaxException, IOException {
+		jsonString = TestUtils.readFirstLine("array-in-innerarray.json");
+		String jsonPath = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:created']";
+
+		JsonPathCache cache = new JsonPathCache(jsonString);
+		List<EdmFieldInstance> instances = cache.get(jsonPath);
+
+		assertNotNull(instances);
+		assertEquals(1, instances.size());
+		assertEquals("sec. 45 - 40 a. Chr.", instances.get(0).getValue());
+		assertNull(instances.get(0).getLanguage());
+		assertNull(instances.get(0).getResource());
+		
+	}
+
 }
