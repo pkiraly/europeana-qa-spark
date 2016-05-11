@@ -75,15 +75,17 @@ public class JsonUtils {
 					extracted.add(hashToFieldInstance(outerVal, recordId, jsonPath));
 				} else {
 					logger.severe(String.format(
-						"Unhandled outerArray type: %s, [record ID: %s, path: %s]",
-						getType(outerVal), recordId, jsonPath
+							  "Unhandled outerArray type: %s, [record ID: %s, path: %s]",
+							  getType(outerVal), recordId, jsonPath
 					));
 				}
 			}
+		} else if (value.getClass() == LinkedHashMap.class) {
+			extracted.add(hashToFieldInstance(value, recordId, jsonPath));
 		} else {
 			logger.severe(String.format(
-				"Unhandled object type: %s, [record ID: %s, path: %s]",
-				getType(value), recordId, jsonPath
+					  "Unhandled object type: %s, [record ID: %s, path: %s]",
+					  getType(value), recordId, jsonPath
 			));
 		}
 		return extracted;
@@ -102,8 +104,8 @@ public class JsonUtils {
 				extracted.addAll(extractInnerArray(innerVal, recordId, jsonPath));
 			} else {
 				logger.severe(String.format(
-					"Unhandled inner array type: %s, [record ID: %s, path: %s]",
-					getType(array.get(j)), recordId, jsonPath
+						  "Unhandled inner array type: %s, [record ID: %s, path: %s]",
+						  getType(array.get(j)), recordId, jsonPath
 				));
 			}
 		}
@@ -122,8 +124,8 @@ public class JsonUtils {
 				instance.setLanguage(map.get("@lang"));
 			} else {
 				logger.severe(String.format(
-					"Other type of map: %s, [record ID: %s, path: %s]",
-					map, recordId, jsonPath
+						  "Other type of map: %s, [record ID: %s, path: %s]",
+						  map, recordId, jsonPath
 				));
 			}
 		}

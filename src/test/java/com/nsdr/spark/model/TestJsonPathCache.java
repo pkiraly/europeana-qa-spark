@@ -82,8 +82,8 @@ public class TestJsonPathCache {
 
 		assertNotNull(instances);
 		assertEquals(2, instances.size());
-		assertEquals("http://sirpac.cultura.marche.it/web/Ricerca.aspx?ids=33334", 
-				instances.get(0).getResource());
+		assertEquals("http://sirpac.cultura.marche.it/web/Ricerca.aspx?ids=33334",
+				  instances.get(0).getResource());
 		assertNull(instances.get(0).getLanguage());
 		assertNull(instances.get(0).getValue());
 	}
@@ -97,8 +97,8 @@ public class TestJsonPathCache {
 
 		assertNotNull(instances);
 		assertEquals(1, instances.size());
-		assertEquals("http://data.europeana.eu/item/07602/5CFC6E149961A1630BAD5C65CE3A683DEB6285A0", 
-				instances.get(0).getValue());
+		assertEquals("http://data.europeana.eu/item/07602/5CFC6E149961A1630BAD5C65CE3A683DEB6285A0",
+				  instances.get(0).getValue());
 		assertNull(instances.get(0).getLanguage());
 		assertNull(instances.get(0).getResource());
 	}
@@ -116,12 +116,15 @@ public class TestJsonPathCache {
 		assertEquals("Holani", instances.get(0).getValue());
 		assertEquals("to", instances.get(0).getLanguage());
 		assertNull(instances.get(0).getResource());
-		
+
 	}
 
+	/**
+	 * Issue #5
+	 */
 	@Test
 	public void testArrayInInnerArray() throws URISyntaxException, IOException {
-		jsonString = TestUtils.readFirstLine("array-in-innerarray.json");
+		jsonString = TestUtils.readFirstLine("issue-examples/issue5-array-in-innerarray.json");
 		String jsonPath = "$.['ore:Proxy'][?(@['edm:europeanaProxy'][0] == 'false')]['dcterms:created']";
 
 		JsonPathCache cache = new JsonPathCache(jsonString);
@@ -132,7 +135,25 @@ public class TestJsonPathCache {
 		assertEquals("sec. 45 - 40 a. Chr.", instances.get(0).getValue());
 		assertNull(instances.get(0).getLanguage());
 		assertNull(instances.get(0).getResource());
-		
 	}
 
+	/**
+	 * Issue #6
+	 * Unhandled object type: java.util.LinkedHashMap, 
+	 *[record ID: 08541/10442_01_75365, path: $.['ore:Aggregation'][0]['edm:dataProvider'][0]]
+	 */
+	@Test
+	public void testDataProviderHash() throws URISyntaxException, IOException {
+		jsonString = TestUtils.readFirstLine("issue-examples/issue6-handling-missing-provider.json");
+		String jsonPath = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
+
+		JsonPathCache cache = new JsonPathCache(jsonString);
+		List<EdmFieldInstance> instances = cache.get(jsonPath);
+
+		assertNotNull(instances);
+		assertEquals(1, instances.size());
+		assertEquals("Εθνικό Κέντρο Τεκμηρίωσης (ΕΚΤ)", instances.get(0).getValue());
+		assertEquals("el", instances.get(0).getLanguage());
+		assertNull(instances.get(0).getResource());
+	}
 }

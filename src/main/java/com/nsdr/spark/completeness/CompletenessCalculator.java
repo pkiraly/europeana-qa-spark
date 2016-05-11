@@ -65,6 +65,8 @@ public class CompletenessCalculator implements Calculator, Serializable {
 
 		counters.setRecordId(cache.get(ID_PATH).get(0).getValue());
 		cache.setRecordId(counters.getRecordId());
+		List<EdmFieldInstance> providers = cache.get(DATA_PROVIDER_PATH);
+		// if (providers)
 		counters.setField("dataProvider", cache.get(DATA_PROVIDER_PATH).get(0).getValue());
 		counters.setField("dataProviderCode", getDataProviderCode(cache.get(DATA_PROVIDER_PATH).get(0).getValue()));
 		counters.setField("dataset", cache.get(DATASET_PATH).get(0).getValue());
