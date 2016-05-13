@@ -41,7 +41,7 @@ object Frequency {
         "proxy_dc_rights." + x(37),
         "proxy_dc_relation." + x(38),
         "proxy_edm_isNextInSequence." + x(39),
-        "proxy_edm_rights." + x(40),
+        "proxy_edm_type." + x(40),
         "aggregation_edm_rights." + x(41),
         "aggregation_edm_provider." + x(42),
         "aggregation_edm_dataProvider." + x(43),
