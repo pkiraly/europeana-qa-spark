@@ -52,15 +52,34 @@ object Cardinality {
       ))
       .map(x => (x, 1))
       .reduceByKey(_ + _)
+      .map(x => (x._1.split("\\."), x._2))
+
+    cardinality.cache()
 
     val cardinalityMap = cardinality
-      .map(x => (x._1.split("\\."), x._2))
       .map(x => (x._1.head, (Integer.parseInt(x._1.last) * x._2)))
       .reduceByKey(_ + _)
 
     // csv
     // "hdfs://localhost:54310/join/cardinality.csv"
-    cardinalityMap.map(x => x._1 + "," + x._2).saveAsTextFile(args(1))
+    cardinalityMap
+      .map(x => x._1 + "," + x._2)
+      .saveAsTextFile(args(1))
+
+    cardinality
+      .map(x => (x._1.head, (x._1.last, x._2)))
+      .groupByKey()
+      .mapValues(x => x.toMap)
+      .map{ case(x, map) => (
+      	x, 
+      	map.getOrElse("0", 0), 
+      	map.filter(x => x._1 != "0")
+      	   .map(x => x._2)
+      	   .reduce(_ + _)
+      )}
+      .map(x => (x._1, x._3, (x._3.toFloat / (x._2 + x._3))))
+      .map(x => x._1 + "," + x._2 + "," + x._3)
+      .saveAsTextFile(args(2)) // "hdfs://localhost:54310/join/frequency.csv"
   }
 }
 
