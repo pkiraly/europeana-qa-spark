@@ -18,9 +18,9 @@ import org.apache.spark.api.java.function.Function;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class LanguangeCount {
+public class LanguageCount {
 
-	private static final Logger logger = Logger.getLogger(LanguangeCount.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(LanguageCount.class.getCanonicalName());
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
