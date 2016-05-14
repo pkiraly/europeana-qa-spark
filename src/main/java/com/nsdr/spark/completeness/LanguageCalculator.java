@@ -6,10 +6,11 @@ import com.nsdr.spark.interfaces.Calculator;
 import com.nsdr.spark.model.EdmFieldInstance;
 import com.nsdr.spark.model.JsonPathCache;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
@@ -80,7 +81,7 @@ public class LanguageCalculator implements Calculator, Serializable {
 	private void extractLanguageTags(JsonBranch jsonBranch, JsonPathCache cache,
 			Map<String, String> languageMap) {
 		List<EdmFieldInstance> values = cache.get(jsonBranch.getJsonPath());
-		List<String> languages = new ArrayList<>();
+		Set<String> languages = new HashSet<>();
 		if (values != null && !values.isEmpty()) {
 			for (EdmFieldInstance field : values)
 				if (field.hasLanguage())
