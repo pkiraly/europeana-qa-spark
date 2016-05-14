@@ -116,7 +116,6 @@ public class TestJsonPathCache {
 		assertEquals("Holani", instances.get(0).getValue());
 		assertEquals("to", instances.get(0).getLanguage());
 		assertNull(instances.get(0).getResource());
-
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.nsdr.spark.model;
 
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -32,12 +33,20 @@ public class EdmFieldInstance {
 		this.value = value;
 	}
 
+	public boolean hasValue() {
+		return StringUtils.isNotBlank(value);
+	}
+
 	public String getLanguage() {
 		return language;
 	}
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public boolean hasLanguage() {
+		return StringUtils.isNotBlank(language);
 	}
 
 	public String getResource() {
@@ -48,10 +57,12 @@ public class EdmFieldInstance {
 		this.resource = resource;
 	}
 
+	public boolean hasResource() {
+		return StringUtils.isNotBlank(resource);
+	}
+
 	public boolean isEmpty() {
-		return (value == null    || value.isEmpty())
-		    && (language == null || language.isEmpty())
-		    && (resource == null || resource.isEmpty());
+		return !hasValue() && !hasLanguage() && !hasResource();
 	}
 
 	@Override
