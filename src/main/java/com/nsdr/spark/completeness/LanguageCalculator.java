@@ -72,7 +72,7 @@ public class LanguageCalculator implements Calculator, Serializable {
 		String result = String.format("%s,%s,%s,%s",
 			counters.getField("datasetCode"),
 			counters.getField("dataProviderCode"),
-			counters.getField("recordId"),
+			counters.getRecordId(),
 			StringUtils.join(languageMap.values(), ",")
 		);
 		return result;
