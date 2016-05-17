@@ -118,13 +118,15 @@ public class EdmBranches {
 			JsonBranch.Category.MANDATORY, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.IDENTIFICATION));
 		paths.add(new JsonBranch("Aggregation/edm:dataProvider",
 			"$.['ore:Aggregation'][0]['edm:dataProvider']",
-			JsonBranch.Category.MANDATORY, JsonBranch.Category.SEARCHABILITY, JsonBranch.Category.IDENTIFICATION));
+			JsonBranch.Category.MANDATORY, JsonBranch.Category.SEARCHABILITY,
+			JsonBranch.Category.IDENTIFICATION));
 		paths.add(new JsonBranch("Aggregation/edm:isShownAt",
 			"$.['ore:Aggregation'][0]['edm:isShownAt']",
 			JsonBranch.Category.BROWSING, JsonBranch.Category.VIEWING));
 		paths.add(new JsonBranch("Aggregation/edm:isShownBy",
 			"$.['ore:Aggregation'][0]['edm:isShownBy']",
-			JsonBranch.Category.BROWSING, JsonBranch.Category.VIEWING, JsonBranch.Category.REUSABILITY));
+			JsonBranch.Category.BROWSING, JsonBranch.Category.VIEWING,
+			JsonBranch.Category.REUSABILITY));
 		paths.add(new JsonBranch("Aggregation/edm:object",
 			"$.['ore:Aggregation'][0]['edm:object']",
 			JsonBranch.Category.VIEWING, JsonBranch.Category.REUSABILITY));

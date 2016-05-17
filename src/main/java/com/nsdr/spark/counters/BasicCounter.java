@@ -13,6 +13,10 @@ public class BasicCounter {
 	public BasicCounter() {
 	}
 
+	public BasicCounter(double total) {
+		this.total = total;
+	}
+
 	public void increaseTotal() {
 		total++;
 	}

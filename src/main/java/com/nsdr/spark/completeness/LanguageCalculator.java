@@ -2,10 +2,13 @@ package com.nsdr.spark.completeness;
 
 import com.nsdr.spark.counters.Counters;
 import com.jayway.jsonpath.InvalidJsonException;
+import com.nsdr.spark.counters.BasicCounter;
 import com.nsdr.spark.interfaces.Calculator;
 import com.nsdr.spark.model.EdmFieldInstance;
 import com.nsdr.spark.model.JsonPathCache;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +39,12 @@ public class LanguageCalculator implements Calculator, Serializable {
 	private static final String DATA_PROVIDER_PATH = "$.['ore:Aggregation'][0]['edm:dataProvider'][0]";
 	private static final String DATASET_PATH = "$.sets[0]";
 
+	private static final List<String> skipFields = Arrays.asList(
+			"edm:ProvidedCHO/@about", "Proxy/edm:isNextInSequence",
+			"Proxy/edm:type", "Aggregation/edm:isShownAt",
+			"Aggregation/edm:isShownBy", "Aggregation/edm:object",
+			"Aggregation/edm:hasView");
+
 	public LanguageCalculator() {
 		// this.recordID = null;
 	}
@@ -55,7 +64,8 @@ public class LanguageCalculator implements Calculator, Serializable {
 
 		languageMap = new LinkedHashMap<>();
 		for (JsonBranch jsonBranch : EdmBranches.getPaths()) {
-			extractLanguageTags(jsonBranch, cache, languageMap);
+			if (!skipFields.contains(jsonBranch.getLabel()))
+				extractLanguageTags(jsonBranch, cache, languageMap);
 		}
 	}
 
@@ -81,13 +91,35 @@ public class LanguageCalculator implements Calculator, Serializable {
 	private void extractLanguageTags(JsonBranch jsonBranch, JsonPathCache cache,
 			Map<String, String> languageMap) {
 		List<EdmFieldInstance> values = cache.get(jsonBranch.getJsonPath());
-		Set<String> languages = new HashSet<>();
+		Map<String, BasicCounter> languages = new HashMap<>();
 		if (values != null && !values.isEmpty()) {
-			for (EdmFieldInstance field : values)
-				if (field.hasLanguage())
-					languages.add(field.getLanguage());
+			for (EdmFieldInstance field : values) {
+				if (field.hasValue()) {
+					if (field.hasLanguage()) {
+						if (!languages.containsKey(field.getLanguage())) {
+							languages.put(field.getLanguage(), new BasicCounter(1));
+						} else {
+							languages.get(field.getLanguage()).increaseTotal();
+						}
+					} else {
+						languages.put("_0", new BasicCounter(1));
+					}
+				}
+			}
+		} else {
+			languages.put("_1", new BasicCounter(1));
 		}
-		languageMap.put(jsonBranch.getLabel(), StringUtils.join(languages, ";"));
+		languageMap.put(jsonBranch.getLabel(), extractLanguages(languages));
+	}
+
+	private String extractLanguages(Map<String, BasicCounter> languages) {
+		String result = "";
+		for (String lang : languages.keySet()) {
+			if (result.length() > 0)
+				result += ";";
+			result += lang + ":" + ((Double)languages.get(lang).getTotal()).intValue();
+		}
+		return result;
 	}
 
 	public String getDataProviderCode(String dataProvider) {
@@ -125,4 +157,5 @@ public class LanguageCalculator implements Calculator, Serializable {
 	public void setDatasetManager(DatasetManager datasetsManager) {
 		this.datasetsManager = datasetsManager;
 	}
+
 }
