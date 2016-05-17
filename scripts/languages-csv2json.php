@@ -1,8 +1,9 @@
 <?php
 
 $file = 'languages.csv';
-$fileGroupped = '../languages-groupped.txt';
+
 $header = ['field', 'language', 'sum'];
+
 $order = [
   'identifier', 'proxy_dc_title', 'proxy_dcterms_alternative', 'proxy_dc_description',
   'proxy_dc_creator', 'proxy_dc_publisher', 'proxy_dc_contributor', 'proxy_dc_type',
@@ -16,12 +17,18 @@ $order = [
   'aggregation_edm_object', 'aggregation_edm_hasView'
 ];
 
+$codes = [
+  '_0' => 'not specified language',
+  '_1' => 'no field instance',
+  '_2' => 'resource only'
+];
+
 $csv = array_map('str_getcsv', file($file));
 array_walk($csv, function(&$a) use ($csv) {
-  global $header;
+  global $header, $codes;
   $a = array_combine($header, $a);
-  if ($a['language'] == '_00_') {
-    $a['language'] = 'not specified';
+  if (isset($codes[$a['language']])) {
+    $a['language'] = $codes[$a['language']];
   }
 });
 

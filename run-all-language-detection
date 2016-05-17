@@ -1,4 +1,9 @@
-TARGET_CSV=result11-language.csv
+#!/usr/bin/env bash
+
+TARGET_CSV=result12-language.csv
+
+echo "Starting language detection."
+
 if [ -e $TARGET_CSV ]; then
   echo "WARNING! $TARGET_CSV exists, rename it to prevent overwriting the file!"
   exit
@@ -16,3 +21,5 @@ spark-submit --class com.nsdr.spark.LanguageCount \
 
 hdfs dfs -getmerge /result $TARGET_CSV
 rm .$TARGET_CSV.crc
+
+echo "Language detection done."
