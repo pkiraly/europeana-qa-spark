@@ -18,9 +18,9 @@ $order = [
 ];
 
 $codes = [
-  '_0' => 'not specified language',
+  '_0' => 'no language',
   '_1' => 'no field instance',
-  '_2' => 'resource only'
+  '_2' => 'resource'
 ];
 
 $csv = array_map('str_getcsv', file($file));

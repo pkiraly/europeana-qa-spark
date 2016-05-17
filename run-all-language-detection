@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TARGET_CSV=result12-language.csv
+TARGET_CSV=result13-language.csv
 
 echo "Starting language detection."
 

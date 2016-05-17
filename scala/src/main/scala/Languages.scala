@@ -74,7 +74,8 @@ object Languages {
 
     val language5 = language4.
       map(x => (x._1.split(":"), x._2)).
-      map(x => (x._1.head, (Integer.parseInt(x._1.last) * x._2)))
+      map(x => (x._1.head, (Integer.parseInt(x._1.last) * x._2))).
+      reduceByKey(_ + _)
 
     language5.
       map(x => x._1.replace(".", ",") + "," + x._2). // -> "title,en,8"
