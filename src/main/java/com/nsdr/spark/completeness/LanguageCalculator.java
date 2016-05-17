@@ -9,11 +9,9 @@ import com.nsdr.spark.model.JsonPathCache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
@@ -96,20 +94,26 @@ public class LanguageCalculator implements Calculator, Serializable {
 			for (EdmFieldInstance field : values) {
 				if (field.hasValue()) {
 					if (field.hasLanguage()) {
-						if (!languages.containsKey(field.getLanguage())) {
-							languages.put(field.getLanguage(), new BasicCounter(1));
-						} else {
-							languages.get(field.getLanguage()).increaseTotal();
-						}
+						increase(languages, field.getLanguage());
 					} else {
-						languages.put("_0", new BasicCounter(1));
+						increase(languages, "_0");
 					}
+				} else {
+					increase(languages, "_2");
 				}
 			}
 		} else {
-			languages.put("_1", new BasicCounter(1));
+			increase(languages, "_1");
 		}
 		languageMap.put(jsonBranch.getLabel(), extractLanguages(languages));
+	}
+
+	private void increase(Map<String, BasicCounter> languages, String key) {
+		if (!languages.containsKey(key)) {
+			languages.put(key, new BasicCounter(1));
+		} else {
+			languages.get(key).increaseTotal();
+		}
 	}
 
 	private String extractLanguages(Map<String, BasicCounter> languages) {
