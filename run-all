@@ -1,4 +1,9 @@
+#!/usr/bin/env bash
+
 TARGET_CSV=result11.csv
+
+echo "Run completeness count"
+
 if [ -e $TARGET_CSV ]; then
   echo "WARNING! $TARGET_CSV exists, rename it to prevent overwriting the file!"
   exit
@@ -12,5 +17,8 @@ spark-submit --class com.nsdr.spark.CompletenessCount \
   hdfs://localhost:54310/result \
   data-providers.txt \
   datasets.txt
+
 hdfs dfs -getmerge /result $TARGET_CSV
 rm .$TARGET_CSV.crc
+
+echo "Completeness count is done!"
