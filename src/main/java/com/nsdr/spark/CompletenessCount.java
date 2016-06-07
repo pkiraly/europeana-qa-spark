@@ -4,6 +4,7 @@ import com.nsdr.spark.completeness.DatasetManager;
 import com.nsdr.spark.completeness.DataProviderManager;
 import com.nsdr.spark.completeness.CompletenessCalculator;
 import com.jayway.jsonpath.InvalidJsonException;
+import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
 import com.nsdr.spark.counters.Counters;
 import com.nsdr.spark.model.JsonPathCache;
 import com.nsdr.spark.problemcatalog.EmptyStrings;
@@ -39,12 +40,22 @@ public class CompletenessCount {
 			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
-		String inputFileName = args[0];
+		final String inputFileName = args[0];
 		logger.info("Input file is " + inputFileName);
 		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
+		
+		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
+		calculator.doAbbreviate(true);
+		calculator.runCompleteness(true);
+		calculator.runFieldCardinality(true);
+		calculator.runFieldExistence(true);
+		calculator.runTfIdf(false);
+		calculator.runProblemCatalog(false);
+		calculator.configure();
 
+		/*
 		final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
 		DataProviderManager dataProviderManager = new DataProviderManager();
 		completenessCalculator.setDataProviderManager(dataProviderManager);
@@ -58,12 +69,15 @@ public class CompletenessCount {
 		new LongSubject(problemCatalog);
 		new TitleAndDescriptionAreSame(problemCatalog);
 		new EmptyStrings(problemCatalog);
+		*/
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
 				try {
+					return calculator.measure(jsonString);
+					/*
 					JsonPathCache cache = new JsonPathCache(jsonString);
 					Counters counters = new Counters();
 					counters.doReturnFieldExistenceList(true);
@@ -76,9 +90,10 @@ public class CompletenessCount {
 					problemCatalog.calculate(cache, counters);
 
 					return counters.getFullResults(withLabel, compressed);
+					*/
 				} catch (InvalidJsonException e) {
 					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
-							  completenessCalculator.getInputFileName(), jsonString, e.getLocalizedMessage()));
+							inputFileName, jsonString, e.getLocalizedMessage()));
 				}
 				return "";
 			}
@@ -88,9 +103,9 @@ public class CompletenessCount {
 		baseCountsRDD.saveAsTextFile(args[1]);
 
 		try {
-			dataProviderManager.save(args[2]);
-			datasetManager.save(args[3]);
-		} catch (UnsupportedEncodingException ex) {
+			calculator.saveDataProviders(args[2]);
+			calculator.saveDatasets(args[3]);
+		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
 	}
