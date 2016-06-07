@@ -18,7 +18,6 @@ import java.util.logging.Logger;
  */
 public class ProblemCatalog implements Calculator, Serializable {
 
-	private static final JsonProvider JSON_PROVIDER = Configuration.defaultConfiguration().jsonProvider();
 	private static final Logger logger = Logger.getLogger(ProblemCatalog.class.getCanonicalName());
 
 	private List<ProblemDetector> problems = new ArrayList<>();
