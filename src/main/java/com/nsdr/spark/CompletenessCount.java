@@ -42,7 +42,7 @@ public class CompletenessCount {
 		calculator.runFieldCardinality(true);
 		calculator.runFieldExistence(true);
 		calculator.runTfIdf(false);
-		calculator.runProblemCatalog(false);
+		calculator.runProblemCatalog(true);
 		calculator.configure();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
