@@ -16,5 +16,9 @@ For running it on Spark, you should install Hadoop, Scala and finally Spark. The
 Command line interface for checking one record. In order to run it you have to have all records in Cassandra database.
 
 ```bash
-java -cp target/europeana-qa-spark-1.0-SNAPSHOT-jar-with-dependencies.jar com.nsdr.spark.CLI '08501/Athena_Update_ProvidedCHO_Bildarchiv_Foto_Marburg_obj_00020602_1_024_377'
+java -cp target/europeana-qa-spark-1.0-SNAPSHOT-jar-with-dependencies.jar \
+  com.nsdr.spark.CLI \
+  '08501/Athena_Update_ProvidedCHO_Bildarchiv_Foto_Marburg_obj_00020602_1_024_377'
 ```
+
+08501/Athena_Update_ProvidedCHO_Bildarchiv_Foto_Marburg_obj_00020602_1_024_377 is the record's identifier.
