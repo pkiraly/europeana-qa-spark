@@ -1,11 +1,9 @@
 package com.nsdr.spark;
 
-import com.nsdr.spark.completeness.DatasetManager;
-import com.nsdr.spark.completeness.DataProviderManager;
 import com.jayway.jsonpath.InvalidJsonException;
-import com.nsdr.spark.completeness.LanguageCalculator;
-import com.nsdr.spark.counters.Counters;
-import com.nsdr.spark.model.JsonPathCache;
+import com.nsdr.europeanaqa.api.abbreviation.EdmDataProviderManager;
+import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
+import com.nsdr.metadataqa.api.calculator.LanguageCalculator;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -40,21 +38,30 @@ public class LanguageCount {
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
+		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
+		calculator.doAbbreviate(true);
+		calculator.runCompleteness(false);
+		calculator.runFieldCardinality(false);
+		calculator.runFieldExistence(false);
+		calculator.runTfIdf(false);
+		calculator.runProblemCatalog(false);
+		calculator.runLanguage(true);
+		calculator.configure();
+
+		/*
 		final LanguageCalculator languageCalculator = new LanguageCalculator();
-		DataProviderManager dataProviderManager = new DataProviderManager();
+		EdmDataProviderManager dataProviderManager = new EdmDataProviderManager();
 		languageCalculator.setDataProviderManager(dataProviderManager);
 		DatasetManager datasetManager = new DatasetManager();
 		languageCalculator.setDatasetManager(datasetManager);
+		*/
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
 				try {
-					JsonPathCache cache = new JsonPathCache(jsonString);
-					Counters counters = new Counters();
-					languageCalculator.calculate(cache, counters);
-					return languageCalculator.getResult();
+					return calculator.measure(jsonString);
 				} catch (InvalidJsonException e) {
 					logger.severe(String.format("Invalid JSON in %s. Error message: %s.",
 							jsonString, e.getLocalizedMessage()));
@@ -67,8 +74,8 @@ public class LanguageCount {
 		baseCountsRDD.saveAsTextFile(args[1]);
 
 		try {
-			dataProviderManager.save(args[2]);
-			datasetManager.save(args[3]);
+			calculator.saveDataProviders(args[2]);
+			calculator.saveDatasets(args[3]);
 		} catch (UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}

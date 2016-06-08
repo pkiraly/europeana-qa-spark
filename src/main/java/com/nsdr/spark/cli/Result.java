@@ -1,6 +1,6 @@
 package com.nsdr.spark.cli;
 
-import com.nsdr.spark.uniqueness.TfIdf;
+import com.nsdr.metadataqa.api.uniqueness.TfIdf;
 import java.util.List;
 import java.util.Map;
 

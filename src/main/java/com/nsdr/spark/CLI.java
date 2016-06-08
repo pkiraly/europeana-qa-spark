@@ -4,11 +4,8 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
 import com.nsdr.spark.cli.Result;
-import com.nsdr.spark.completeness.CompletenessCalculator;
-import com.nsdr.spark.counters.Counters;
-import com.nsdr.spark.model.JsonPathCache;
-import com.nsdr.spark.uniqueness.TfIdfCalculator;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -35,11 +32,21 @@ public class CLI {
 		cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
 		session = cluster.connect("europeana");
 
-		final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
-		completenessCalculator.setVerbose(true);
+		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
+		calculator.doAbbreviate(true);
+		calculator.runCompleteness(true);
+		calculator.runFieldCardinality(true);
+		calculator.runFieldExistence(true);
+		calculator.runTfIdf(true);
+		calculator.runProblemCatalog(true);
+		calculator.collectTfIdfTerms(true);
+		calculator.configure();
+
+		// final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
+		// completenessCalculator.setVerbose(true);
 		
-		final TfIdfCalculator tfIdfCalculator = new TfIdfCalculator();
-		tfIdfCalculator.setDoCollectTerms(true);
+		// final TfIdfCalculator tfIdfCalculator = new TfIdfCalculator();
+		// tfIdfCalculator.setDoCollectTerms(true);
 		// DataProviderManager dataProviderManager = new DataProviderManager();
 		// counter.setDataProviderManager(dataProviderManager);
 		// DatasetManager datasetManager = new DatasetManager();
@@ -49,21 +56,14 @@ public class CLI {
 		ResultSet results = session.execute(String.format("SELECT content FROM edm WHERE id = '%s'", id));
 		for (Row row : results) {
 			String jsonString = row.getString("content");
-			Counters counters = new Counters();
-			counters.doReturnFieldExistenceList(true);
-			counters.doReturnTfIdfList(true);
-
-			JsonPathCache cache = new JsonPathCache(jsonString);
-			completenessCalculator.calculate(cache, counters);
-			tfIdfCalculator.calculate(cache, counters);
-			// result = counter.getFullResults(true, true);
+			calculator.measure(jsonString);
 
 			result = new Result();
-			result.setResults(counters.getResults());
-			result.setExistingFields(completenessCalculator.getExistingFields());
-			result.setMissingFields(completenessCalculator.getMissingFields());
-			result.setEmptyFields(completenessCalculator.getEmptyFields());
-			result.setTermsCollection(tfIdfCalculator.getTermsCollection());
+			result.setResults(calculator.getCounters().getResults());
+			result.setExistingFields(calculator.getExistingFields());
+			result.setMissingFields(calculator.getMissingFields());
+			result.setEmptyFields(calculator.getEmptyFields());
+			result.setTermsCollection(calculator.getTermsCollection());
 
 			break;
 		}
