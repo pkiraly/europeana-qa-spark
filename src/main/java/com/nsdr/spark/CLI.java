@@ -40,6 +40,7 @@ public class CLI {
 		calculator.runTfIdf(true);
 		calculator.runProblemCatalog(true);
 		calculator.collectTfIdfTerms(true);
+		calculator.verbose(true);
 		calculator.configure();
 
 		// final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
