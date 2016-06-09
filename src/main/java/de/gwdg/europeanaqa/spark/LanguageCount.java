@@ -39,7 +39,7 @@ public class LanguageCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.doAbbreviate(true);
+		calculator.abbreviate(true);
 		calculator.runCompleteness(false);
 		calculator.runFieldCardinality(false);
 		calculator.runFieldExistence(false);

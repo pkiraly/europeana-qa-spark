@@ -33,7 +33,7 @@ public class CLI {
 		session = cluster.connect("europeana");
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.doAbbreviate(true);
+		calculator.abbreviate(true);
 		calculator.runCompleteness(true);
 		calculator.runFieldCardinality(true);
 		calculator.runFieldExistence(true);
@@ -60,7 +60,7 @@ public class CLI {
 			calculator.measure(jsonString);
 
 			result = new Result();
-			result.setResults(calculator.getCounters().getResults());
+			result.setResults(calculator.getResults());
 			result.setExistingFields(calculator.getExistingFields());
 			result.setMissingFields(calculator.getMissingFields());
 			result.setEmptyFields(calculator.getEmptyFields());

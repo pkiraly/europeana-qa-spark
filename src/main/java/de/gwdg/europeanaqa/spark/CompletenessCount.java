@@ -37,7 +37,7 @@ public class CompletenessCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.doAbbreviate(true);
+		calculator.abbreviate(true);
 		calculator.runCompleteness(true);
 		calculator.runFieldCardinality(true);
 		calculator.runFieldExistence(true);
