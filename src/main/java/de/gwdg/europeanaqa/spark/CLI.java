@@ -1,11 +1,11 @@
-package com.nsdr.spark;
+package de.gwdg.europeanaqa.spark;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
-import com.nsdr.spark.cli.Result;
+import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.spark.cli.Result;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;

@@ -1,9 +1,7 @@
-package com.nsdr.spark;
+package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import com.nsdr.europeanaqa.api.abbreviation.EdmDataProviderManager;
-import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
-import com.nsdr.metadataqa.api.calculator.LanguageCalculator;
+import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -16,9 +14,9 @@ import org.apache.spark.api.java.function.Function;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class LanguageCount {
+public class CompletenessCount {
 
-	private static final Logger logger = Logger.getLogger(LanguageCount.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(CompletenessCount.class.getCanonicalName());
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
@@ -32,7 +30,7 @@ public class LanguageCount {
 			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
-		String inputFileName = args[0];
+		final String inputFileName = args[0];
 		logger.info("Input file is " + inputFileName);
 		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
@@ -40,21 +38,12 @@ public class LanguageCount {
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
 		calculator.doAbbreviate(true);
-		calculator.runCompleteness(false);
-		calculator.runFieldCardinality(false);
-		calculator.runFieldExistence(false);
+		calculator.runCompleteness(true);
+		calculator.runFieldCardinality(true);
+		calculator.runFieldExistence(true);
 		calculator.runTfIdf(false);
-		calculator.runProblemCatalog(false);
-		calculator.runLanguage(true);
+		calculator.runProblemCatalog(true);
 		calculator.configure();
-
-		/*
-		final LanguageCalculator languageCalculator = new LanguageCalculator();
-		EdmDataProviderManager dataProviderManager = new EdmDataProviderManager();
-		languageCalculator.setDataProviderManager(dataProviderManager);
-		DatasetManager datasetManager = new DatasetManager();
-		languageCalculator.setDatasetManager(datasetManager);
-		*/
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
@@ -63,8 +52,8 @@ public class LanguageCount {
 				try {
 					return calculator.measure(jsonString);
 				} catch (InvalidJsonException e) {
-					logger.severe(String.format("Invalid JSON in %s. Error message: %s.",
-							jsonString, e.getLocalizedMessage()));
+					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
+							inputFileName, jsonString, e.getLocalizedMessage()));
 				}
 				return "";
 			}
@@ -76,7 +65,7 @@ public class LanguageCount {
 		try {
 			calculator.saveDataProviders(args[2]);
 			calculator.saveDatasets(args[3]);
-		} catch (UnsupportedEncodingException ex) {
+		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
 	}
