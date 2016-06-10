@@ -7,7 +7,8 @@
 	<version>1.0-SNAPSHOT</version>
 	<name>Europeana Metadata Quality Assurance Spark interface</name>
 	<description>
-		Spark and command line interfaces for the Europeana Metadata Quality Assurance Framework.
+		Spark and command line interfaces for the Europeana Metadata Quality 
+		Assurance Framework.
 	</description>
 	<developers>
 		<developer>
@@ -34,6 +35,17 @@
 		<developerConnection>scm:git:git@github.com:pkiraly/europeana-qa-spark.git</developerConnection>
 		<url>http://github.com/pkiraly/europeana-qa-spark</url>
 	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
