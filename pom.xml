@@ -74,7 +74,7 @@
 		<dependency>
 			<groupId>de.gwdg.metadataqa</groupId>
 			<artifactId>europeana-qa-api</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 	</dependencies>
 
