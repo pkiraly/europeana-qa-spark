@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TARGET_CSV=result11.csv
+TARGET_CSV=result12.csv
 
 echo "Run completeness count"
 
