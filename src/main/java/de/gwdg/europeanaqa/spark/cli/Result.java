@@ -1,6 +1,6 @@
-package com.nsdr.spark.cli;
+package de.gwdg.europeanaqa.spark.cli;
 
-import com.nsdr.metadataqa.api.uniqueness.TfIdf;
+import de.gwdg.metadataqa.api.uniqueness.TfIdf;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +12,7 @@ public class Result {
 	private List<String> existingFields;
 	private List<String> missingFields;
 	private List<String> emptyFields;
-	private Map<String, Double> results;
+	private Map<String, Object> results;
 	private Map<String, List<TfIdf>> termsCollection;
 
 	public Result() {
@@ -42,11 +42,11 @@ public class Result {
 		this.emptyFields = emptyFields;
 	}
 
-	public Map<String, Double> getResults() {
+	public Map<String, Object> getResults() {
 		return results;
 	}
 
-	public void setResults(Map<String, Double> results) {
+	public void setResults(Map<String, Object> results) {
 		this.results = results;
 	}
 

@@ -1,9 +1,7 @@
-package com.nsdr.spark;
+package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import com.nsdr.europeanaqa.api.abbreviation.EdmDataProviderManager;
-import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
-import com.nsdr.metadataqa.api.calculator.LanguageCalculator;
+import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -39,13 +37,13 @@ public class LanguageCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.doAbbreviate(true);
-		calculator.runCompleteness(false);
-		calculator.runFieldCardinality(false);
-		calculator.runFieldExistence(false);
-		calculator.runTfIdf(false);
-		calculator.runProblemCatalog(false);
-		calculator.runLanguage(true);
+		calculator.abbreviate(true);
+		calculator.enableCompletenessMeasurement(false);
+		calculator.enableFieldCardinalityMeasurement(false);
+		calculator.enableFieldExistenceMeasurement(false);
+		calculator.enableTfIdfMeasurement(false);
+		calculator.enableProblemCatalogMeasurement(false);
+		calculator.enableLanguageMeasurement(true);
 		calculator.configure();
 
 		/*

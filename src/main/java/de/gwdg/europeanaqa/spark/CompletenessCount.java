@@ -1,7 +1,7 @@
-package com.nsdr.spark;
+package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -37,12 +37,12 @@ public class CompletenessCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.doAbbreviate(true);
-		calculator.runCompleteness(true);
-		calculator.runFieldCardinality(true);
-		calculator.runFieldExistence(true);
-		calculator.runTfIdf(false);
-		calculator.runProblemCatalog(true);
+		calculator.abbreviate(true);
+		calculator.enableCompletenessMeasurement(true);
+		calculator.enableFieldCardinalityMeasurement(true);
+		calculator.enableFieldExistenceMeasurement(true);
+		calculator.enableTfIdfMeasurement(false);
+		calculator.enableProblemCatalogMeasurement(true);
 		calculator.configure();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);

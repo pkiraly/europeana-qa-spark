@@ -1,11 +1,11 @@
-package com.nsdr.spark;
+package de.gwdg.europeanaqa.spark;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.nsdr.europeanaqa.api.calculator.EdmCalculatorFacade;
-import com.nsdr.spark.cli.Result;
+import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.spark.cli.Result;
 import java.io.IOException;
 import java.util.logging.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -33,14 +33,14 @@ public class CLI {
 		session = cluster.connect("europeana");
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.doAbbreviate(true);
-		calculator.runCompleteness(true);
-		calculator.runFieldCardinality(true);
-		calculator.runFieldExistence(true);
-		calculator.runTfIdf(true);
-		calculator.runProblemCatalog(true);
+		calculator.abbreviate(true);
+		calculator.enableCompletenessMeasurement(true);
+		calculator.enableFieldCardinalityMeasurement(true);
+		calculator.enableFieldExistenceMeasurement(true);
+		calculator.enableTfIdfMeasurement(true);
+		calculator.enableProblemCatalogMeasurement(true);
 		calculator.collectTfIdfTerms(true);
-		calculator.verbose(true);
+		calculator.completenessCollectFields(true);
 		calculator.configure();
 
 		// final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
@@ -60,7 +60,7 @@ public class CLI {
 			calculator.measure(jsonString);
 
 			result = new Result();
-			result.setResults(calculator.getCounters().getResults());
+			result.setResults(calculator.getResults());
 			result.setExistingFields(calculator.getExistingFields());
 			result.setMissingFields(calculator.getMissingFields());
 			result.setEmptyFields(calculator.getEmptyFields());

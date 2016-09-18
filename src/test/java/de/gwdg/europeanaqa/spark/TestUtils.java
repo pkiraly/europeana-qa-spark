@@ -1,4 +1,4 @@
-package com.nsdr.spark;
+package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.Configuration;
 import java.io.IOException;
