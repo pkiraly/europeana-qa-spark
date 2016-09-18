@@ -38,11 +38,11 @@ public class CompletenessCount {
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
 		calculator.abbreviate(true);
-		calculator.runCompleteness(true);
-		calculator.runFieldCardinality(true);
-		calculator.runFieldExistence(true);
-		calculator.runTfIdf(false);
-		calculator.runProblemCatalog(true);
+		calculator.enableCompletenessMeasurement(true);
+		calculator.enableFieldCardinalityMeasurement(true);
+		calculator.enableFieldExistenceMeasurement(true);
+		calculator.enableTfIdfMeasurement(false);
+		calculator.enableProblemCatalogMeasurement(true);
 		calculator.configure();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);

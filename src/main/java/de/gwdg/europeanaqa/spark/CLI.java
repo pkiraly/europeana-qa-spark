@@ -34,11 +34,11 @@ public class CLI {
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
 		calculator.abbreviate(true);
-		calculator.runCompleteness(true);
-		calculator.runFieldCardinality(true);
-		calculator.runFieldExistence(true);
-		calculator.runTfIdf(true);
-		calculator.runProblemCatalog(true);
+		calculator.enableCompletenessMeasurement(true);
+		calculator.enableFieldCardinalityMeasurement(true);
+		calculator.enableFieldExistenceMeasurement(true);
+		calculator.enableTfIdfMeasurement(true);
+		calculator.enableProblemCatalogMeasurement(true);
 		calculator.collectTfIdfTerms(true);
 		calculator.completenessCollectFields(true);
 		calculator.configure();
