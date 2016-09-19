@@ -1,4 +1,5 @@
-cd ../metadata-qa-api/ && git pull && mvn clean install && cd ../europeana-qa-spark/
-cd ../europeana-qa-api/ && git pull && mvn clean install && cd ../europeana-qa-spark/
+cd ../metadata-qa-api/ && git pull && mvn clean install -Ptravis && cd ../europeana-qa-spark/
+cd ../europeana-qa-api/ && git pull && mvn clean install -Ptravis && cd ../europeana-qa-spark/
 git pull
-mvn clean install
+mvn clean install -Ptravis
+

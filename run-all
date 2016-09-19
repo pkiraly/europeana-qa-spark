@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-TARGET_CSV=result12.csv
+TARGET_CSV=result14.csv
+JAR_VERSION=0.4-SNAPSHOT
 
 echo "Run completeness count"
 
@@ -11,8 +12,8 @@ fi
 
 hdfs dfs -rm -r -skipTrash /result
 wait 5
-spark-submit --class com.nsdr.spark.CompletenessCount \
-  --master local[*] target/europeana-qa-spark-1.0-SNAPSHOT-jar-with-dependencies.jar \
+spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
+  --master local[*] target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar \
   hdfs://localhost:54310/europeana/*.json \
   hdfs://localhost:54310/result \
   data-providers.txt \

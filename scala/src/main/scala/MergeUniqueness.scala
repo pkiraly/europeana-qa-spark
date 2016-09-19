@@ -16,7 +16,7 @@ object MergeUniqueness {
       .map(line => line
                      .split(",")
                      .map(elem => elem.trim))
-      .map(x => (x(2), x.mkString(",")))
+      .map(x => (x(0), x.mkString(",")))
     data.cache()
 
     val tfidfFile = sc.textFile("hdfs://localhost:54310/join/tfidf.csv").filter(_.nonEmpty)
@@ -54,10 +54,12 @@ object MergeUniqueness {
     val merged = united
       .groupByKey()
       .map(x => 
-        if (x._2.toList.head.length > x._2.toList.last.length) {
-          x._2.toList.mkString(",")
-        } else {
-          x._2.toList.last + "," + x._2.toList.head
+        if (x._2.toList.head != x._2.toList.last) {
+          if (x._2.toList.head.length > x._2.toList.last.length) {
+            x._2.toList.mkString(",")
+          } else {
+            x._2.toList.last + "," + x._2.toList.head
+          }
         }
       )
     merged.saveAsTextFile("hdfs://localhost:54310/join/merged-" + filt + ".csv")
