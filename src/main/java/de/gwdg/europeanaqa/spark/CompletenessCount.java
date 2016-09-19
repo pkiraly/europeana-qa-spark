@@ -2,6 +2,7 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
@@ -17,8 +18,6 @@ import org.apache.spark.api.java.function.Function;
 public class CompletenessCount {
 
 	private static final Logger logger = Logger.getLogger(CompletenessCount.class.getCanonicalName());
-	private static final boolean withLabel = false;
-	private static final boolean compressed = true;
 
 	public static void main(String[] args) throws FileNotFoundException {
 
@@ -36,21 +35,14 @@ public class CompletenessCount {
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.abbreviate(true);
-		calculator.enableCompletenessMeasurement(true);
-		calculator.enableFieldCardinalityMeasurement(true);
-		calculator.enableFieldExistenceMeasurement(true);
-		calculator.enableTfIdfMeasurement(false);
-		calculator.enableProblemCatalogMeasurement(true);
-		calculator.configure();
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
 				try {
-					return calculator.measure(jsonString);
+					return facade.measure(jsonString);
 				} catch (InvalidJsonException e) {
 					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
 							inputFileName, jsonString, e.getLocalizedMessage()));
@@ -63,8 +55,8 @@ public class CompletenessCount {
 		baseCountsRDD.saveAsTextFile(args[1]);
 
 		try {
-			calculator.saveDataProviders(args[2]);
-			calculator.saveDatasets(args[3]);
+			facade.saveDataProviders(args[2]);
+			facade.saveDatasets(args[3]);
 		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
