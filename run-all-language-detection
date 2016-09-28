@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TARGET_CSV=result13-language.csv
+TARGET_CSV=result14-language.csv
 
 echo "Starting language detection."
 
@@ -11,9 +11,10 @@ fi
 
 hdfs dfs -rm -r -skipTrash /result
 wait 5
+JAR=target/europeana-qa-spark-0.4-SNAPSHOT-jar-with-dependencies.jar
 
-spark-submit --class com.nsdr.spark.LanguageCount \
-  --master local[*] target/europeana-qa-spark-1.0-SNAPSHOT-jar-with-dependencies.jar \
+spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
+  --master local[*] $JAR \
   hdfs://localhost:54310/europeana/*.json \
   hdfs://localhost:54310/result \
   data-providers.txt \
