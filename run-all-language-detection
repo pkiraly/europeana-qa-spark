@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run the record level measure of main features
+# Run the record level measure of language features
 #
 # Input
 #   The json files take place on HDFS /europeana directory
@@ -23,12 +23,15 @@ fi
 
 echo "Starting language detection."
 
-hdfs dfs -rm -r -skipTrash /result
-wait 5
+if hdfs dfs -test -d /result; then
+  hdfs dfs -rm -r -f -skipTrash /result
+  wait 5
+fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
-  --master local[*] $JAR \
+  --master local[*] \
+  $JAR \
   hdfs://localhost:54310/europeana/*.json \
   hdfs://localhost:54310/result \
   data-providers.txt \
