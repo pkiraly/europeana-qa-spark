@@ -1,18 +1,32 @@
 #!/usr/bin/env bash
+#
+# Run the record level measure of main features
+#
+# Input
+#   The json files take place on HDFS /europeana directory
+# Output
+#   You should specify a file name, such as resultXX-language.csv
+#   This will be the input of top level, and collection level aggregations
 
-TARGET_CSV=result14-language.csv
+OUTPUT=$1
+JAR_VERSION=0.4-SNAPSHOT
+
+if [[ ("$#" -ne 1) || ("$OUTPUT" == "") ]]; then
+  echo "You should add an output file (such as resultXX-language.csv)!"
+  exit 1
+fi
+
+if [ -e $OUTPUT ]; then
+  echo "WARNING! $OUTPUT exists, rename it to prevent overwriting the file!"
+  exit 1
+fi
 
 echo "Starting language detection."
 
-if [ -e $TARGET_CSV ]; then
-  echo "WARNING! $TARGET_CSV exists, rename it to prevent overwriting the file!"
-  exit
-fi
-
 hdfs dfs -rm -r -skipTrash /result
 wait 5
-JAR=target/europeana-qa-spark-0.4-SNAPSHOT-jar-with-dependencies.jar
 
+JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
   --master local[*] $JAR \
   hdfs://localhost:54310/europeana/*.json \
@@ -20,7 +34,8 @@ spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
   data-providers.txt \
   datasets.txt
 
-hdfs dfs -getmerge /result $TARGET_CSV
-rm .$TARGET_CSV.crc
+echo Retrieve $OUTPUT
+hdfs dfs -getmerge /result $OUTPUT
+rm .$OUTPUT.crc
 
-echo "Language detection done."
+echo "Language detection is done!"

@@ -12,7 +12,7 @@ INPUT=$1
 
 if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
   echo "You should add an input file!"
-  exit 1;
+  exit 1
 fi
 
 OUTPUTFILE=languages.csv
