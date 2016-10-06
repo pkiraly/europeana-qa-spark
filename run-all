@@ -1,25 +1,44 @@
 #!/usr/bin/env bash
+#
+# Run the record level measure of main features
+#
+# Input
+#   The json files take place on HDFS /europeana directory
+# Output
+#   You should specify a file name, such as resultXX.csv
+#   This will be the input of top level, and collection level aggregations
 
-TARGET_CSV=result14.csv
+OUTPUT=$1
 JAR_VERSION=0.4-SNAPSHOT
+
+if [[ ("$#" -ne 1) || ("$OUTPUT" == "") ]]; then
+  echo "You should add an output file (such as resultXX.csv)!"
+  exit 1
+fi
+
+if [ -e $OUTPUT ]; then
+  echo "WARNING! $OUTPUT exists, rename it to prevent overwriting the file!"
+  exit 1
+fi
 
 echo "Run completeness count"
 
-if [ -e $TARGET_CSV ]; then
-  echo "WARNING! $TARGET_CSV exists, rename it to prevent overwriting the file!"
-  exit
+if hdfs dfs -test -d /result; then
+  hdfs dfs -rm -r -f -skipTrash /result
+  wait 5
 fi
 
-hdfs dfs -rm -r -skipTrash /result
-wait 5
+JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
-  --master local[*] target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar \
+  --master local[*] \
+  $JAR \
   hdfs://localhost:54310/europeana/*.json \
   hdfs://localhost:54310/result \
   data-providers.txt \
   datasets.txt
 
-hdfs dfs -getmerge /result $TARGET_CSV
-rm .$TARGET_CSV.crc
+echo Retrieve $OUTPUT
+hdfs dfs -getmerge /result $OUTPUT
+rm .$OUTPUT.crc
 
 echo "Completeness count is done!"

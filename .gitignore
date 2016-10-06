@@ -1,3 +1,5 @@
 target/
 /nbproject/
 nohup*.out
+*.log
+scala/*.log
