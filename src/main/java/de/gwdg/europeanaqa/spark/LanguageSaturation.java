@@ -34,7 +34,19 @@ public class LanguageSaturation {
 		}
 		String inputFileName = args[0];
 		logger.log(Level.INFO, "Input file is {0}", inputFileName);
-		System.err.println("Input file is " + inputFileName);
+
+		String outputFileName = args[1];
+		logger.log(Level.INFO, "Output file is {0}", outputFileName);
+
+		String headerOutputFile = args[2];
+		logger.log(Level.INFO, "Header output is {0}", headerOutputFile);
+
+		String dataProvidersFile = args[3];
+		logger.log(Level.INFO, "DataProviders file is {0}", dataProvidersFile);
+
+		String datasetsFile = args[4];
+		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
+
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
@@ -49,15 +61,14 @@ public class LanguageSaturation {
 		calculator.enableLanguageSaturationMeasurement(true);
 		calculator.configure();
 
-		logger.info("Calculators:");
+		logger.info("Running with the following calculators:");
 		for (Calculator calc : calculator.getCalculators()) {
-			logger.info(calc.getCalculatorName());
+			logger.log(Level.INFO, "\t{0}", calc.getCalculatorName());
 		}
 
 		JavaRDD<String> headerRDD = context.parallelize(calculator.getHeader());
-		headerRDD.saveAsTextFile("header.csv");
+		headerRDD.saveAsTextFile(headerOutputFile);
 
-		/*
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
@@ -73,14 +84,13 @@ public class LanguageSaturation {
 		};
 
 		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
-		baseCountsRDD.saveAsTextFile(args[1]);
+		baseCountsRDD.saveAsTextFile(outputFileName);
 
 		try {
-			calculator.saveDataProviders(args[2]);
-			calculator.saveDatasets(args[3]);
+			calculator.saveDataProviders(dataProvidersFile);
+			calculator.saveDatasets(datasetsFile);
 		} catch (UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
-		*/
 	}
 }
