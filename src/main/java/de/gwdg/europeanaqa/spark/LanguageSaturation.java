@@ -34,6 +34,7 @@ public class LanguageSaturation {
 			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
+
 		String inputFileName = args[0];
 		logger.log(Level.INFO, "Input file is {0}", inputFileName);
 
@@ -71,7 +72,7 @@ public class LanguageSaturation {
 		JavaRDD<String> headerRDD = context.parallelize(
 			Arrays.asList(
 				StringUtils.join(
-					calculator.getHeader(), ", ")));
+					calculator.getHeader(), ",")));
 		headerRDD.saveAsTextFile(headerOutputFile);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
