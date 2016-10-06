@@ -5,8 +5,10 @@ import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -66,7 +68,10 @@ public class LanguageSaturation {
 			logger.log(Level.INFO, "\t{0}", calc.getCalculatorName());
 		}
 
-		JavaRDD<String> headerRDD = context.parallelize(calculator.getHeader());
+		JavaRDD<String> headerRDD = context.parallelize(
+			Arrays.asList(
+				StringUtils.join(
+					calculator.getHeader(), ", ")));
 		headerRDD.saveAsTextFile(headerOutputFile);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
