@@ -52,6 +52,7 @@ public class LanguageSaturation {
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
 
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local[*]");
+		logger.log(Level.INFO, "", conf.get("master"));
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
@@ -69,11 +70,6 @@ public class LanguageSaturation {
 		logger.info("Running with the following calculators:");
 		for (Calculator calc : calculator.getCalculators()) {
 			logger.log(Level.INFO, "\t{0}", calc.getCalculatorName());
-			if (calc.getCalculatorName().equals(LanguageSaturationCalculator.CALCULATOR_NAME)) {
-				((LanguageSaturationCalculator)calc)
-					.setResultType(LanguageSaturationCalculator.ResultTypes.EXTENDED);
-				logger.log(Level.INFO, "\t{0}", ((LanguageSaturationCalculator)calc).getResultType());
-			}
 		}
 
 		JavaRDD<String> headerRDD = context.parallelize(
