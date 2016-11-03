@@ -1,6 +1,6 @@
 <?php
 
-$file = '../scala/languages14.csv';
+$file = '../scala/languages.csv';
 
 $header = ['field', 'language', 'sum'];
 
