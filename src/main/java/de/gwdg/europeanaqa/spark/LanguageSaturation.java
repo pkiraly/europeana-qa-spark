@@ -63,6 +63,7 @@ public class LanguageSaturation {
 		calculator.enableProblemCatalogMeasurement(false);
 		calculator.enableLanguageMeasurement(false);
 		calculator.enableLanguageSaturationMeasurement(true);
+		calculator.setSaturationExtendedResult(true);
 		calculator.configure();
 
 		logger.info("Running with the following calculators:");
