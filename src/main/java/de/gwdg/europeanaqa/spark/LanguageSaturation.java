@@ -2,6 +2,7 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.metadataqa.api.calculator.LanguageSaturationCalculator;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
@@ -67,6 +68,10 @@ public class LanguageSaturation {
 		logger.info("Running with the following calculators:");
 		for (Calculator calc : calculator.getCalculators()) {
 			logger.log(Level.INFO, "\t{0}", calc.getCalculatorName());
+			if (calc.getCalculatorName().equals(LanguageSaturationCalculator.CALCULATOR_NAME)) {
+				((LanguageSaturationCalculator)calc)
+					.setResultType(LanguageSaturationCalculator.ResultTypes.EXTENDED);
+			}
 		}
 
 		JavaRDD<String> headerRDD = context.parallelize(
