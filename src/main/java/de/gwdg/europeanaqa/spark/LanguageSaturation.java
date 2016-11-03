@@ -52,7 +52,7 @@ public class LanguageSaturation {
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
 
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local[*]");
-		logger.log(Level.INFO, "", conf.get("master"));
+		logger.log(Level.INFO, "", conf.getOption("master"));
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
