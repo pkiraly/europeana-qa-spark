@@ -15,6 +15,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
+import scala.Tuple2;
 
 /**
  *
@@ -53,8 +54,11 @@ public class LanguageSaturation {
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
-		logger.info(conf.getAll().toString());
 		JavaSparkContext context = new JavaSparkContext(conf);
+		Tuple2<String, String>[] values = conf.getAll();
+		for (Tuple2<String, String> value : values) {
+			logger.log(Level.INFO, "{0}: {1}", new Object[]{value._1, value._2});
+		}
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
 		calculator.abbreviate(true);
