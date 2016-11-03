@@ -4,6 +4,7 @@ import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.metadataqa.api.calculator.LanguageSaturationCalculator;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
+import de.gwdg.metadataqa.api.util.CompressionLevel;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class LanguageSaturation {
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
 
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local[*]");
-		logger.log(Level.INFO, "", conf.getOption("master"));
+		logger.log(Level.INFO, "Master is {0}", conf.getOption("master"));
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
@@ -64,6 +65,7 @@ public class LanguageSaturation {
 		calculator.enableProblemCatalogMeasurement(false);
 		calculator.enableLanguageMeasurement(false);
 		calculator.enableLanguageSaturationMeasurement(true);
+		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
 		calculator.setSaturationExtendedResult(true);
 		calculator.configure();
 
