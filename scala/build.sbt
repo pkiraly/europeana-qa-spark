@@ -6,5 +6,6 @@ scalaVersion := "2.10.5"
 
 // additional libraries
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "1.6.0" % "provided"
+  "org.apache.spark" %% "spark-core" % "1.6.0" % "provided",
+  "org.apache.commons" % "commons-math3" % "3.6.1"
 )
