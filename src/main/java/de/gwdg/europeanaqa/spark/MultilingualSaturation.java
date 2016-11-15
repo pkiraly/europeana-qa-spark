@@ -2,7 +2,6 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
-import de.gwdg.metadataqa.api.calculator.LanguageSaturationCalculator;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import de.gwdg.metadataqa.api.util.CompressionLevel;
 import java.io.FileNotFoundException;
@@ -15,15 +14,14 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import scala.Tuple2;
 
 /**
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class LanguageSaturation {
+public class MultilingualSaturation {
 
-	private static final Logger logger = Logger.getLogger(LanguageSaturation.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(MultilingualSaturation.class.getCanonicalName());
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
@@ -55,10 +53,6 @@ public class LanguageSaturation {
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
 		JavaSparkContext context = new JavaSparkContext(conf);
-		Tuple2<String, String>[] values = conf.getAll();
-		for (Tuple2<String, String> value : values) {
-			logger.log(Level.INFO, "{0}: {1}", new Object[]{value._1, value._2});
-		}
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
 		calculator.abbreviate(true);
