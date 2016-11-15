@@ -62,7 +62,7 @@ public class MultilingualSaturation {
 		calculator.enableTfIdfMeasurement(false);
 		calculator.enableProblemCatalogMeasurement(false);
 		calculator.enableLanguageMeasurement(false);
-		calculator.enableLanguageSaturationMeasurement(true);
+		calculator.enableMultilingualSaturationMeasurement(true);
 		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
 		calculator.setSaturationExtendedResult(true);
 		calculator.configure();
