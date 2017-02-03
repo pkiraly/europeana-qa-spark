@@ -32,7 +32,7 @@ public class CompletenessCount {
 		final String inputFileName = args[0];
 		logger.info("Input file is " + inputFileName);
 		System.err.println("Input file is " + inputFileName);
-		SparkConf conf = new SparkConf().setAppName("TextLinesCount").setMaster("local");
+		SparkConf conf = new SparkConf().setAppName("TextLinesCount"); //.setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create();
