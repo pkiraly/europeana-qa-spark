@@ -16,8 +16,10 @@ object SaturationPerCollections {
     val language = sc.textFile(sourceFile).filter(_.nonEmpty)
 
     val count = language.count().toDouble
-    val language2 = language
+    val language1 = language
       .map(line => line.split(","))
+
+    val language2 = language1
       .flatMap(line => List(
         ("c" + line(1) + ":proxy_dc_title", line(3).toDouble),
         ("d" + line(2) + ":proxy_dc_title", line(3).toDouble),

@@ -30,7 +30,7 @@ fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
-  --master local[*] \
+  --master local[6] \
   $JAR \
   hdfs://localhost:54310/europeana/*.json \
   hdfs://localhost:54310/result \
