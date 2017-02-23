@@ -17,6 +17,7 @@ public class CalculatorFacadeFactory {
 		facade.enableFieldExistenceMeasurement(true);
 		facade.enableTfIdfMeasurement(false);
 		facade.enableProblemCatalogMeasurement(true);
+		facade.setCheckSkippableCollections(true);
 		facade.configure();
 
 		return facade;
