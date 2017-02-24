@@ -36,6 +36,7 @@ public class CompletenessCount {
 		final boolean checkSkippableCollections = (args.length >= 5 && args[4].equals("checkSkippableCollections"));
 
 		logger.info("Input file is " + inputFileName);
+		logger.info("checkSkippableCollections: " + checkSkippableCollections);
 		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount"); //.setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
