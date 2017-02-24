@@ -19,7 +19,7 @@ public class HeaderCommand {
 
 	public static void main(String[] args) throws FileNotFoundException {
 
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create();
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(false);
 
 		List<String> header = new ArrayList<>();
 		for (Calculator calculator : facade.getCalculators()) {

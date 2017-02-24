@@ -8,7 +8,7 @@ import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
  */
 public class CalculatorFacadeFactory {
 
-	public static EdmCalculatorFacade create() {
+	public static EdmCalculatorFacade create(boolean checkSkippableCollections) {
 
 		final EdmCalculatorFacade facade = new EdmCalculatorFacade();
 		facade.abbreviate(true);
@@ -17,7 +17,7 @@ public class CalculatorFacadeFactory {
 		facade.enableFieldExistenceMeasurement(true);
 		facade.enableTfIdfMeasurement(false);
 		facade.enableProblemCatalogMeasurement(true);
-		facade.setCheckSkippableCollections(true);
+		facade.setCheckSkippableCollections(checkSkippableCollections);
 		facade.configure();
 
 		return facade;

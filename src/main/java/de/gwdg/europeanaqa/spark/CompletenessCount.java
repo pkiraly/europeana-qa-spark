@@ -30,12 +30,17 @@ public class CompletenessCount {
 			System.exit(0);
 		}
 		final String inputFileName = args[0];
+		final String outputFileName = args[1];
+		final String dataProvidersFileName = args[2];
+		final String datasetsFileName = args[3];
+		final boolean checkSkippableCollections = (args.length >= 5 && args[4].equals("checkSkippableCollections"));
+
 		logger.info("Input file is " + inputFileName);
 		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("TextLinesCount"); //.setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create();
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(checkSkippableCollections);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
@@ -52,11 +57,11 @@ public class CompletenessCount {
 		};
 
 		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
-		baseCountsRDD.saveAsTextFile(args[1]);
+		baseCountsRDD.saveAsTextFile(outputFileName);
 
 		try {
-			facade.saveDataProviders(args[2]);
-			facade.saveDatasets(args[3]);
+			facade.saveDataProviders(dataProvidersFileName);
+			facade.saveDatasets(datasetsFileName);
 		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
