@@ -8,12 +8,16 @@
 #   A .csv file with the same name as of the input .json file.
 
 INPUT=$1
-if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
+SKIP_FLAG=$2
+if [[ ("$#" -ne 1 && "$#" -ne 2) || ("$INPUT" == "") ]]; then
   echo "You should add an input file which should exist in HDFS /europeana directory (such as 00101.json)!"
   exit 1
 fi
+if [[ ("$SKIP_FLAG" != "checkSkippableCollections") ]]; then
+  SKIP_FLAG=""
+fi
 
-JAR_VERSION=0.4-SNAPSHOT
+JAR_VERSION=0.5-SNAPSHOT
 HDFS=hdfs://localhost:54310
 INPUTPATH=$HDFS/europeana/$INPUT
 RESULT=$HDFS/result
@@ -33,8 +37,8 @@ spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
   --master local[*] \
   $JAR \
   $INPUTPATH $RESULT \
-  data-providers.txt \
-  datasets.txt
+  data-providers.txt datasets.txt \
+  $SKIP_FLAG
 
 echo Retrieve $OUTPUT
 hdfs dfs -getmerge /result $OUTPUT
