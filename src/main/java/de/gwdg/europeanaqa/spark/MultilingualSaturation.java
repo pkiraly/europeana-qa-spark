@@ -2,7 +2,6 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
-import de.gwdg.europeanaqa.spark.cli.util.OptionFactory;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import de.gwdg.metadataqa.api.util.CompressionLevel;
 import java.io.FileNotFoundException;
@@ -10,11 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkConf;
@@ -32,19 +26,7 @@ public class MultilingualSaturation {
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
-	private static Options options = new Options();
-	static {
-		options.addOption(OptionFactory.create("i", "input", true, "Input file name"));
-		options.addOption(OptionFactory.create("o", "output", true, "Output file name"));
-		options.addOption(OptionFactory.create("h", "header", false, "Header output file name"));
-		options.addOption(OptionFactory.create("p", "data-providers", false, "DataProviders file"));
-		options.addOption(OptionFactory.create("s", "datasets", false, "Datasets file"));
-		options.addOption(OptionFactory.create("e", "skip-enrichments", false, "Skip enriched contextual entities", false));
-	}
-
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
-
-		// boolean skipEnrichments = cmd.hasOption("skip-enrichments");
 
 		if (args.length < 1) {
 			System.err.println("Please provide a full path to the input files");
@@ -71,6 +53,7 @@ public class MultilingualSaturation {
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
 
 		boolean skipEnrichments = (args.length >= 5 && args[5].equals("skip-enrichments"));
+		logger.log(Level.INFO, "Skip enrichments is {0}", skipEnrichments);
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
 		JavaSparkContext context = new JavaSparkContext(conf);
@@ -123,10 +106,5 @@ public class MultilingualSaturation {
 		} catch (UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
-	}
-
-	private static void help() {
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("java -cp [jar] de.gwdg.europeanaqa.spark.CLIArgs [options]", options);
 	}
 }

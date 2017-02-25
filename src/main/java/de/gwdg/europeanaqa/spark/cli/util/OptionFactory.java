@@ -9,11 +9,13 @@ import org.apache.commons.cli.Option;
  */
 public class OptionFactory implements Serializable {
 
-	public static Option create(String smallOpt, String longOpt, boolean required, String desc) {
-		return create(smallOpt, longOpt, required, desc, true);
+	public static Option create(String smallOpt, String longOpt, boolean required,
+			  String desc) {
+		return OptionFactory.create(smallOpt, longOpt, required, desc, true);
 	}
 
-	public static Option create(String smallOpt, String longOpt, boolean required, String desc, boolean hasArg) {
+	public static Option create(String smallOpt, String longOpt, boolean required,
+			  String desc, boolean hasArg) {
 		Option option = Option.builder(smallOpt)
 				       .longOpt(longOpt)
 				       .required(required)
