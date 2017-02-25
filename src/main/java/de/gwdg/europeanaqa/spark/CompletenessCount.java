@@ -3,9 +3,12 @@ package de.gwdg.europeanaqa.spark;
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
+import de.gwdg.europeanaqa.spark.cli.util.OptionFactory;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -18,6 +21,7 @@ import org.apache.spark.api.java.function.Function;
 public class CompletenessCount {
 
 	private static final Logger logger = Logger.getLogger(CompletenessCount.class.getCanonicalName());
+	private static Options options = new Options();
 
 	public static void main(String[] args) throws FileNotFoundException {
 
@@ -66,5 +70,10 @@ public class CompletenessCount {
 		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
+	}
+
+	private static void help() {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("java -cp [jar] de.gwdg.europeanaqa.spark.CompletenessCount [options]", options);
 	}
 }

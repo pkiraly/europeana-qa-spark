@@ -2,6 +2,7 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.spark.cli.util.OptionFactory;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import de.gwdg.metadataqa.api.util.CompressionLevel;
 import java.io.FileNotFoundException;
@@ -9,6 +10,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -25,31 +32,41 @@ public class MultilingualSaturation {
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
-	public static void main(String[] args) throws FileNotFoundException {
+	private static Options options = new Options();
+	static {
+		options.addOption(OptionFactory.create("i", "input", true, "Input file name"));
+		options.addOption(OptionFactory.create("o", "output", true, "Output file name"));
+		options.addOption(OptionFactory.create("h", "header", false, "Header output file name"));
+		options.addOption(OptionFactory.create("p", "data-providers", false, "DataProviders file"));
+		options.addOption(OptionFactory.create("s", "datasets", false, "Datasets file"));
+		options.addOption(OptionFactory.create("e", "skip-enrichments", false, "Skip enriched contextual entities", false));
+	}
 
-		if (args.length < 1) {
-			System.err.println("Please provide a full path to the input files");
+	public static void main(String[] args) throws FileNotFoundException, ParseException {
+
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(options, args);
+		} catch (ParseException exp) {
+			System.err.println("Parsing failed. Reason: " + exp.getMessage());
+			help();
 			System.exit(0);
 		}
-		if (args.length < 2) {
-			System.err.println("Please provide a full path to the output file");
-			System.exit(0);
-		}
 
-		String inputFileName = args[0];
+		String inputFileName = cmd.getOptionValue("i");
+		String outputFileName = cmd.getOptionValue("o");
+		String headerOutputFile = cmd.getOptionValue("h");
+		String dataProvidersFile = cmd.getOptionValue("data-providers");
+		String datasetsFile = cmd.getOptionValue("datasets");
+		boolean skipEnrichments = cmd.hasOption("skip-enrichments");
+
 		logger.log(Level.INFO, "Input file is {0}", inputFileName);
-
-		String outputFileName = args[1];
 		logger.log(Level.INFO, "Output file is {0}", outputFileName);
-
-		String headerOutputFile = args[2];
 		logger.log(Level.INFO, "Header output is {0}", headerOutputFile);
-
-		String dataProvidersFile = args[3];
 		logger.log(Level.INFO, "DataProviders file is {0}", dataProvidersFile);
-
-		String datasetsFile = args[4];
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
+		logger.log(Level.INFO, "Skip enrichments: {0}", skipEnrichments);
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
 		JavaSparkContext context = new JavaSparkContext(conf);
@@ -65,6 +82,7 @@ public class MultilingualSaturation {
 		calculator.enableMultilingualSaturationMeasurement(true);
 		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
 		calculator.setSaturationExtendedResult(true);
+		calculator.setCheckSkippableCollections(skipEnrichments);
 		calculator.configure();
 
 		logger.info("Running with the following calculators:");
@@ -101,5 +119,10 @@ public class MultilingualSaturation {
 		} catch (UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
+	}
+
+	private static void help() {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("java -cp [jar] de.gwdg.europeanaqa.spark.CLIArgs [options]", options);
 	}
 }
