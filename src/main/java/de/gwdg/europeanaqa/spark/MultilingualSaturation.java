@@ -44,29 +44,33 @@ public class MultilingualSaturation {
 
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
 
-		CommandLineParser parser = new DefaultParser();
-		CommandLine cmd = null;
-		try {
-			cmd = parser.parse(options, args);
-		} catch (ParseException exp) {
-			System.err.println("Parsing failed. Reason: " + exp.getMessage());
-			help();
+		// boolean skipEnrichments = cmd.hasOption("skip-enrichments");
+
+		if (args.length < 1) {
+			System.err.println("Please provide a full path to the input files");
+			System.exit(0);
+		}
+		if (args.length < 2) {
+			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
 
-		String inputFileName = cmd.getOptionValue("i");
-		String outputFileName = cmd.getOptionValue("o");
-		String headerOutputFile = cmd.getOptionValue("h");
-		String dataProvidersFile = cmd.getOptionValue("data-providers");
-		String datasetsFile = cmd.getOptionValue("datasets");
-		boolean skipEnrichments = cmd.hasOption("skip-enrichments");
-
+		String inputFileName = args[0];
 		logger.log(Level.INFO, "Input file is {0}", inputFileName);
+
+		String outputFileName = args[1];
 		logger.log(Level.INFO, "Output file is {0}", outputFileName);
+
+		String headerOutputFile = args[2];
 		logger.log(Level.INFO, "Header output is {0}", headerOutputFile);
+
+		String dataProvidersFile = args[3];
 		logger.log(Level.INFO, "DataProviders file is {0}", dataProvidersFile);
+
+		String datasetsFile = args[4];
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
-		logger.log(Level.INFO, "Skip enrichments: {0}", skipEnrichments);
+
+		boolean skipEnrichments = (args.length >= 5 && args[5].equals("skip-enrichments"));
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
 		JavaSparkContext context = new JavaSparkContext(conf);
