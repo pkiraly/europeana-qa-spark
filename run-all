@@ -9,9 +9,10 @@
 #   This will be the input of top level, and collection level aggregations
 
 OUTPUT=$1
-JAR_VERSION=0.4-SNAPSHOT
+SKIP_FLAG=$2
+JAR_VERSION=0.5-SNAPSHOT
 
-if [[ ("$#" -ne 1) || ("$OUTPUT" == "") ]]; then
+if [[ ("$#" -ne 1 && "$#" -ne 2) || ("$OUTPUT" == "") ]]; then
   echo "You should add an output file (such as resultXX.csv)!"
   exit 1
 fi
@@ -19,6 +20,10 @@ fi
 if [ -e $OUTPUT ]; then
   echo "WARNING! $OUTPUT exists, rename it to prevent overwriting the file!"
   exit 1
+fi
+
+if [[ ("$SKIP_FLAG" != "checkSkippableCollections") ]]; then
+  SKIP_FLAG=""
 fi
 
 echo "Run completeness count"
@@ -34,8 +39,8 @@ spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
   $JAR \
   hdfs://localhost:54310/europeana/*.json \
   hdfs://localhost:54310/result \
-  data-providers.txt \
-  datasets.txt
+  data-providers.txt datasets.txt \
+  $SKIP_FLAG
 
 echo Retrieve $OUTPUT
 hdfs dfs -getmerge /result $OUTPUT
