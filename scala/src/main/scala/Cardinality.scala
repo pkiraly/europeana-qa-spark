@@ -19,7 +19,7 @@ object Cardinality {
 
     val cardinality = data.flatMap(
       x => List(
-        "providedcho_about." + x(139),
+        "providedcho_rdf_about." + x(139),
         "proxy_rdf_about." + x(140),
         "proxy_dc_title." + x(141),
         "proxy_dcterms_alternative." + x(142),
