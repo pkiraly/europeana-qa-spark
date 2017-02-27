@@ -53,7 +53,7 @@ object Cardinality {
         "proxy_edm_userTag." + x(169),
         "proxy_ore_ProxyIn." + x(170),
         "proxy_ore_ProxyFor." + x(171),
-        "proxy_dc_conformsTo." + x(172),
+        "proxy_dcterms_conformsTo." + x(172),
         "proxy_dcterms_hasFormat." + x(173),
         "proxy_dcterms_hasVersion." + x(174),
         "proxy_dcterms_isFormatOf." + x(175),
