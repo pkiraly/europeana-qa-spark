@@ -49,7 +49,7 @@ object Saturation {
         ("proxy_edm_userTag", line(30).toDouble),
         ("proxy_ore_ProxyIn", line(31).toDouble),
         ("proxy_ore_ProxyFor", line(32).toDouble),
-        ("proxy_dc_conformsTo", line(33).toDouble),
+        ("proxy_dcterms_conformsTo", line(33).toDouble),
         ("proxy_dcterms_hasFormat", line(34).toDouble),
         ("proxy_dcterms_hasVersion", line(35).toDouble),
         ("proxy_dcterms_isFormatOf", line(36).toDouble),
