@@ -7,10 +7,10 @@ install: MAVEN_OPTS="-Xms512m -Xmx2g -XX:PermSize=256m" mvn clean install -Ptrav
 
 before_install:
   - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
-   # prevent OutOfMemoryError: unable to create new native thread
-   - ulimit -t 166384
-   # get the actually set values
-   - ulimit -a
+  # prevent OutOfMemoryError: unable to create new native thread
+  - ulimit -t 166384
+  # get the actually set values
+  - ulimit -a
 
 env:
   global:
