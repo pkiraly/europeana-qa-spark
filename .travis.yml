@@ -10,4 +10,4 @@ before_install:
 
 env:
   global:
-    JAVA_OPTS=-Xmx1g
+    MAVEN_OPTS=-Xmx1g
