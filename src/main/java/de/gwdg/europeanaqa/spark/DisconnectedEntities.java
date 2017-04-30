@@ -20,9 +20,9 @@ import org.apache.spark.api.java.function.Function;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class OrphanedEntities {
+public class DisconnectedEntities {
 
-	private static final Logger logger = Logger.getLogger(OrphanedEntities.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(DisconnectedEntities.class.getCanonicalName());
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
@@ -64,7 +64,7 @@ public class OrphanedEntities {
 		calculator.enableProblemCatalogMeasurement(false);
 		calculator.enableLanguageMeasurement(false);
 		calculator.enableMultilingualSaturationMeasurement(false);
-		calculator.enableOrphanedEntityMeasurement(true);
+		calculator.enableDisconnectedEntityMeasurement(true);
 		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
 		calculator.setSaturationExtendedResult(true);
 
