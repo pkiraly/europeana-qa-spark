@@ -63,7 +63,7 @@ public class MarcCompletenessCount {
 		JavaRDD<String> baseCountsRDD = inputFile.map(line -> 
 				baseCounts.call(
 					Arrays.asList(
-						functions.input_file_name().toString(),
+						functions.input_file_name().named().name(),
 						line)));
 		baseCountsRDD.saveAsTextFile(outputFileName);
 	}
