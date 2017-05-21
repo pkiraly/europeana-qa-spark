@@ -30,9 +30,10 @@ public class CalculatorFacadeFactory {
 		final CalculatorFacade facade = new CalculatorFacade();
 		// facade.abbreviate(true);
 		facade.setSchema(new MarcJsonSchema());
+		facade.enableFieldExtractor(true);
 		facade.enableCompletenessMeasurement(true);
 		facade.enableFieldCardinalityMeasurement(true);
-		facade.enableFieldExistenceMeasurement(true);
+		facade.enableFieldExistenceMeasurement(false);
 		facade.enableTfIdfMeasurement(false);
 		facade.enableProblemCatalogMeasurement(false);
 		facade.configure();
