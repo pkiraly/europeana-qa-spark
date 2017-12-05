@@ -52,7 +52,7 @@ public class MultilingualSaturation {
 		String datasetsFile = args[4];
 		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
 
-		boolean skipEnrichments = (args.length >= 5 && args[5].equals("skip-enrichments"));
+		boolean skipEnrichments = (args.length >= 6 && args[5].equals("skip-enrichments"));
 		logger.log(Level.INFO, "Skip enrichments is {0}", skipEnrichments);
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
