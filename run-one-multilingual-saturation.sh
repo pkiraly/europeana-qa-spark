@@ -8,12 +8,17 @@
 #   A .csv file with the same name as of the input .json file.
 
 INPUT=$1
-if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
+SKIP_ENRICHMENTS_FLAG=$2
+if [[ ("$#" -ne 1 && "$#" -ne 2) || ("$INPUT" == "") ]]; then
   echo "You should add an input file which should exist in HDFS /europeana directory (such as 00101.json)!"
   exit 1
 fi
 
-JAR_VERSION=0.4-SNAPSHOT
+if [[ ("$SKIP_ENRICHMENTS_FLAG" != "skip-enrichments" && "$SKIP_ENRICHMENTS_FLAG" != "e") ]]; then
+  SKIP_ENRICHMENTS_FLAG=""
+fi
+
+JAR_VERSION=0.5-SNAPSHOT
 HDFS=hdfs://localhost:54310
 INPUTPATH=$HDFS/europeana/$INPUT
 RESULT=$HDFS/result
@@ -37,13 +42,17 @@ fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 
+echo "spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation --master local[*] $JAR $INPUTPATH $RESULT $HDFS$HEADEROUTPUT data-providers.txt datasets.txt $SKIP_ENRICHMENTS_FLAG"
+
 spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation \
   --master local[*] \
   $JAR \
-  $INPUTPATH $RESULT \
+  $INPUTPATH \
+  $RESULT \
   $HDFS$HEADEROUTPUT \
   data-providers.txt \
-  datasets.txt
+  datasets.txt \
+  $SKIP_ENRICHMENTS_FLAG
 
 echo Retrieve $OUTPUT
 hdfs dfs -getmerge /result $OUTPUT

@@ -21,7 +21,7 @@ hdfs dfs -rm -r /join/$OUTPUTFILE
 
 spark-submit \
    --class Saturation \
-   --master local[*] \
+   --master local[6] \
    target/scala-2.10/europeana-qa_2.10-1.0.jar \
    hdfs://localhost:54310/join/ $INPUT $OUTPUTFILE
 
