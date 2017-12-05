@@ -3,7 +3,8 @@
 $file = '../scala/frequency.csv';
 $header = ['field', 'count', 'frequency'];
 $order = [
-  'edm_providedcho_about',
+  'providedcho_rdf_about',
+  'proxy_rdf_about',
   'proxy_dc_title', 'proxy_dcterms_alternative', 'proxy_dc_description', 'proxy_dc_creator',
   'proxy_dc_publisher', 'proxy_dc_contributor', 'proxy_dc_type', 'proxy_dc_identifier',
   'proxy_dc_language', 'proxy_dc_coverage', 'proxy_dcterms_temporal', 'proxy_dcterms_spatial',
@@ -11,7 +12,7 @@ $order = [
   'proxy_dcterms_extent', 'proxy_dcterms_medium', 'proxy_dcterms_provenance', 'proxy_dcterms_hasPart',
   'proxy_dcterms_isPartOf', 'proxy_dc_format', 'proxy_dc_source', 'proxy_dc_rights', 'proxy_dc_relation',
   'proxy_edm_isNextInSequence', 'proxy_edm_type', 'proxy_edm_europeanaProxy', 'proxy_edm_year',
-  'proxy_edm_userTag', 'proxy_ore_ProxyIn', 'proxy_ore_ProxyFor', 'proxy_dc_conformsTo',
+  'proxy_edm_userTag', 'proxy_ore_ProxyIn', 'proxy_ore_ProxyFor', 'proxy_dcterms_conformsTo',
   'proxy_dcterms_hasFormat', 'proxy_dcterms_hasVersion', 'proxy_dcterms_isFormatOf',
   'proxy_dcterms_isReferencedBy', 'proxy_dcterms_isReplacedBy', 'proxy_dcterms_isRequiredBy',
   'proxy_dcterms_isVersionOf', 'proxy_dcterms_references', 'proxy_dcterms_replaces',
@@ -19,13 +20,15 @@ $order = [
   'proxy_edm_hasMet', 'proxy_edm_hasType', 'proxy_edm_incorporates', 'proxy_edm_isDerivativeOf',
   'proxy_edm_isRelatedTo', 'proxy_edm_isRepresentationOf', 'proxy_edm_isSimilarTo',
   'proxy_edm_isSuccessorOf', 'proxy_edm_realizes', 'proxy_edm_wasPresentAt',
+  'aggregation_rdf_about',
   'aggregation_edm_rights', 'aggregation_edm_provider', 'aggregation_edm_dataProvider',
   'aggregation_edm_isShownAt', 'aggregation_edm_isShownBy', 'aggregation_edm_object',
   'aggregation_edm_hasView', 'aggregation_dc_rights', 'aggregation_edm_ugc', 'aggregation_edm_aggregatedCHO',
-  'aggregation_edm_intermediateProvider', 'aggregation_rdf_about',
+  'aggregation_edm_intermediateProvider',
+  'place_rdf_about',
   'place_wgs84_lat', 'place_wgs84_long', 'place_wgs84_alt', 'place_dcterms_isPartOf',
   'place_wgs84_pos_lat_long', 'place_dcterms_hasPart', 'place_owl_sameAs', 'place_skos_prefLabel',
-  'place_skos_altLabel', 'place_skos_note', 'place_rdf_about',
+  'place_skos_altLabel', 'place_skos_note',
   'agent_rdf_about', 'agent_edm_begin', 'agent_edm_end', 'agent_edm_hasMet', 'agent_edm_isRelatedTo',
   'agent_owl_sameAs', 'agent_foaf_name', 'agent_dc_date', 'agent_dc_identifier', 'agent_rdaGr2_dateOfBirth',
   'agent_rdaGr2_placeOfBirth', 'agent_rdaGr2_dateOfDeath', 'agent_rdaGr2_placeOfDeath',
@@ -50,12 +53,17 @@ array_walk($csv, function(&$a) use ($csv) {
 $fieldMap = [];
 foreach ($csv as $row) {
   $fieldMap[$row['field']] = $row;
+  if (!in_array($row['field'], $order)) {
+    echo 'missing field from $order: ', $row['field'], "\n";
+  }
 }
 
 $ordered = [];
 foreach ($order as $field) {
   if (isset($fieldMap[$field])) {
     $ordered[] = $fieldMap[$field];
+  } else {
+    echo 'missing field from frequency.csv: ', $field, "\n";
   }
 }
 
