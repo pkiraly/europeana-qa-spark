@@ -53,7 +53,7 @@ object Frequency {
         "aggregation_edm_hasView." + x(47)
       ))
       .map(x => (x, 1))
-      .reduceByKey(_ + _)
+      .reduceByKey((a, b) => a + b)
 
     val freqData = frequencies
       .map(x => (x._1.split("\\."), x._2))
