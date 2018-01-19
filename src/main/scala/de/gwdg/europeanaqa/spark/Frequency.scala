@@ -63,7 +63,7 @@ object Frequency {
       .map{ case(field, map) => (field, map.getOrElse("0", 0), map.getOrElse("1", 0)) }
       .map(x => (x._1, x._3, (x._3.toFloat / (x._2 + x._3))))
 
-    // "hdfs://localhost:54310/join/frequency.csv"
+    // val output = "hdfs://localhost:54310/join/frequency.csv"
     freqData.map(x => x._1 + "," + x._2 + "," + x._3).saveAsTextFile(args(1))
   }
 }
