@@ -1,27 +1,18 @@
 package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.api.calculator.EdmFieldExtractor;
-import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import de.gwdg.metadataqa.api.model.JsonPathCache;
 import de.gwdg.metadataqa.api.model.XmlFieldInstance;
 import de.gwdg.metadataqa.api.schema.EdmOaiPmhXmlSchema;
 import de.gwdg.metadataqa.api.schema.Schema;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
-import org.apache.commons.collections.iterators.ArrayListIterator;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
 
 import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -54,11 +45,10 @@ public class GraphExtractor {
 		logger.info("checkSkippableCollections: " + checkSkippableCollections);
 		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("CompletenessCount");
-
-		SparkSession session = SparkSession.builder().getOrCreate();
-
 		JavaSparkContext context = new JavaSparkContext(conf);
-		SQLContext sqlContext = new SQLContext(context);
+
+		// SparkSession session = SparkSession.builder().getOrCreate();
+		// SQLContext sqlContext = new SQLContext(context);
 
 		Schema schema = new EdmOaiPmhXmlSchema();
 		Map<String, String> extractableFields = new LinkedHashMap<>();
@@ -69,15 +59,14 @@ public class GraphExtractor {
 		extractableFields.put("timespan", "$.['edm:TimeSpan'][*]['@about']");
 		schema.setExtractableFields(extractableFields);
 
-		EdmFieldExtractor fieldExtractor = new EdmFieldExtractor(schema);
+		final EdmFieldExtractor fieldExtractor = new EdmFieldExtractor(schema);
 		fieldExtractor.abbreviate(false);
 
 		List<String> entities = Arrays.asList("agent", "concept", "place", "timespan");
 
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.createExtractorFacade();
+		// final EdmCalculatorFacade facade = CalculatorFacadeFactory.createExtractorFacade();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
-
 		JavaRDD<List<String>> idsRDD = inputFile
 			.flatMap(
 				jsonString -> {
