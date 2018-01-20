@@ -2,6 +2,7 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmFieldExtractor;
+import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
 import de.gwdg.metadataqa.api.model.JsonPathCache;
 import de.gwdg.metadataqa.api.model.XmlFieldInstance;
 import de.gwdg.metadataqa.api.schema.EdmOaiPmhXmlSchema;
@@ -59,22 +60,15 @@ public class GraphExtractor {
 		extractableFields.put("timespan", "$.['edm:TimeSpan'][*]['@about']");
 		schema.setExtractableFields(extractableFields);
 
-		final EdmFieldExtractor fieldExtractor = new EdmFieldExtractor(schema);
-		fieldExtractor.abbreviate(false);
-
+		final MultiFieldExtractor fieldExtractor = new MultiFieldExtractor(schema);
 		List<String> entities = Arrays.asList("agent", "concept", "place", "timespan");
-
-		// final EdmCalculatorFacade facade = CalculatorFacadeFactory.createExtractorFacade();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		JavaRDD<List<String>> idsRDD = inputFile
-			.flatMap(
-				jsonString -> {
-
+			.flatMap(jsonString -> {
 					List<List<String>> values = new ArrayList<>();
 					try {
 						JsonPathCache<? extends XmlFieldInstance> cache = new JsonPathCache<>(jsonString);
-
 						fieldExtractor.measure(cache);
 						Map<String, ? extends Object> map = fieldExtractor.getResultMap();
 						String recordId = (String) map.get("recordId");
@@ -83,7 +77,6 @@ public class GraphExtractor {
 								values.add(Arrays.asList(recordId, entity, item));
 							}
 						}
-
 					} catch (InvalidJsonException e) {
 						logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
 							inputFileName, jsonString, e.getLocalizedMessage()));
