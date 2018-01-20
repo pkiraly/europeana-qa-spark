@@ -71,7 +71,7 @@ public class GraphExtractor {
 						JsonPathCache<? extends XmlFieldInstance> cache = new JsonPathCache<>(jsonString);
 						fieldExtractor.measure(cache);
 						Map<String, ? extends Object> map = fieldExtractor.getResultMap();
-						String recordId = (String) map.get("recordId");
+						String recordId = ((List<String>) map.get("recordId")).get(0);
 						for (String entity : entities) {
 							for (String item : (List<String>) map.get(entity)) {
 								values.add(Arrays.asList(recordId, entity, item));
