@@ -99,6 +99,7 @@ public class GraphExtractor {
 		System.err.printf("Total: %d\n", total);
 		df.groupBy("type", "entityId")
 			.count()
+			.orderBy("type", "entityId")
 			.write().mode(SaveMode.Overwrite).csv(outputFileName);
 
 		/*
