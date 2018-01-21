@@ -73,9 +73,9 @@ public class GraphExtractor {
 		*/
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
-		JavaRDD<List<String>> idsRDD = inputFile
+		JavaRDD<Graph> idsRDD = inputFile
 			.flatMap(jsonString -> {
-					List<List<String>> values = new ArrayList<>();
+					List<Graph> values = new ArrayList<>();
 					try {
 						JsonPathCache<? extends XmlFieldInstance> cache = new JsonPathCache<>(jsonString);
 						fieldExtractor.measure(cache);
@@ -83,7 +83,7 @@ public class GraphExtractor {
 						String recordId = ((List<String>) map.get("recordId")).get(0);
 						for (String entity : entities) {
 							for (String item : (List<String>) map.get(entity)) {
-								values.add(Arrays.asList(recordId, entity, item));
+								values.add(new Graph(recordId, entity, item));
 							}
 						}
 					} catch (InvalidJsonException e) {
