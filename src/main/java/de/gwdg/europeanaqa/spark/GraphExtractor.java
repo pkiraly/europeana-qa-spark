@@ -38,12 +38,12 @@ public class GraphExtractor {
 			System.exit(0);
 		}
 		final String inputFileName = args[0];
-		final String outputFileName = args[1];
+		final String outputDirName = args[1];
 		final boolean checkSkippableCollections = (args.length >= 5 && args[4].equals("checkSkippableCollections"));
 
 		logger.info("arg length: " + args.length);
 		logger.info("Input file is " + inputFileName);
-		logger.info("Output file is " + outputFileName);
+		logger.info("Output file is " + outputDirName);
 		logger.info("checkSkippableCollections: " + checkSkippableCollections);
 		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("CompletenessCount");
@@ -96,11 +96,20 @@ public class GraphExtractor {
 
 		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph.class);
 		long total = df.count();
-		System.err.printf("Total: %d\n", total);
-		df.groupBy("type", "entityId")
+		context.parallelize(Arrays.asList(total)).saveAsTextFile(outputDirName + "/total");
+
+		Dataset<Row> typeEntityCount = df.groupBy("type", "entityId")
 			.count()
 			.orderBy("type", "entityId")
-			.write().mode(SaveMode.Overwrite).csv(outputFileName);
+			.cache();
+
+		typeEntityCount.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count");
+
+		typeEntityCount
+			.groupBy("type")
+			.count()
+			.orderBy("type")
+			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-count");
 
 		/*
 		StructType idTypeEntityTriplet = new StructType(
