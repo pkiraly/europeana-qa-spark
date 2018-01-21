@@ -97,7 +97,7 @@ public class GraphExtractor {
 
 		Dataset<Row> typeEntityCount = df.groupBy("type", "entityId")
 			.count()
-			.orderBy("type", (Seq<String>) col("count").desc())
+			.orderBy(df.col("type"), df.col("count").desc())
 			//.cache()
 			;
 
