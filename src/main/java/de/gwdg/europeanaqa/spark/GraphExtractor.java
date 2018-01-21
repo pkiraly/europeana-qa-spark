@@ -1,8 +1,8 @@
 package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import de.gwdg.europeanaqa.api.calculator.EdmFieldExtractor;
 import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
+import de.gwdg.europeanaqa.spark.bean.Graph;
 import de.gwdg.metadataqa.api.model.JsonPathCache;
 import de.gwdg.metadataqa.api.model.XmlFieldInstance;
 import de.gwdg.metadataqa.api.schema.EdmOaiPmhXmlSchema;
@@ -12,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.*;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -48,20 +49,28 @@ public class GraphExtractor {
 		SparkConf conf = new SparkConf().setAppName("CompletenessCount");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		// SparkSession session = SparkSession.builder().getOrCreate();
+		SparkSession spark = SparkSession.builder().getOrCreate();
+		SparkSession session = SparkSession.builder().getOrCreate();
 		// SQLContext sqlContext = new SQLContext(context);
 
-		Schema schema = new EdmOaiPmhXmlSchema();
+		Schema qaSchema = new EdmOaiPmhXmlSchema();
 		Map<String, String> extractableFields = new LinkedHashMap<>();
 		extractableFields.put("recordId", "$.identifier");
 		extractableFields.put("agent",    "$.['edm:Agent'][*]['@about']");
 		extractableFields.put("concept",  "$.['skos:Concept'][*]['@about']");
 		extractableFields.put("place",    "$.['edm:Place'][*]['@about']");
 		extractableFields.put("timespan", "$.['edm:TimeSpan'][*]['@about']");
-		schema.setExtractableFields(extractableFields);
+		qaSchema.setExtractableFields(extractableFields);
 
-		final MultiFieldExtractor fieldExtractor = new MultiFieldExtractor(schema);
+		final MultiFieldExtractor fieldExtractor = new MultiFieldExtractor(qaSchema);
 		List<String> entities = Arrays.asList("agent", "concept", "place", "timespan");
+
+		/*
+		Dataset<Row> ds = spark.read().text(inputFileName);
+		Dataset<Row> c = ds.flatMap(
+			(FlatMapFunction<String, String>) x -> Arrays.asList(x.split(" ")).iterator(), Encoders.STRING()
+		);
+		*/
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		JavaRDD<List<String>> idsRDD = inputFile
@@ -84,18 +93,30 @@ public class GraphExtractor {
 					return values.iterator();
 				}
 			);
+
+		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph.class);
+		long total = df.count();
+		System.err.printf("Total: %d\n", total);
+		df.groupBy("type", "entityId")
+			.count()
+			.write().mode(SaveMode.Overwrite).csv(outputFileName);
+
 		/*
-		List<StructField> fields = Arrays.asList(
-			DataTypes.createStructField("recordId", DataTypes.StringType, true),
-			DataTypes.createStructField("type", DataTypes.StringType, true),
-			DataTypes.createStructField("entityId", DataTypes.StringType, true)
+		StructType idTypeEntityTriplet = new StructType(
+			new StructField[]{
+				new StructField("recordId", DataTypes.StringType, true, Metadata.empty()),
+				new StructField("type", DataTypes.StringType, true, Metadata.empty()),
+				new StructField("entityId", DataTypes.StringType, true, Metadata.empty())
+			}
 		);
+		spark.createDataFra
+
 		StructType dfSchema = DataTypes.createStructType(fields);
 		DataFrame df = session.createDataFrame(idsRDD, dfSchema);
 		// DataFrame df = sqlContext.createDataFrame(idsRDD, dfSchema);
 		*/
 
-		idsRDD.saveAsTextFile(outputFileName);
+		// idsRDD.saveAsTextFile(outputFileName);
 	}
 
 	private static void help() {
