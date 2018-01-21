@@ -66,7 +66,7 @@ public class GraphExtractor {
 		List<List<String>> statistics = new ArrayList<>();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
-		statistics.add(Arrays.asList("proxy-nodes", String.valueOf(inputFile.count())));
+		// statistics.add(Arrays.asList("proxy-nodes", String.valueOf(inputFile.count())));
 		JavaRDD<Graph> idsRDD = inputFile
 			.flatMap(jsonString -> {
 					List<Graph> values = new ArrayList<>();
@@ -89,18 +89,19 @@ public class GraphExtractor {
 			);
 
 		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph.class);
-		statistics.add(Arrays.asList("entity-links", String.valueOf(df.count())));
-		context.parallelize(statistics).saveAsTextFile(outputDirName + "/statistics");
+		// statistics.add(Arrays.asList("entity-links", String.valueOf(df.count())));
+		// context.parallelize(statistics).saveAsTextFile(outputDirName + "/statistics");
 
 		Dataset<Row> typeEntityCount = df.groupBy("type", "entityId")
 			.count()
-			.orderBy("type", "entityId")
+			.orderBy("type", "count")
 			//.cache()
 			;
 
 		// output every individual entity IDs with count
-		// typeEntityCount.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count");
+		typeEntityCount.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count");
 
+		/*
 		typeEntityCount
 			.groupBy("type")
 			.count()
@@ -112,6 +113,7 @@ public class GraphExtractor {
 			.count()
 			.orderBy("type")
 			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/entity-links");
+		*/
 
 	}
 
