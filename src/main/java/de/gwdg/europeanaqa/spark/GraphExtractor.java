@@ -50,8 +50,6 @@ public class GraphExtractor {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		SparkSession spark = SparkSession.builder().getOrCreate();
-		SparkSession session = SparkSession.builder().getOrCreate();
-		// SQLContext sqlContext = new SQLContext(context);
 
 		Schema qaSchema = new EdmOaiPmhXmlSchema();
 		Map<String, String> extractableFields = new LinkedHashMap<>();
@@ -64,13 +62,6 @@ public class GraphExtractor {
 
 		final MultiFieldExtractor fieldExtractor = new MultiFieldExtractor(qaSchema);
 		List<String> entities = Arrays.asList("agent", "concept", "place", "timespan");
-
-		/*
-		Dataset<Row> ds = spark.read().text(inputFileName);
-		Dataset<Row> c = ds.flatMap(
-			(FlatMapFunction<String, String>) x -> Arrays.asList(x.split(" ")).iterator(), Encoders.STRING()
-		);
-		*/
 
 		List<List<String>> statistics = new ArrayList<>();
 
@@ -107,6 +98,7 @@ public class GraphExtractor {
 			//.cache()
 			;
 
+		// output every individual entity IDs with count
 		// typeEntityCount.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count");
 
 		typeEntityCount
@@ -121,22 +113,6 @@ public class GraphExtractor {
 			.orderBy("type")
 			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/entity-links");
 
-		/*
-		StructType idTypeEntityTriplet = new StructType(
-			new StructField[]{
-				new StructField("recordId", DataTypes.StringType, true, Metadata.empty()),
-				new StructField("type", DataTypes.StringType, true, Metadata.empty()),
-				new StructField("entityId", DataTypes.StringType, true, Metadata.empty())
-			}
-		);
-		spark.createDataFra
-
-		StructType dfSchema = DataTypes.createStructType(fields);
-		DataFrame df = session.createDataFrame(idsRDD, dfSchema);
-		// DataFrame df = sqlContext.createDataFrame(idsRDD, dfSchema);
-		*/
-
-		// idsRDD.saveAsTextFile(outputFileName);
 	}
 
 	private static void help() {
