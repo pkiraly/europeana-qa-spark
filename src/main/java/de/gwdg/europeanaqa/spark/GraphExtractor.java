@@ -72,7 +72,10 @@ public class GraphExtractor {
 		);
 		*/
 
+		List<String[]> statistics = new ArrayList<>();
+
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
+		statistics.add(new String[]{"proxy", String.valueOf(inputFile.count())});
 		JavaRDD<Graph> idsRDD = inputFile
 			.flatMap(jsonString -> {
 					List<Graph> values = new ArrayList<>();
@@ -95,8 +98,8 @@ public class GraphExtractor {
 			);
 
 		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph.class);
-		long total = df.count();
-		context.parallelize(Arrays.asList(total)).saveAsTextFile(outputDirName + "/total");
+		statistics.add(new String[]{"all-entities-links", String.valueOf(df.count())});
+		context.parallelize(statistics).saveAsTextFile(outputDirName + "/statistics");
 
 		Dataset<Row> typeEntityCount = df.groupBy("type", "entityId")
 			.count()
@@ -109,7 +112,13 @@ public class GraphExtractor {
 			.groupBy("type")
 			.count()
 			.orderBy("type")
-			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-count");
+			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/entity-nodes");
+
+		df
+			.groupBy("type")
+			.count()
+			.orderBy("type")
+			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-link-count");
 
 		/*
 		StructType idTypeEntityTriplet = new StructType(
