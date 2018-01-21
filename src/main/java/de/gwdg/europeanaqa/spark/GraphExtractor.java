@@ -95,14 +95,14 @@ public class GraphExtractor {
 		// statistics.add(Arrays.asList("entity-links", String.valueOf(df.count())));
 		// context.parallelize(statistics).saveAsTextFile(outputDirName + "/statistics");
 
-		Dataset<Row> typeEntityCount = df.groupBy("type", "entityId")
-			.count()
-			.orderBy(df.col("type"), df.col("count").desc())
+		Dataset<Row> counted = df.groupBy("type", "entityId")
+			.count();
+		Dataset<Row> ordered = counted.orderBy(col("type"), col("count").desc())
 			//.cache()
 			;
 
 		// output every individual entity IDs with count
-		typeEntityCount.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count");
+		ordered.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count");
 
 		/*
 		typeEntityCount
