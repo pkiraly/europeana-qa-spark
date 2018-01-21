@@ -13,6 +13,9 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.*;
+import scala.collection.Seq;
+
+import static org.apache.spark.sql.functions.*;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -94,7 +97,7 @@ public class GraphExtractor {
 
 		Dataset<Row> typeEntityCount = df.groupBy("type", "entityId")
 			.count()
-			.orderBy("type", "count")
+			.orderBy("type", (Seq<String>) col("count").desc())
 			//.cache()
 			;
 
