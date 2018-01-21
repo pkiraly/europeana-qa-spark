@@ -118,7 +118,7 @@ public class GraphExtractor {
 			.groupBy("type")
 			.count()
 			.orderBy("type")
-			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-link-count");
+			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/entity-links");
 
 		/*
 		StructType idTypeEntityTriplet = new StructType(
