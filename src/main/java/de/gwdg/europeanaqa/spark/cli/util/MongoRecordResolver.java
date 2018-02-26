@@ -254,16 +254,16 @@ public class MongoRecordResolver implements Serializable {
 
 	private Document resolveReference(DBRef ref, boolean withFieldRename) {
 		String collection = ref.getCollectionName();
+		if (!auxiliaryTables.containsKey(collection)) {
+			logger.info("unregistered collection: " + collection);
+			return null;
+		}
+		JavaMongoRDD<Document> inputRdd = auxiliaryTables.get(collection);
+		Document query = Document.parse(String.format("{$match: {_id: \"%s\"}}", ref.getId()));
 
-		JavaMongoRDD<Document> aggregatedRdd = auxiliaryTables.get(collection).withPipeline(
-			singletonList(
-				Document.parse("{$match: {\"_id\" : \"" + ref.getId() + "\"}}")));
+		JavaMongoRDD<Document> aggregatedRdd = inputRdd.withPipeline(singletonList(query));
 		Document doc = aggregatedRdd.first();
-		/*
-		Document doc = mongoWrapper.getMongoDb()
-			.getCollection(collection)
-			.find(Filters.eq("_id", ref.getId())).first();
-		*/
+
 		if (doc != null) {
 			doc.remove("_id");
 			doc.remove("className");
