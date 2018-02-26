@@ -72,6 +72,13 @@
 			<artifactId>spark-sql_2.11</artifactId> 
 			<version>2.2.1</version>
 		</dependency>
+		<!-- Mongo-Spark connector -->
+		<dependency>
+			<groupId>org.mongodb.spark</groupId>
+			<artifactId>mongo-spark-connector_2.11</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+		<!-- Casandra driver -->
 		<dependency>
 			<groupId>com.datastax.cassandra</groupId>
 			<artifactId>cassandra-driver-core</artifactId>
