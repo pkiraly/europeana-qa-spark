@@ -254,9 +254,10 @@ public class MongoRecordResolver implements Serializable {
 
 	private Document resolveReference(DBRef ref, boolean withFieldRename) {
 		String collection = ref.getCollectionName();
+
 		JavaMongoRDD<Document> aggregatedRdd = auxiliaryTables.get(collection).withPipeline(
 			singletonList(
-				Document.parse("{ $match: { \"_id\" : " + ref.getId() +" }}")));
+				Document.parse("{$match: {\"_id\" : \"" + ref.getId() + "\"}}")));
 		Document doc = aggregatedRdd.first();
 		/*
 		Document doc = mongoWrapper.getMongoDb()
