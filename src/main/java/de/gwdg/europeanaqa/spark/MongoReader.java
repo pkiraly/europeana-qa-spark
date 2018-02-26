@@ -19,6 +19,8 @@ import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class MongoReader  implements Serializable {
@@ -27,20 +29,23 @@ public class MongoReader  implements Serializable {
 
 	public static void main(final String[] args) throws InterruptedException {
 
-		SparkSession spark = SparkSession.builder()
-			.master("local[*]")
-			.appName("MongoSparkConnectorIntro")
-			.config("spark.mongodb.input.uri", "mongodb://127.0.0.1/europeana_production_publish_1.record")
-			.config("spark.mongodb.input.partitioner", "MongoSplitVectorPartitioner")
-			.config("spark.mongodb.input.partitionerOptions.partitionKey", "_id")
-			.config("spark.mongodb.input.partitionerOptions.partitionSizeMB", "64")
-			.getOrCreate();
+		SparkSession spark = createSparkSession("record");
+		Map<String, JavaMongoRDD<Document>> auxiliaryTables = new HashMap<>();
+		String[] tableNames = new String[]{
+			"agents", "concepts", "timespans", "places", "licenses",
+			"aggregations", "providedCHOs", "proxies", "europeanaAggregation",
+			"webResources"
+		};
+		for (String name : tableNames) {
+			SparkSession session = createSparkSession(name);
+			JavaSparkContext context = new JavaSparkContext(spark.sparkContext());
+			auxiliaryTables.put(name, MongoSpark.load(context));
+		}
 
 		// Create a JavaSparkContext using the SparkSession's SparkContext object
 		JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
 
-		MongoRecordResolver resolver = new MongoRecordResolver(
-			"127.0.0.1", 27017, "europeana_production_publish_1");
+		MongoRecordResolver resolver = new MongoRecordResolver(auxiliaryTables);
 
 		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
@@ -66,5 +71,20 @@ public class MongoReader  implements Serializable {
 		baseCountsRDD.saveAsTextFile(outputFileName);
 
 		jsc.close();
+	}
+
+	private static SparkSession createSparkSession(String collection) {
+		return SparkSession
+			.builder()
+			.master("local[*]")
+			.appName("MongoSparkConnectorIntro")
+			.config("spark.mongodb.input.uri", "mongodb://127.0.0.1/")
+			.config("spark.mongodb.input.database", "europeana_production_publish_1")
+			.config("spark.mongodb.input.collection", collection)
+			.config("spark.mongodb.input.readPreference.name", "primaryPreferred")
+			.config("spark.mongodb.input.partitioner", "MongoSplitVectorPartitioner")
+			.config("spark.mongodb.input.partitionerOptions.partitionKey", "_id")
+			.config("spark.mongodb.input.partitionerOptions.partitionSizeMB", "64")
+			.getOrCreate();
 	}
 }
