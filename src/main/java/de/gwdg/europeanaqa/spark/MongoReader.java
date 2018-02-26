@@ -3,6 +3,7 @@ package de.gwdg.europeanaqa.spark;
 import com.mongodb.MongoClient;
 import com.mongodb.spark.MongoSpark;
 import com.mongodb.spark.rdd.api.java.JavaMongoRDD;
+import de.gwdg.europeanaqa.spark.cli.util.MongoRecordResolver;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.bson.Document;
@@ -29,6 +30,8 @@ public class MongoReader {
 		// Create a JavaSparkContext using the SparkSession's SparkContext object
 		JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
 
+		MongoRecordResolver resolver = new MongoRecordResolver("127.0.0.1", 27017, "europeana_production_publish_1");
+
 		// More application logic would go here...
 		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
@@ -38,6 +41,10 @@ public class MongoReader {
 
 		// System.out.println(rdd.count());
 		System.out.println(rdd.first().toJson(writerSettings, codec));
+
+		Document record = rdd.first();
+		resolver.resolve(record);
+		System.out.println(record.toJson(writerSettings, codec));
 
 		jsc.close();
 	}
