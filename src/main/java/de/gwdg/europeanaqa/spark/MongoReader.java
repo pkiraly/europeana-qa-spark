@@ -52,13 +52,14 @@ public class MongoReader  implements Serializable {
 			MongoClient.getDefaultCodecRegistry());
 		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 
-		JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
+		// JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
 		final CalculatorFacade facade = CalculatorFacadeFactory.createMarcCalculator();
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			resolver.resolve(record);
-			String jsonString = record.toJson(writerSettings, codec);
+			String jsonString = record.toJson();
+			// String jsonString = record.toJson(writerSettings, codec);
 			try {
 				return facade.measure(jsonString);
 			} catch (InvalidJsonException e) {
