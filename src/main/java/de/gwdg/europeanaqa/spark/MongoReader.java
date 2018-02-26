@@ -18,9 +18,10 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
 
+import java.io.Serializable;
 import java.util.logging.Logger;
 
-public class MongoReader {
+public class MongoReader  implements Serializable {
 
 	static final Logger logger = Logger.getLogger(MongoReader.class.getCanonicalName());
 
@@ -38,10 +39,12 @@ public class MongoReader {
 		// Create a JavaSparkContext using the SparkSession's SparkContext object
 		JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
 
-		MongoRecordResolver resolver = new MongoRecordResolver("127.0.0.1", 27017, "europeana_production_publish_1");
+		MongoRecordResolver resolver = new MongoRecordResolver(
+			"127.0.0.1", 27017, "europeana_production_publish_1");
 
 		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
-		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
+			MongoClient.getDefaultCodecRegistry());
 		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 
 		JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
