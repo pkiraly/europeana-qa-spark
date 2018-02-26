@@ -15,7 +15,7 @@ public class MongoRecordResolver implements Serializable {
 
 	static final Logger logger = Logger.getLogger(MongoRecordResolver.class.getCanonicalName());
 
-	MongoDatabase mongoDb;
+	MongoWrapper mongoWrapper;
 	boolean withFieldRename = false;
 
 	private final static Map<String, String> entities = new LinkedHashMap<String, String>() {
@@ -209,7 +209,7 @@ public class MongoRecordResolver implements Serializable {
 
 	public MongoRecordResolver(String mongoHost, int mongoPort, String mongoDatabase) {
 		MongoClient mongoClient = new MongoClient(mongoHost, mongoPort);
-		mongoDb = mongoClient.getDatabase(mongoDatabase); //
+		mongoWrapper = new MongoWrapper(mongoClient.getDatabase(mongoDatabase)); //
 	}
 
 	public void resolve(Document record) {
@@ -256,7 +256,9 @@ public class MongoRecordResolver implements Serializable {
 
 	private Document resolveReference(DBRef ref, boolean withFieldRename) {
 		String collection = ref.getCollectionName();
-		Document doc = mongoDb.getCollection(collection).find(Filters.eq("_id", ref.getId())).first();
+		Document doc = mongoWrapper.getMongoDb()
+			.getCollection(collection)
+			.find(Filters.eq("_id", ref.getId())).first();
 		if (doc != null) {
 			doc.remove("_id");
 			doc.remove("className");
