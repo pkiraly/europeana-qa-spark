@@ -6,11 +6,12 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MongoRecordResolver {
+public class MongoRecordResolver implements Serializable {
 
 	static final Logger logger = Logger.getLogger(MongoRecordResolver.class.getCanonicalName());
 
