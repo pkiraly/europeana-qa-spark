@@ -36,7 +36,7 @@ public class MongoReader {
 
 		JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
-		System.out.println(rdd.count());
+		// System.out.println(rdd.count());
 		System.out.println(rdd.first().toJson(writerSettings, codec));
 
 		jsc.close();
