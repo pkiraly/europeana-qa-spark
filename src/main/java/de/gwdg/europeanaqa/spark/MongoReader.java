@@ -15,8 +15,6 @@ import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.DocumentCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.json.JsonMode;
-import org.bson.json.JsonWriterSettings;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -32,9 +30,9 @@ public class MongoReader  implements Serializable {
 		SparkSession spark = createSparkSession("record");
 		Map<String, JavaMongoRDD<Document>> auxiliaryTables = new HashMap<>();
 		String[] tableNames = new String[]{
-			"agents", "concepts", "timespans", "places", "licenses",
-			"aggregations", "providedCHOs", "proxies", "europeanaAggregation",
-			"webResources"
+			"Agent", "Concept", "Timespan", "Place", "License",
+			"Aggregation", "ProvidedCHO", "proxies", "EuropeanaAggregation",
+			"webResources", "PhysicalThing"
 		};
 		for (String name : tableNames) {
 			SparkSession session = createSparkSession(name);
