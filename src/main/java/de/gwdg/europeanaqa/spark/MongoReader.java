@@ -1,9 +1,13 @@
 package de.gwdg.europeanaqa.spark;
 
+import com.jayway.jsonpath.InvalidJsonException;
 import com.mongodb.MongoClient;
 import com.mongodb.spark.MongoSpark;
 import com.mongodb.spark.rdd.api.java.JavaMongoRDD;
+import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import de.gwdg.europeanaqa.spark.cli.util.MongoRecordResolver;
+import de.gwdg.metadataqa.api.calculator.CalculatorFacade;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 import org.bson.Document;
@@ -14,12 +18,16 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
 
+import java.util.logging.Logger;
+
 public class MongoReader {
+
+	static final Logger logger = Logger.getLogger(MongoReader.class.getCanonicalName());
 
 	public static void main(final String[] args) throws InterruptedException {
 
 		SparkSession spark = SparkSession.builder()
-			.master("local")
+			.master("local[*]")
 			.appName("MongoSparkConnectorIntro")
 			.config("spark.mongodb.input.uri", "mongodb://127.0.0.1/europeana_production_publish_1.record")
 			.config("spark.mongodb.input.partitioner", "MongoSplitVectorPartitioner")
@@ -32,19 +40,27 @@ public class MongoReader {
 
 		MongoRecordResolver resolver = new MongoRecordResolver("127.0.0.1", 27017, "europeana_production_publish_1");
 
-		// More application logic would go here...
 		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry());
 		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 
 		JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
-		// System.out.println(rdd.count());
-		System.out.println(rdd.first().toJson(writerSettings, codec));
+		final CalculatorFacade facade = CalculatorFacadeFactory.createMarcCalculator();
 
-		Document record = rdd.first();
-		resolver.resolve(record);
-		System.out.println(record.toJson(writerSettings, codec));
+		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
+			resolver.resolve(record);
+			String jsonString = record.toJson(writerSettings, codec);
+			try {
+				return facade.measure(jsonString);
+			} catch (InvalidJsonException e) {
+				logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
+					jsonString, e.getLocalizedMessage()));
+			}
+			return "";
+		});
+		String outputFileName = "hdfs://localhost:54310/mongo-result";
+		baseCountsRDD.saveAsTextFile(outputFileName);
 
 		jsc.close();
 	}

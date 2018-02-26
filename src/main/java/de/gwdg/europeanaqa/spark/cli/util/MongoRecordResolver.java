@@ -212,6 +212,11 @@ public class MongoRecordResolver {
 	}
 
 	public void resolve(Document record) {
+		record.remove("_id");
+		record.remove("className");
+		record.put("identifier", record.get("about"));
+		record.remove("about");
+		record.put("sets", record.get("europeanaCollectionName"));
 		for (String entity : entities.keySet()) {
 			if (record.containsKey(entity)) {
 				Object value = record.get(entity);
