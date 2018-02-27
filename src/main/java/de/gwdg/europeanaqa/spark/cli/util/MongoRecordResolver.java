@@ -249,7 +249,6 @@ public class MongoRecordResolver implements Serializable {
 				}
 			}
 		}
-
 	}
 
 	private Document resolveReference(DBRef ref, boolean withFieldRename) {

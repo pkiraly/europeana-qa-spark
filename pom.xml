@@ -101,6 +101,12 @@
 			<artifactId>maven-scala-plugin</artifactId>
 			<version>2.15.2</version>
 		</dependency>
+		<!-- Jersey REST API client -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>2.26</version>
+		</dependency>
 	</dependencies>
 
 	<build>
