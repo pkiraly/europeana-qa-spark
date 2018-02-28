@@ -37,23 +37,20 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 	}
 
 	// HTTP GET request
-	private String getRecord(String recordId) throws Exception {
+	public String getRecord(String recordId) throws Exception {
 
 		String url = String.format(REST_URI_WITH_PARAMS, recordId);
 
 		HttpClient client = new DefaultHttpClient();
 		HttpGet request = new HttpGet(url);
-
-		// add request header
 		request.addHeader("User-Agent", USER_AGENT);
 
 		HttpResponse response = client.execute(request);
-
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
+		//System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
 
 		BufferedReader rd = new BufferedReader(
-			new InputStreamReader(response.getEntity().getContent()));
+			new InputStreamReader(
+				response.getEntity().getContent()));
 
 		StringBuffer result = new StringBuffer();
 		String line = "";
