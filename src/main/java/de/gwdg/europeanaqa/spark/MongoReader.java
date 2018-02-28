@@ -4,7 +4,9 @@ import com.jayway.jsonpath.InvalidJsonException;
 import com.mongodb.MongoClient;
 import com.mongodb.spark.MongoSpark;
 import com.mongodb.spark.rdd.api.java.JavaMongoRDD;
+import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
+import de.gwdg.europeanaqa.spark.cli.util.EuropeanaRecordReaderAPIClient;
 import de.gwdg.europeanaqa.spark.cli.util.MongoRecordResolver;
 import de.gwdg.metadataqa.api.calculator.CalculatorFacade;
 import org.apache.spark.api.java.JavaRDD;
@@ -28,6 +30,7 @@ public class MongoReader  implements Serializable {
 	public static void main(final String[] args) throws InterruptedException {
 
 		SparkSession spark = createSparkSession("record");
+		/*
 		Map<String, JavaMongoRDD<Document>> auxiliaryTables = new HashMap<>();
 		String[] tableNames = new String[]{
 			"Agent", "Concept", "Timespan", "Place", "License",
@@ -39,11 +42,12 @@ public class MongoReader  implements Serializable {
 			JavaSparkContext context = new JavaSparkContext(spark.sparkContext());
 			auxiliaryTables.put(name, MongoSpark.load(context));
 		}
+		*/
 
 		// Create a JavaSparkContext using the SparkSession's SparkContext object
 		JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
 
-		MongoRecordResolver resolver = new MongoRecordResolver(auxiliaryTables);
+		// MongoRecordResolver resolver = new MongoRecordResolver(auxiliaryTables);
 
 		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
@@ -52,14 +56,20 @@ public class MongoReader  implements Serializable {
 
 		// JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
-		final CalculatorFacade facade = CalculatorFacadeFactory.createMarcCalculator();
+		boolean checkSkippableCollections = false;
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(checkSkippableCollections);
+
+		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient();
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
-			resolver.resolve(record);
-			String jsonString = record.toJson();
+			String id = record.get("about", String.class);
+			System.err.println(id);
+			String jsonString = client.getRecord(id);
+			// resolver.resolve(record);
+			// String jsonString = record.toJson();
 			// String jsonString = record.toJson(writerSettings, codec);
 			try {
-				return facade.measure(jsonString);
+				// return facade.measure(jsonString);
 			} catch (InvalidJsonException e) {
 				logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
 					jsonString, e.getLocalizedMessage()));

@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.gwdg.metadataqa</groupId>
 	<artifactId>europeana-qa-spark</artifactId>
@@ -7,7 +7,7 @@
 	<version>0.6-SNAPSHOT</version>
 	<name>Europeana Metadata Quality Assurance Spark interface</name>
 	<description>
-		Spark and command line interfaces for the Europeana Metadata Quality 
+		Spark and command line interfaces for the Europeana Metadata Quality
 		Assurance Framework.
 	</description>
 	<developers>
@@ -53,6 +53,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<scala.version>2.12.4</scala.version>
 		<hadoop.version>2.7.1</hadoop.version>
+		<jersey.version>2.25.1</jersey.version>
 	</properties>
 
 	<dependencies>
@@ -63,13 +64,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.spark</groupId> 
-			<artifactId>spark-core_2.11</artifactId> 
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-core_2.11</artifactId>
 			<version>2.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.spark</groupId> 
-			<artifactId>spark-sql_2.11</artifactId> 
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-sql_2.11</artifactId>
 			<version>2.2.1</version>
 		</dependency>
 		<!-- Mongo-Spark connector -->
@@ -105,7 +106,17 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>2.26</version>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>${jersey.version}</version>
 		</dependency>
 	</dependencies>
 
