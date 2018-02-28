@@ -15,10 +15,9 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 
 	private static final String REST_URI = "http://144.76.218.178:8080/europeana-qa/record/%s.json";
 	private static final String REST_URI_WITH_PARAMS = "http://144.76.218.178:8080/europeana-qa/record/%s.json?dataSource=mongo";
-	private Client client = ClientBuilder.newClient();
+	// private Client client = ClientBuilder.newClient();
 
 	private final String USER_AGENT = "Custom Java application";
-
 
 	public static void main(String[] args) throws Exception {
 		EuropeanaRecordReaderAPIClient http = new EuropeanaRecordReaderAPIClient();
@@ -26,6 +25,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		http.getRecord("91001/006ED5FBDCEF5B1847C443CA4829A65ABE55A917");
 	}
 
+	/*
 	public String getRecordWithJersey(String recordId) {
 		String json = client
 			.target(String.format(REST_URI, recordId))
@@ -35,6 +35,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 
 		return json;
 	}
+	*/
 
 	// HTTP GET request
 	public String getRecord(String recordId) throws Exception {
