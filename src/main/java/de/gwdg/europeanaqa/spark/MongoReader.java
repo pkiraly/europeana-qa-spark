@@ -49,7 +49,7 @@ public class MongoReader  implements Serializable {
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			String id = record.get("about", String.class);
 			// System.err.println(id);
-			String jsonString = client.getRecord(id);
+			String jsonString = client.getRecord2(id);
 			// System.err.println(jsonString);
 			// resolver.resolve(record);
 			// String jsonString = record.toJson();
@@ -72,7 +72,7 @@ public class MongoReader  implements Serializable {
 	private static SparkSession createSparkSession(String collection) {
 		return SparkSession
 			.builder()
-			.master("local[*]")
+			// .master("local[*]")
 			.appName("MongoSparkConnectorIntro")
 			.config("spark.mongodb.input.uri", "mongodb://127.0.0.1/")
 			.config("spark.mongodb.input.database", "europeana_production_publish_1")
