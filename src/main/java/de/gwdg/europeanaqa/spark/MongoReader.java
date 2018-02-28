@@ -44,7 +44,7 @@ public class MongoReader  implements Serializable {
 		boolean checkSkippableCollections = false;
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(checkSkippableCollections);
 
-		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("127.0.0.1:8080");
+		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("localhost:8080");
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			String id = record.get("about", String.class);
