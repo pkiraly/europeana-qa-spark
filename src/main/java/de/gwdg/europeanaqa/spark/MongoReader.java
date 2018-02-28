@@ -30,24 +30,9 @@ public class MongoReader  implements Serializable {
 	public static void main(final String[] args) throws InterruptedException {
 
 		SparkSession spark = createSparkSession("record");
-		/*
-		Map<String, JavaMongoRDD<Document>> auxiliaryTables = new HashMap<>();
-		String[] tableNames = new String[]{
-			"Agent", "Concept", "Timespan", "Place", "License",
-			"Aggregation", "ProvidedCHO", "proxies", "EuropeanaAggregation",
-			"webResources", "PhysicalThing"
-		};
-		for (String name : tableNames) {
-			SparkSession session = createSparkSession(name);
-			JavaSparkContext context = new JavaSparkContext(spark.sparkContext());
-			auxiliaryTables.put(name, MongoSpark.load(context));
-		}
-		*/
 
 		// Create a JavaSparkContext using the SparkSession's SparkContext object
 		JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
-
-		// MongoRecordResolver resolver = new MongoRecordResolver(auxiliaryTables);
 
 		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
@@ -59,12 +44,13 @@ public class MongoReader  implements Serializable {
 		boolean checkSkippableCollections = false;
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(checkSkippableCollections);
 
-		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient();
+		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("144.76.218.178:8080");
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			String id = record.get("about", String.class);
 			System.err.println(id);
 			String jsonString = client.getRecord(id);
+			System.err.println(jsonString);
 			// resolver.resolve(record);
 			// String jsonString = record.toJson();
 			// String jsonString = record.toJson(writerSettings, codec);
