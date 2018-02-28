@@ -7,12 +7,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class EuropeanaRecordReaderAPIClient implements Serializable {
 
-	private static final String REST_URI = "http://%s/europeana-qa/record/%s.json?dataSource=mongo";
+	private static final String REST_URI = "http://%s/europeana-qa/record/%s.json?dataSource=mongo&batchMode=true";
 
 	private final String USER_AGENT = "Custom Java application";
 	private String host;
