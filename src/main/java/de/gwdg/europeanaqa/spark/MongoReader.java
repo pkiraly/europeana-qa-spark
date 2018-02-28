@@ -48,14 +48,15 @@ public class MongoReader  implements Serializable {
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			String id = record.get("about", String.class);
-			System.err.println(id);
+			// System.err.println(id);
 			String jsonString = client.getRecord(id);
-			System.err.println(jsonString);
+			// System.err.println(jsonString);
 			// resolver.resolve(record);
 			// String jsonString = record.toJson();
 			// String jsonString = record.toJson(writerSettings, codec);
 			try {
 				// return facade.measure(jsonString);
+				return id;
 			} catch (InvalidJsonException e) {
 				logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
 					jsonString, e.getLocalizedMessage()));
