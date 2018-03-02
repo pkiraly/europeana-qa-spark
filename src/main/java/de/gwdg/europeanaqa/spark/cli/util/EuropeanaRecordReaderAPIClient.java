@@ -96,7 +96,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 	}
 
 	// HTTP POST request
-	private String resolveFragmentWithPost(String jsonFragment) throws Exception {
+	public String resolveFragmentWithPost(String jsonFragment) throws Exception {
 		URL url = new URL(getFragmentUrl());
 		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
 
