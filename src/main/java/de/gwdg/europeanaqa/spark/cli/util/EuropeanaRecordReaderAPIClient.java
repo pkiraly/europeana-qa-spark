@@ -5,9 +5,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class EuropeanaRecordReaderAPIClient implements Serializable {
@@ -18,9 +18,15 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 
 	private final String USER_AGENT = "Custom Java application";
 	private String host;
+	private URL fragmentPostUrl;
 
 	public EuropeanaRecordReaderAPIClient(String host) {
 		this.host = host;
+		try {
+			fragmentPostUrl = new URL(getFragmentUrl());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getRecord(String recordId) throws Exception {
@@ -34,17 +40,10 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		HttpResponse response = client.execute(request);
 		//System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
 
-		BufferedReader rd = new BufferedReader(
-			new InputStreamReader(
-				response.getEntity().getContent()));
+		InputStream in = new BufferedInputStream(response.getEntity().getContent());
+		String record = readStream(in);
 
-		StringBuffer result = new StringBuffer();
-		String line = "";
-		while ((line = rd.readLine()) != null) {
-			result.append(line);
-		}
-
-		return result.toString();
+		return record;
 	}
 
 	private String getRecordUrl(String recordId) {
@@ -97,8 +96,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 
 	// HTTP POST request
 	public String resolveFragmentWithPost(String jsonFragment) throws Exception {
-		URL url = new URL(getFragmentUrl());
-		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+		HttpURLConnection urlConnection = (HttpURLConnection) fragmentPostUrl.openConnection();
 
 		//add reuqest header
 		urlConnection.setRequestMethod("POST");
@@ -134,6 +132,5 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		}
 
 		return result.toString();
-
 	}
 }
