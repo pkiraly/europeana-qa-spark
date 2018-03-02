@@ -50,7 +50,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 	}
 
 	private String getFragmentUrl(String jsonFragment) {
-		return String.format(RESOLVE_FRAGMENT_URI, jsonFragment);
+		return String.format(RESOLVE_FRAGMENT_URI, host, jsonFragment);
 	}
 
 	public String getRecord2(String recordId) {
