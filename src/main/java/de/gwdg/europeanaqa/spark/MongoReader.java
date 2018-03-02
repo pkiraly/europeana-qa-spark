@@ -4,6 +4,7 @@ import com.jayway.jsonpath.InvalidJsonException;
 import com.mongodb.MongoClient;
 import com.mongodb.spark.MongoSpark;
 import com.mongodb.spark.rdd.api.java.JavaMongoRDD;
+import com.mongodb.util.JSON;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import de.gwdg.europeanaqa.spark.cli.util.EuropeanaRecordReaderAPIClient;
@@ -47,12 +48,9 @@ public class MongoReader  implements Serializable {
 		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("144.76.218.178:8080");
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
-			System.err.println(record);
-			System.err.println(record.toString());
-			System.err.println(com.mongodb.util.JSON.serialize(record));
+			String jsonFragment = JSON.serialize(record);
 			String id = record.get("about", String.class);
-			// System.err.println(id);
-			String jsonString = client.getRecord2(id);
+			String jsonString = client.resolveFragment(jsonFragment);
 			// System.err.println(jsonString);
 			// resolver.resolve(record);
 			// String jsonString = record.toJson();

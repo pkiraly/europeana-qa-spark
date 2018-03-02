@@ -11,7 +11,8 @@ import java.net.URL;
 
 public class EuropeanaRecordReaderAPIClient implements Serializable {
 
-	private static final String REST_URI = "http://%s/europeana-qa/record/%s.json?dataSource=mongo&batchMode=true";
+	private static final String GET_RECORD_URI = "http://%s/europeana-qa/record/%s.json?dataSource=mongo&batchMode=true";
+	private static final String RESOLVE_FRAGMENT_URI = "http://%s/europeana-qa/resolve-json-fragment?batchMode=true&jsonFragment=%s";
 
 	private final String USER_AGENT = "Custom Java application";
 	private String host;
@@ -22,7 +23,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 
 	public String getRecord(String recordId) throws Exception {
 
-		String url = getUrl(recordId);
+		String url = getRecordUrl(recordId);
 
 		HttpClient client = new DefaultHttpClient();
 		HttpGet request = new HttpGet(url);
@@ -44,8 +45,12 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		return result.toString();
 	}
 
-	private String getUrl(String recordId) {
-		return String.format(REST_URI, host, recordId);
+	private String getRecordUrl(String recordId) {
+		return String.format(GET_RECORD_URI, host, recordId);
+	}
+
+	private String getFragmentUrl(String jsonFragment) {
+		return String.format(RESOLVE_FRAGMENT_URI, jsonFragment);
 	}
 
 	public String getRecord2(String recordId) {
@@ -53,7 +58,25 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		HttpURLConnection urlConnection = null;
 		String record = null;
 		try {
-			url = new URL(getUrl(recordId));
+			url = new URL(getRecordUrl(recordId));
+			urlConnection = (HttpURLConnection) url.openConnection();
+			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+			record = readStream(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (urlConnection != null)
+				urlConnection.disconnect();
+		}
+		return record;
+	}
+
+	public String resolveFragment(String jsonFragment) {
+		URL url = null;
+		HttpURLConnection urlConnection = null;
+		String record = null;
+		try {
+			url = new URL(getFragmentUrl(jsonFragment));
 			urlConnection = (HttpURLConnection) url.openConnection();
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			record = readStream(in);
