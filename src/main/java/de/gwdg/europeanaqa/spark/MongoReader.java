@@ -19,6 +19,7 @@ import org.bson.codecs.DocumentCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +59,11 @@ public class MongoReader  implements Serializable {
 				String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
 				// return facade.measure(jsonString);
 				return id;
+			} catch (IOException e) {
+				logger.severe(
+					String.format(
+						"Resolving error. Id: %s, fragment in %s: %s. Error message: %s.",
+						id, jsonFragment, e.getLocalizedMessage()));
 			} catch (InvalidJsonException e) {
 				String jsonString = "";
 				logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
