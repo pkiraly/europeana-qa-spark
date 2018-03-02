@@ -14,7 +14,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 
 	private static final String GET_RECORD_URI = "http://%s/europeana-qa/record/%s.json?dataSource=mongo&batchMode=true";
 	private static final String RESOLVE_FRAGMENT_URI = "http://%s/europeana-qa/resolve-json-fragment";
-	private static final String RESOLVE_FRAGMENT_PARAMETERS = "batchMode=true&jsonFragment=%s";
+	private static final String RESOLVE_FRAGMENT_PARAMETERS = "batchMode=true&recordId=%s&jsonFragment=%s";
 
 	private final String USER_AGENT = "Custom Java application";
 	private String host;
@@ -54,8 +54,8 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		return String.format(RESOLVE_FRAGMENT_URI, host);
 	}
 
-	private String getFragmentParameters(String jsonFragment) {
-		return String.format(RESOLVE_FRAGMENT_PARAMETERS, jsonFragment);
+	private String getFragmentParameters(String jsonFragment, String recordId) {
+		return String.format(RESOLVE_FRAGMENT_PARAMETERS, recordId, jsonFragment);
 	}
 
 	public String getRecord2(String recordId) {
@@ -76,12 +76,12 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		return record;
 	}
 
-	public String resolveFragment(String jsonFragment) {
+	public String resolveFragment(String jsonFragment, String recordId) {
 		URL url = null;
 		HttpURLConnection urlConnection = null;
 		String record = null;
 		try {
-			url = new URL(getFragmentUrl() + "?" + getFragmentParameters(jsonFragment));
+			url = new URL(getFragmentUrl() + "?" + getFragmentParameters(jsonFragment, recordId));
 			urlConnection = (HttpURLConnection) url.openConnection();
 			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 			record = readStream(in);
@@ -95,7 +95,8 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 	}
 
 	// HTTP POST request
-	public String resolveFragmentWithPost(String jsonFragment) throws Exception {
+	public String resolveFragmentWithPost(String jsonFragment, String recordId)
+			throws Exception {
 		HttpURLConnection urlConnection = (HttpURLConnection) fragmentPostUrl.openConnection();
 
 		//add reuqest header
@@ -104,7 +105,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		urlConnection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 		urlConnection.setDoOutput(true);
 		DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
-		wr.writeBytes(getFragmentParameters(jsonFragment));
+		wr.writeBytes(getFragmentParameters(jsonFragment, recordId));
 		wr.flush();
 		wr.close();
 
