@@ -47,6 +47,7 @@ public class MongoReader  implements Serializable {
 		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("144.76.218.178:8080");
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
+			System.err.println(record);
 			String id = record.get("about", String.class);
 			// System.err.println(id);
 			String jsonString = client.getRecord2(id);
