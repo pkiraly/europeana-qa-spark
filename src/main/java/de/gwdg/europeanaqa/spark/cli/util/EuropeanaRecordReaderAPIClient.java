@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class EuropeanaRecordReaderAPIClient implements Serializable {
 
@@ -55,7 +56,15 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 	}
 
 	private String getFragmentParameters(String jsonFragment, String recordId) {
-		return String.format(RESOLVE_FRAGMENT_PARAMETERS, recordId, jsonFragment);
+		try {
+			return String.format(
+				RESOLVE_FRAGMENT_PARAMETERS,
+				recordId,
+				URLEncoder.encode(jsonFragment, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	public String getRecord2(String recordId) {
