@@ -56,15 +56,17 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 	}
 
 	private String getFragmentParameters(String jsonFragment, String recordId) {
+		String params = "";
 		try {
-			return String.format(
+			params = String.format(
 				RESOLVE_FRAGMENT_PARAMETERS,
 				recordId,
 				URLEncoder.encode(jsonFragment, "UTF-8"));
+			System.err.println(params);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		return "";
+		return params;
 	}
 
 	public String getRecord2(String recordId) {
