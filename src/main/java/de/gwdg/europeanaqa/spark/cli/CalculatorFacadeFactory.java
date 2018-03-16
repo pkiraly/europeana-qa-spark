@@ -5,6 +5,7 @@ import de.gwdg.metadataqa.api.calculator.CalculatorFacade;
 import de.gwdg.metadataqa.api.json.JsonBranch;
 import de.gwdg.metadataqa.api.schema.MarcJsonSchema;
 import de.gwdg.metadataqa.api.schema.Schema;
+import de.gwdg.metadataqa.api.util.CompressionLevel;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,6 +29,28 @@ public class CalculatorFacadeFactory {
 		facade.configure();
 
 		return facade;
+	}
+
+	public static EdmCalculatorFacade createMultilingualSaturationCalculator(boolean skipEnrichments, boolean useFullBeanFormat) {
+
+		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
+		calculator.abbreviate(true);
+		calculator.enableCompletenessMeasurement(false);
+		calculator.enableFieldCardinalityMeasurement(false);
+		calculator.enableFieldExistenceMeasurement(false);
+		calculator.enableProblemCatalogMeasurement(false);
+		calculator.enableTfIdfMeasurement(false);
+		calculator.enableLanguageMeasurement(false);
+		calculator.enableMultilingualSaturationMeasurement(true);
+		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
+		calculator.setSaturationExtendedResult(true);
+		calculator.setCheckSkippableCollections(skipEnrichments);
+		if (useFullBeanFormat)
+			calculator.setFormat(EdmCalculatorFacade.Formats.FULLBEAN);
+
+		calculator.configure();
+
+		return calculator;
 	}
 
 	public static EdmCalculatorFacade createExtractorFacade() {

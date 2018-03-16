@@ -15,7 +15,7 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 
 	private static final String GET_RECORD_URI = "http://%s/europeana-qa/record/%s.json?dataSource=mongo&batchMode=true";
 	private static final String RESOLVE_FRAGMENT_URI = "http://%s/europeana-qa/resolve-json-fragment";
-	private static final String RESOLVE_FRAGMENT_PARAMETERS = "batchMode=true&recordId=%s&jsonFragment=%s";
+	private static final String RESOLVE_FRAGMENT_PARAMETERS = "batchMode=true&recordId=%s&jsonFragment=%s&withFieldRename=false";
 
 	private final String USER_AGENT = "Custom Java application";
 	private String host;
@@ -62,7 +62,8 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 				RESOLVE_FRAGMENT_PARAMETERS,
 				recordId,
 				URLEncoder.encode(jsonFragment, "UTF-8"));
-			System.err.println(params);
+			if (recordId.equals("/2051943/EUS_6E00FE4A25134980BBF298B77D19903D"))
+				System.err.println(params);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

@@ -44,7 +44,10 @@ public class MongoReader  implements Serializable {
 		// JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
 		boolean checkSkippableCollections = false;
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(checkSkippableCollections);
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory
+			.createMultilingualSaturationCalculator(
+				checkSkippableCollections, true
+			);
 
 		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("144.76.218.178:8080");
 
@@ -57,8 +60,8 @@ public class MongoReader  implements Serializable {
 			// String jsonString = record.toJson(writerSettings, codec);
 			try {
 				String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
-				// return facade.measure(jsonString);
-				return id;
+				return facade.measure(jsonString);
+				// return id;
 			} catch (IOException e) {
 				logger.severe(
 					String.format(
