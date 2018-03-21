@@ -8,8 +8,6 @@ import com.mongodb.util.JSON;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import de.gwdg.europeanaqa.spark.cli.util.EuropeanaRecordReaderAPIClient;
-import de.gwdg.europeanaqa.spark.cli.util.MongoRecordResolver;
-import de.gwdg.metadataqa.api.calculator.CalculatorFacade;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -21,8 +19,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public class MongoReader  implements Serializable {
@@ -54,10 +50,6 @@ public class MongoReader  implements Serializable {
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			String jsonFragment = JSON.serialize(record);
 			String id = record.get("about", String.class);
-			// System.err.println(jsonString);
-			// resolver.resolve(record);
-			// String jsonString = record.toJson();
-			// String jsonString = record.toJson(writerSettings, codec);
 			try {
 				String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
 				return facade.measure(jsonString);
