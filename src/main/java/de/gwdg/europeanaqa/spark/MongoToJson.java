@@ -43,7 +43,13 @@ public class MongoToJson implements Serializable {
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			TaskContext tc = TaskContext.get();
-			System.err.println("attemptNumber: " + tc.attemptNumber());
+
+			System.err.printf("attemptNumber: %s, partitionId: %s, stageId: %s, result size: %s",
+				tc.attemptNumber(),
+				tc.partitionId(),
+				tc.stageId(),
+				tc.taskMetrics().resultSize()
+			);
 			String jsonFragment = JSON.serialize(record);
 			String id = record.get("about", String.class);
 			try {
