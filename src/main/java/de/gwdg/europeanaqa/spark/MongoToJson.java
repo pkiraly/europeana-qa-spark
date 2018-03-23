@@ -6,6 +6,7 @@ import com.mongodb.spark.MongoSpark;
 import com.mongodb.spark.rdd.api.java.JavaMongoRDD;
 import com.mongodb.util.JSON;
 import de.gwdg.europeanaqa.spark.cli.util.EuropeanaRecordReaderAPIClient;
+import org.apache.spark.TaskContext;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -41,6 +42,8 @@ public class MongoToJson implements Serializable {
 		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("144.76.218.178:8080");
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
+			TaskContext tc = TaskContext.get();
+			System.err.println("attemptNumber: " + tc.attemptNumber());
 			String jsonFragment = JSON.serialize(record);
 			String id = record.get("about", String.class);
 			try {
