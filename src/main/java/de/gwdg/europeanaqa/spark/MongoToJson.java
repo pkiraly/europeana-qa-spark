@@ -62,7 +62,7 @@ public class MongoToJson implements Serializable {
 			}
 			return "";
 		});
-		String outputFileName = "hdfs://localhost:54310/mongo-result";
+		String outputFileName = "hdfs://localhost:54310/mongo-result2";
 		baseCountsRDD.saveAsTextFile(outputFileName);
 
 		jsc.close();
