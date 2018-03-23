@@ -44,32 +44,32 @@ public class MongoToJson implements Serializable {
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			TaskContext tc = TaskContext.get();
 
-			System.err.printf("attemptNumber: %s, partitionId: %s, stageId: %s, result size: %s\n",
-				tc.attemptNumber(),
-				tc.partitionId(),
-				tc.stageId(),
-				tc.taskMetrics().resultSize()
-			);
-			String jsonFragment = JSON.serialize(record);
-			String id = record.get("about", String.class);
-			try {
-				String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
-				return jsonString;
-				// return id;
-			} catch (IOException e) {
-				logger.severe(
-					String.format(
-						"Resolving error. Id: %s, fragment in %s: %s. Error message: %s.",
-						id, jsonFragment, e.getLocalizedMessage()));
-			} catch (InvalidJsonException e) {
-				String jsonString = "";
-				logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
-					jsonString, e.getLocalizedMessage()));
+			if (tc.partitionId() == 2
+			    || tc.partitionId() == 413
+			    || tc.partitionId() > 1238) {
+				String jsonFragment = JSON.serialize(record);
+				String id = record.get("about", String.class);
+				try {
+					String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
+					return jsonString;
+					// return id;
+				} catch (IOException e) {
+					logger.severe(
+						String.format(
+							"Resolving error. Id: %s, fragment in %s: %s. Error message: %s.",
+							id, jsonFragment, e.getLocalizedMessage()));
+				} catch (InvalidJsonException e) {
+					String jsonString = "";
+					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
+						jsonString, e.getLocalizedMessage()));
+				}
 			}
 			return "";
 		});
 		String outputFileName = "hdfs://localhost:54310/mongo-result2";
-		baseCountsRDD.saveAsTextFile(outputFileName);
+		baseCountsRDD
+			.filter(record -> !record.equals(""))
+			.saveAsTextFile(outputFileName);
 
 		jsc.close();
 	}
