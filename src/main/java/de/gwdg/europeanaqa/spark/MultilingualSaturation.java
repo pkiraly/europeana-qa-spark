@@ -2,6 +2,7 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import de.gwdg.metadataqa.api.util.CompressionLevel;
 import java.io.FileNotFoundException;
@@ -37,22 +38,30 @@ public class MultilingualSaturation {
 			System.exit(0);
 		}
 
+		Parameters parameters = new Parameters(args);
+
+		/*
 		String inputFileName = args[0];
-		logger.log(Level.INFO, "Input file is {0}", inputFileName);
-
 		String outputFileName = args[1];
-		logger.log(Level.INFO, "Output file is {0}", outputFileName);
-
 		String headerOutputFile = args[2];
-		logger.log(Level.INFO, "Header output is {0}", headerOutputFile);
-
 		String dataProvidersFile = args[3];
-		logger.log(Level.INFO, "DataProviders file is {0}", dataProvidersFile);
-
 		String datasetsFile = args[4];
-		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
-
 		boolean skipEnrichments = (args.length >= 6 && args[5].equals("skip-enrichments"));
+		*/
+
+		String inputFileName = parameters.getInputFileName();
+		String outputFileName = parameters.getOutputFileName();
+		String headerOutputFile = parameters.getHeaderOutputFile();
+		String dataProvidersFile = parameters.getDataProvidersFile();
+		String datasetsFile = parameters.getDatasetsFile();
+		EdmCalculatorFacade.Formats format = parameters.getFormat();
+		boolean skipEnrichments = parameters.getSkipEnrichments();
+
+		logger.log(Level.INFO, "Input file is {0}", inputFileName);
+		logger.log(Level.INFO, "Output file is {0}", outputFileName);
+		logger.log(Level.INFO, "Header output is {0}", headerOutputFile);
+		logger.log(Level.INFO, "DataProviders file is {0}", dataProvidersFile);
+		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
 		logger.log(Level.INFO, "Skip enrichments is {0}", skipEnrichments);
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
@@ -70,6 +79,9 @@ public class MultilingualSaturation {
 		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
 		calculator.setSaturationExtendedResult(true);
 		calculator.setCheckSkippableCollections(skipEnrichments);
+		if (format != null)
+			calculator.setFormat(format);
+
 		calculator.configure();
 
 		logger.info("Running with the following calculators:");
