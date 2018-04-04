@@ -6,8 +6,11 @@ import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
+
+import de.gwdg.europeanaqa.spark.cli.Parameters;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -22,7 +25,8 @@ public class CompletenessCount {
 	private static final Logger logger = Logger.getLogger(CompletenessCount.class.getCanonicalName());
 	private static Options options = new Options();
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args)
+			throws FileNotFoundException, ParseException {
 
 		if (args.length < 1) {
 			System.err.println("Please provide a full path to the input files");
@@ -32,21 +36,33 @@ public class CompletenessCount {
 			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
+		Parameters parameters = new Parameters(args);
+
+		/*
 		final String inputFileName = args[0];
 		final String outputFileName = args[1];
 		final String dataProvidersFileName = args[2];
 		final String datasetsFileName = args[3];
 		final boolean checkSkippableCollections = (args.length >= 5 && args[4].equals("checkSkippableCollections"));
+		*/
+
+		String inputFileName = parameters.getInputFileName();
+		String outputFileName = parameters.getOutputFileName();
+		String headerOutputFile = parameters.getHeaderOutputFile();
+		String dataProvidersFile = parameters.getDataProvidersFile();
+		String datasetsFile = parameters.getDatasetsFile();
+		EdmCalculatorFacade.Formats format = parameters.getFormat();
+		boolean skipEnrichments = parameters.getSkipEnrichments();
 
 		logger.info("arg length: " + args.length);
 		logger.info("Input file is " + inputFileName);
 		logger.info("Output file is " + outputFileName);
-		logger.info("checkSkippableCollections: " + checkSkippableCollections);
+		logger.info("checkSkippableCollections: " + skipEnrichments);
 		System.err.println("Input file is " + inputFileName);
 		SparkConf conf = new SparkConf().setAppName("CompletenessCount"); //.setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(checkSkippableCollections);
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(skipEnrichments);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
@@ -66,8 +82,8 @@ public class CompletenessCount {
 		baseCountsRDD.saveAsTextFile(outputFileName);
 
 		try {
-			facade.saveDataProviders(dataProvidersFileName);
-			facade.saveDatasets(datasetsFileName);
+			facade.saveDataProviders(dataProvidersFile);
+			facade.saveDatasets(datasetsFile);
 		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}

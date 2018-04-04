@@ -27,7 +27,8 @@ public class MultilingualSaturation {
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
-	public static void main(String[] args) throws FileNotFoundException, ParseException {
+	public static void main(String[] args)
+			throws FileNotFoundException, ParseException {
 
 		if (args.length < 1) {
 			System.err.println("Please provide a full path to the input files");
