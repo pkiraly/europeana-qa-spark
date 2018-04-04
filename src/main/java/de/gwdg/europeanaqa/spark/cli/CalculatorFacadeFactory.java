@@ -16,7 +16,8 @@ import java.util.Map;
  */
 public class CalculatorFacadeFactory {
 
-	public static EdmCalculatorFacade create(boolean checkSkippableCollections) {
+	public static EdmCalculatorFacade create(boolean checkSkippableCollections,
+	                                         EdmCalculatorFacade.Formats format) {
 
 		final EdmCalculatorFacade facade = new EdmCalculatorFacade();
 		facade.abbreviate(true);
@@ -26,6 +27,8 @@ public class CalculatorFacadeFactory {
 		facade.enableTfIdfMeasurement(false);
 		facade.enableProblemCatalogMeasurement(true);
 		facade.setCheckSkippableCollections(checkSkippableCollections);
+		if (format != null)
+			facade.setFormat(format);
 		facade.configure();
 
 		return facade;

@@ -2,11 +2,14 @@ package de.gwdg.europeanaqa.spark;
 
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
+import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -17,9 +20,12 @@ public class HeaderCommand {
 
 	private static final Logger logger = Logger.getLogger(HeaderCommand.class.getCanonicalName());
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, ParseException {
 
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(false);
+		Parameters parameters = new Parameters(args);
+		EdmCalculatorFacade.Formats format = parameters.getFormat();
+
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(false, format);
 
 		List<String> header = new ArrayList<>();
 		for (Calculator calculator : facade.getCalculators()) {
