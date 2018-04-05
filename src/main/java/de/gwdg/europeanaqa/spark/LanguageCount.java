@@ -5,6 +5,9 @@ import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
+
+import de.gwdg.europeanaqa.spark.cli.Parameters;
+import org.apache.commons.cli.ParseException;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -20,7 +23,7 @@ public class LanguageCount {
 	private static final boolean withLabel = false;
 	private static final boolean compressed = true;
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, ParseException {
 
 		if (args.length < 1) {
 			System.err.println("Please provide a full path to the input files");
@@ -30,10 +33,12 @@ public class LanguageCount {
 			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
-		String inputFileName = args[0];
+
+		Parameters parameters = new Parameters(args);
+
+		String inputFileName = parameters.getInputFileName();
 		logger.info("Input file is " + inputFileName);
-		System.err.println("Input file is " + inputFileName);
-		SparkConf conf = new SparkConf().setAppName("TextLinesCount"); //.setMaster("local");
+		SparkConf conf = new SparkConf().setAppName("LanguageCount");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
@@ -44,15 +49,9 @@ public class LanguageCount {
 		calculator.enableTfIdfMeasurement(false);
 		calculator.enableProblemCatalogMeasurement(false);
 		calculator.enableLanguageMeasurement(true);
+		if (parameters.getFormat() != null)
+			calculator.setFormat(parameters.getFormat());
 		calculator.configure();
-
-		/*
-		final LanguageCalculator languageCalculator = new LanguageCalculator();
-		EdmDataProviderManager dataProviderManager = new EdmDataProviderManager();
-		languageCalculator.setDataProviderManager(dataProviderManager);
-		DatasetManager datasetManager = new DatasetManager();
-		languageCalculator.setDatasetManager(datasetManager);
-		*/
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {

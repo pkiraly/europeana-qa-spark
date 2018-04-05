@@ -1,19 +1,22 @@
 package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
+import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
 import de.gwdg.europeanaqa.spark.bean.Graph;
+import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.metadataqa.api.model.JsonPathCache;
 import de.gwdg.metadataqa.api.model.XmlFieldInstance;
+import de.gwdg.metadataqa.api.schema.EdmFullBeanSchema;
 import de.gwdg.metadataqa.api.schema.EdmOaiPmhXmlSchema;
 import de.gwdg.metadataqa.api.schema.Schema;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.*;
-import scala.collection.Seq;
 
 import static org.apache.spark.sql.functions.*;
 
@@ -30,7 +33,7 @@ public class GraphExtractor {
 	private static final Logger logger = Logger.getLogger(GraphExtractor.class.getCanonicalName());
 	private static Options options = new Options();
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, ParseException {
 
 		if (args.length < 1) {
 			System.err.println("Please provide a full path to the input files");
@@ -40,27 +43,41 @@ public class GraphExtractor {
 			System.err.println("Please provide a full path to the output file");
 			System.exit(0);
 		}
-		final String inputFileName = args[0];
-		final String outputDirName = args[1];
-		final boolean checkSkippableCollections = (args.length >= 5 && args[4].equals("checkSkippableCollections"));
+
+		Parameters parameters = new Parameters(args);
+
+		final String inputFileName = parameters.getInputFileName();
+		final String outputDirName = parameters.getInputFileName();
+		final boolean checkSkippableCollections = parameters.getSkipEnrichments();
+			// (args.length >= 5 && args[4].equals("checkSkippableCollections"));
 
 		logger.info("arg length: " + args.length);
 		logger.info("Input file is " + inputFileName);
 		logger.info("Output file is " + outputDirName);
 		logger.info("checkSkippableCollections: " + checkSkippableCollections);
 		System.err.println("Input file is " + inputFileName);
-		SparkConf conf = new SparkConf().setAppName("CompletenessCount");
+		SparkConf conf = new SparkConf().setAppName("GraphExtractor");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		SparkSession spark = SparkSession.builder().getOrCreate();
 
-		Schema qaSchema = new EdmOaiPmhXmlSchema();
 		Map<String, String> extractableFields = new LinkedHashMap<>();
-		extractableFields.put("recordId", "$.identifier");
-		extractableFields.put("agent",    "$.['edm:Agent'][*]['@about']");
-		extractableFields.put("concept",  "$.['skos:Concept'][*]['@about']");
-		extractableFields.put("place",    "$.['edm:Place'][*]['@about']");
-		extractableFields.put("timespan", "$.['edm:TimeSpan'][*]['@about']");
+		Schema qaSchema = null;
+		if (parameters.getFormat() == null || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
+			qaSchema = new EdmOaiPmhXmlSchema();
+			extractableFields.put("recordId", "$.identifier");
+			extractableFields.put("agent", "$.['edm:Agent'][*]['@about']");
+			extractableFields.put("concept", "$.['skos:Concept'][*]['@about']");
+			extractableFields.put("place", "$.['edm:Place'][*]['@about']");
+			extractableFields.put("timespan", "$.['edm:TimeSpan'][*]['@about']");
+		} else {
+			qaSchema = new EdmFullBeanSchema();
+			extractableFields.put("recordId", "$.identifier");
+			extractableFields.put("agent", "$.['agents'][*]['about']");
+			extractableFields.put("concept", "$.['concepts'][*]['about']");
+			extractableFields.put("place", "$.['places'][*]['about']");
+			extractableFields.put("timespan", "$.['timespans'][*]['about']");
+		}
 		qaSchema.setExtractableFields(extractableFields);
 
 		final MultiFieldExtractor fieldExtractor = new MultiFieldExtractor(qaSchema);
