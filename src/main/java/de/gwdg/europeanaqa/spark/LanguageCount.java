@@ -68,11 +68,11 @@ public class LanguageCount {
 		};
 
 		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
-		baseCountsRDD.saveAsTextFile(args[1]);
+		baseCountsRDD.saveAsTextFile(parameters.getOutputFileName());
 
 		try {
-			calculator.saveDataProviders(args[2]);
-			calculator.saveDatasets(args[3]);
+			calculator.saveDataProviders(parameters.getDataProvidersFile());
+			calculator.saveDatasets(parameters.getDatasetsFile());
 		} catch (UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
