@@ -63,7 +63,8 @@ public class GraphExtractor {
 
 		Map<String, String> extractableFields = new LinkedHashMap<>();
 		Schema qaSchema = null;
-		if (parameters.getFormat() == null || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
+		if (parameters.getFormat() == null
+		    || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
 			qaSchema = new EdmOaiPmhXmlSchema();
 			extractableFields.put("recordId", "$.identifier");
 			extractableFields.put("agent", "$.['edm:Agent'][*]['@about']");
