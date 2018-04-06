@@ -47,7 +47,7 @@ public class GraphExtractor {
 		Parameters parameters = new Parameters(args);
 
 		final String inputFileName = parameters.getInputFileName();
-		final String outputDirName = parameters.getInputFileName();
+		final String outputDirName = parameters.getOutputFileName();
 		final boolean checkSkippableCollections = parameters.getSkipEnrichments();
 			// (args.length >= 5 && args[4].equals("checkSkippableCollections"));
 
