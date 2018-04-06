@@ -98,6 +98,7 @@ public class GraphExtractor {
 						String recordId = ((List<String>) map.get("recordId")).get(0);
 						for (String entity : entities) {
 							for (String item : (List<String>) map.get(entity)) {
+								logger.info(String.format("%s, %s, %s", recordId, entity, item));
 								values.add(new Graph(recordId, entity, item));
 							}
 						}
