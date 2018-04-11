@@ -137,17 +137,6 @@ object Languages {
       map(x => (x, 1)).            // -> title.en 1, 1, 1, ....
       reduceByKey(_ + _)          // -> title.en 8
 
-    /*
-    val language4 = language3.
-      map(x => (x.split(";"))).
-      map(x => (x.head, x.tail)).
-      flatMap(x => x._2.
-        map(y => x._1 + "." + y)).
-      map(x => x.split(":")).
-      map(x => (x.head, x.last)).
-      reduceByKey(_ + _)
-    */
-
     val language5 = language4.
       map(x => (x._1.split(":"), x._2)).
       map(x => (x._1.head, (Integer.parseInt(x._1.last) * x._2))).
@@ -157,12 +146,5 @@ object Languages {
       map(x => x._1.replace(".", ",") + "," + x._2). // -> "title,en,8"
       saveAsTextFile(dir + "/languages.csv")
 
-    /*
-    language4
-      .map(x => (x._1.split("\\."), x._2))      // -> ((title, en), 8)
-      .map(x => (x._1.head, (x._1.last, x._2))) // -> (title, (en, 8))
-      .groupByKey()                             // -> (title, ((en, 8), (de, 5), ...))
-      .saveAsTextFile(dir + "/languages-groupped.txt")
-    */
   }
 }
