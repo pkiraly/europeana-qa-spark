@@ -95,4 +95,20 @@ public class CalculatorFacadeFactory {
 
 		return facade;
 	}
+
+	public static EdmCalculatorFacade getLanguageCalculatorFacade(Parameters parameters) {
+		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
+		calculator.abbreviate(true);
+		calculator.enableCompletenessMeasurement(false);
+		calculator.enableFieldCardinalityMeasurement(false);
+		calculator.enableFieldExistenceMeasurement(false);
+		calculator.enableTfIdfMeasurement(false);
+		calculator.enableProblemCatalogMeasurement(false);
+		calculator.enableLanguageMeasurement(true);
+		if (parameters.getFormat() != null)
+			calculator.setFormat(parameters.getFormat());
+		calculator.configure();
+		return calculator;
+	}
+
 }

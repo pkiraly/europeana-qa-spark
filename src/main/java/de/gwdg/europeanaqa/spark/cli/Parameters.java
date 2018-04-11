@@ -7,12 +7,35 @@ import java.io.Serializable;
 
 public class Parameters implements Serializable {
 
+	public enum Analysis {
+
+		COMPLETENESS("completeness"),
+		LANGUAGES("languages"),
+		MULTILINGUAL_SATURATION("multilingual-saturation")
+		;
+
+		private final String name;
+
+		private Analysis(String name) {
+			this.name = name;
+		}
+
+		public static Analysis byCode(String code) {
+			for(Analysis analysis : values())
+				if (analysis.name.equals(code))
+					return analysis;
+			return null;
+		}
+
+	};
+
 	private String inputFileName;
 	private String outputFileName;
 	private String headerOutputFile;
 	private String dataProvidersFile;
 	private String datasetsFile;
 	private EdmCalculatorFacade.Formats format;
+	private Analysis analysis;
 	private Boolean skipEnrichments = false;
 
 	protected Options options = new Options();
@@ -29,6 +52,7 @@ public class Parameters implements Serializable {
 			options.addOption("c", "datasetsFile", true, "datasets file");
 			options.addOption("s", "skipEnrichments", false, "skip enrichments");
 			options.addOption("f", "format", true, "format");
+			options.addOption("a", "analysis", true, "format");
 			isOptionSet = true;
 		}
 	}
@@ -54,6 +78,11 @@ public class Parameters implements Serializable {
 		if (cmd.hasOption("format")) {
 			String schemaName = cmd.getOptionValue("format");
 			format = EdmCalculatorFacade.Formats.byCode(schemaName);
+		}
+
+		if (cmd.hasOption("analysis")) {
+			String analysisName = cmd.getOptionValue("analysis");
+			analysis = Analysis.byCode(analysisName);
 		}
 
 		skipEnrichments = cmd.hasOption("skipEnrichments");
@@ -91,5 +120,9 @@ public class Parameters implements Serializable {
 
 	public Boolean getSkipEnrichments() {
 		return skipEnrichments;
+	}
+
+	public Analysis getAnalysis() {
+		return analysis;
 	}
 }

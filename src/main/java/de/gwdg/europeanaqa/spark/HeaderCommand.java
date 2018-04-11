@@ -25,7 +25,10 @@ public class HeaderCommand {
 		Parameters parameters = new Parameters(args);
 		EdmCalculatorFacade.Formats format = parameters.getFormat();
 
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(false, format);
+		final EdmCalculatorFacade facade = (parameters.getAnalysis() != null
+			&& parameters.getAnalysis().equals(Parameters.Analysis.LANGUAGES))
+			? CalculatorFacadeFactory.getLanguageCalculatorFacade(parameters)
+			: CalculatorFacadeFactory.create(false, format);
 
 		List<String> header = new ArrayList<>();
 		for (Calculator calculator : facade.getCalculators()) {

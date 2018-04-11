@@ -6,12 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
+import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import de.gwdg.europeanaqa.spark.cli.Parameters;
 import org.apache.commons.cli.ParseException;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -41,17 +43,7 @@ public class LanguageCount {
 		SparkConf conf = new SparkConf().setAppName("LanguageCount");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.abbreviate(true);
-		calculator.enableCompletenessMeasurement(false);
-		calculator.enableFieldCardinalityMeasurement(false);
-		calculator.enableFieldExistenceMeasurement(false);
-		calculator.enableTfIdfMeasurement(false);
-		calculator.enableProblemCatalogMeasurement(false);
-		calculator.enableLanguageMeasurement(true);
-		if (parameters.getFormat() != null)
-			calculator.setFormat(parameters.getFormat());
-		calculator.configure();
+		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.getLanguageCalculatorFacade(parameters);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {
@@ -77,4 +69,5 @@ public class LanguageCount {
 			logger.severe(ex.getLocalizedMessage());
 		}
 	}
+
 }
