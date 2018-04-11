@@ -13,7 +13,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -43,7 +42,7 @@ public class LanguageCount {
 		SparkConf conf = new SparkConf().setAppName("LanguageCount");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.getLanguageCalculatorFacade(parameters);
+		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.createLanguageCalculator(parameters);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {

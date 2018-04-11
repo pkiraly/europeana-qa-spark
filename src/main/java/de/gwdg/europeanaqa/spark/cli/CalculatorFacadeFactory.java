@@ -2,7 +2,6 @@ package de.gwdg.europeanaqa.spark.cli;
 
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.metadataqa.api.calculator.CalculatorFacade;
-import de.gwdg.metadataqa.api.json.JsonBranch;
 import de.gwdg.metadataqa.api.schema.MarcJsonSchema;
 import de.gwdg.metadataqa.api.schema.Schema;
 import de.gwdg.metadataqa.api.util.CompressionLevel;
@@ -16,8 +15,8 @@ import java.util.Map;
  */
 public class CalculatorFacadeFactory {
 
-	public static EdmCalculatorFacade create(boolean checkSkippableCollections,
-	                                         EdmCalculatorFacade.Formats format) {
+	public static EdmCalculatorFacade createCompletenessCalculator(boolean checkSkippableCollections,
+	                                                               EdmCalculatorFacade.Formats format) {
 
 		final EdmCalculatorFacade facade = new EdmCalculatorFacade();
 		facade.abbreviate(true);
@@ -34,7 +33,7 @@ public class CalculatorFacadeFactory {
 		return facade;
 	}
 
-	public static EdmCalculatorFacade createMultilingualSaturationCalculator(boolean skipEnrichments, boolean useFullBeanFormat) {
+	public static EdmCalculatorFacade createMultilingualSaturationCalculator(Parameters parameters) {
 
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
 		calculator.abbreviate(true);
@@ -47,9 +46,9 @@ public class CalculatorFacadeFactory {
 		calculator.enableMultilingualSaturationMeasurement(true);
 		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
 		calculator.setSaturationExtendedResult(true);
-		calculator.setCheckSkippableCollections(skipEnrichments);
-		if (useFullBeanFormat)
-			calculator.setFormat(EdmCalculatorFacade.Formats.FULLBEAN);
+		calculator.setCheckSkippableCollections(parameters.getSkipEnrichments());
+		if (parameters.getFormat() != null)
+			calculator.setFormat(parameters.getFormat());
 
 		calculator.configure();
 
@@ -96,7 +95,7 @@ public class CalculatorFacadeFactory {
 		return facade;
 	}
 
-	public static EdmCalculatorFacade getLanguageCalculatorFacade(Parameters parameters) {
+	public static EdmCalculatorFacade createLanguageCalculator(Parameters parameters) {
 		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
 		calculator.abbreviate(true);
 		calculator.enableCompletenessMeasurement(false);
@@ -111,4 +110,21 @@ public class CalculatorFacadeFactory {
 		return calculator;
 	}
 
+	public static EdmCalculatorFacade createByAnalysis(Parameters parameters) {
+		EdmCalculatorFacade calculator;
+		if (parameters.getAnalysis() != null) {
+			switch (parameters.getAnalysis()) {
+				case LANGUAGES:
+					calculator = createLanguageCalculator(parameters); break;
+				case MULTILINGUAL_SATURATION:
+					calculator = createMultilingualSaturationCalculator(parameters); break;
+				case COMPLETENESS:
+				default:
+					calculator = createCompletenessCalculator(false, parameters.getFormat()); break;
+			}
+		} else {
+			calculator = createCompletenessCalculator(false, parameters.getFormat());
+		}
+		return calculator;
+	}
 }

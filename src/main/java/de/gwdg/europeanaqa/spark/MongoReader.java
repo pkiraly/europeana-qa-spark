@@ -7,7 +7,9 @@ import com.mongodb.spark.rdd.api.java.JavaMongoRDD;
 import com.mongodb.util.JSON;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
+import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.europeanaqa.spark.cli.util.EuropeanaRecordReaderAPIClient;
+import org.apache.commons.cli.ParseException;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -25,12 +27,13 @@ public class MongoReader  implements Serializable {
 
 	static final Logger logger = Logger.getLogger(MongoReader.class.getCanonicalName());
 
-	public static void main(final String[] args) throws InterruptedException {
+	public static void main(final String[] args) throws InterruptedException, ParseException {
 
 		SparkSession spark = createSparkSession("record");
 
 		// Create a JavaSparkContext using the SparkSession's SparkContext object
 		JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
+
 
 		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
@@ -39,11 +42,10 @@ public class MongoReader  implements Serializable {
 
 		// JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
+		Parameters parameters = new Parameters(args);
 		boolean checkSkippableCollections = false;
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory
-			.createMultilingualSaturationCalculator(
-				checkSkippableCollections, true
-			);
+			.createMultilingualSaturationCalculator(parameters);
 
 		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("144.76.218.178:8080");
 

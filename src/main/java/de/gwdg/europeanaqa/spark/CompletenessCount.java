@@ -62,7 +62,7 @@ public class CompletenessCount {
 		SparkConf conf = new SparkConf().setAppName("CompletenessCount"); //.setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade facade = CalculatorFacadeFactory.create(skipEnrichments, format);
+		final EdmCalculatorFacade facade = CalculatorFacadeFactory.createCompletenessCalculator(skipEnrichments, format);
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {

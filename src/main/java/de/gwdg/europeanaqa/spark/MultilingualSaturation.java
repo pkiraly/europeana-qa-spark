@@ -2,6 +2,7 @@ package de.gwdg.europeanaqa.spark;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
 import de.gwdg.metadataqa.api.util.CompressionLevel;
@@ -68,22 +69,7 @@ public class MultilingualSaturation {
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade calculator = new EdmCalculatorFacade();
-		calculator.abbreviate(true);
-		calculator.enableCompletenessMeasurement(false);
-		calculator.enableFieldCardinalityMeasurement(false);
-		calculator.enableFieldExistenceMeasurement(false);
-		calculator.enableTfIdfMeasurement(false);
-		calculator.enableProblemCatalogMeasurement(false);
-		calculator.enableLanguageMeasurement(false);
-		calculator.enableMultilingualSaturationMeasurement(true);
-		calculator.setCompressionLevel(CompressionLevel.WITHOUT_TRAILING_ZEROS);
-		calculator.setSaturationExtendedResult(true);
-		calculator.setCheckSkippableCollections(skipEnrichments);
-		if (format != null)
-			calculator.setFormat(format);
-
-		calculator.configure();
+		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.createMultilingualSaturationCalculator(parameters);
 
 		logger.info("Running with the following calculators:");
 		for (Calculator calc : calculator.getCalculators()) {
