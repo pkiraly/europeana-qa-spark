@@ -22,7 +22,7 @@ hdfs dfs -rm -r /join/$OUTPUTFILE
 spark-submit \
    --class Languages \
    --master local[*] \
-   target/scala-2.10/europeana-qa_2.10-1.0.jar \
+   target/scala-2.11/europeana-qa_2.11-1.0.jar \
    hdfs://localhost:54310/join/ $INPUT
 
 echo Retrieve $OUTPUTFILE

@@ -10,7 +10,7 @@
 
 OUTPUT=$1
 SKIP_FLAG=$2
-JAR_VERSION=0.5-SNAPSHOT
+JAR_VERSION=0.6-SNAPSHOT
 
 if [[ ("$#" -ne 1 && "$#" -ne 2) || ("$OUTPUT" == "") ]]; then
   echo "You should add an output file (such as resultXX.csv)!"
@@ -22,7 +22,7 @@ if [ -e $OUTPUT ]; then
   exit 1
 fi
 
-if [[ ("$SKIP_FLAG" != "checkSkippableCollections") ]]; then
+if [[ ("$SKIP_FLAG" != "--skipEnrichments") ]]; then
   SKIP_FLAG=""
 fi
 
@@ -34,16 +34,33 @@ if hdfs dfs -test -d /result; then
 fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+# spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
+#   --master local[*] \
+#   $JAR \
+#   hdfs://localhost:54310/europeana/*.json \
+#   hdfs://localhost:54310/result \
+#   data-providers.txt datasets.txt \
+#   $SKIP_FLAG
+
+FORMAT="fullbean"
+
+#  --inputFileName hdfs://localhost:54310/europeana/*.json \
+#  --inputFileName hdfs://localhost:54310/europeana/*.json.gz \
+#  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
+
 spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
   --master local[*] \
   $JAR \
-  hdfs://localhost:54310/europeana/*.json \
-  hdfs://localhost:54310/result \
-  data-providers.txt datasets.txt \
+  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
+  --outputFileName hdfs://localhost:54310/result \
+  --dataProvidersFile data-providers.txt \
+  --datasetsFile datasets.txt \
+  --format $FORMAT \
   $SKIP_FLAG
 
 echo Retrieve $OUTPUT
 hdfs dfs -getmerge /result $OUTPUT
 rm .$OUTPUT.crc
 
+date +"%T"
 echo "Completeness count is done!"

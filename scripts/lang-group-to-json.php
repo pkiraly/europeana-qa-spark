@@ -4,14 +4,14 @@ $start = microtime(TRUE);
 
 $order = [
   'aggregated',
-  'proxy_dc_title', 'proxy_dcterms_alternative', 'proxy_dc_description', 'proxy_dc_creator', 
-  'proxy_dc_publisher', 'proxy_dc_contributor', 'proxy_dc_type', 'proxy_dc_identifier', 
+  'proxy_dc_title', 'proxy_dcterms_alternative', 'proxy_dc_description', 'proxy_dc_creator',
+  'proxy_dc_publisher', 'proxy_dc_contributor', 'proxy_dc_type', 'proxy_dc_identifier',
   'proxy_dc_language', 'proxy_dc_coverage', 'proxy_dcterms_temporal', 'proxy_dcterms_spatial',
   'proxy_dc_subject', 'proxy_dc_date', 'proxy_dcterms_created', 'proxy_dcterms_issued',
   'proxy_dcterms_extent', 'proxy_dcterms_medium', 'proxy_dcterms_provenance',
   'proxy_dcterms_hasPart', 'proxy_dcterms_isPartOf', 'proxy_dc_format', 'proxy_dc_source',
   'proxy_dc_rights', 'proxy_dc_relation', 'proxy_edm_europeanaProxy', 'proxy_edm_year',
-  'proxy_edm_userTag', 'proxy_ore_ProxyIn', 'proxy_ore_ProxyFor', 'proxy_dc_conformsTo',
+  'proxy_edm_userTag', 'proxy_ore_ProxyIn', 'proxy_ore_ProxyFor', 'proxy_dcterms_conformsTo',
   'proxy_dcterms_hasFormat', 'proxy_dcterms_hasVersion', 'proxy_dcterms_isFormatOf',
   'proxy_dcterms_isReferencedBy', 'proxy_dcterms_isReplacedBy', 'proxy_dcterms_isRequiredBy',
   'proxy_dcterms_isVersionOf', 'proxy_dcterms_references', 'proxy_dcterms_replaces',
@@ -65,18 +65,18 @@ function processLine($line) {
     $json = orderJson(restructureJson($origJson[1]));
     saveJson($collectionId, $json);
   } else {
-    echo $line, "\n";
+    echo "NULL line:\n", $line, "\n";
   }
 }
 
 function saveJson($collectionId, $json) {
-  $fileName = '../../europeana-qa-r/json2/' . $collectionId . '.languages.json';
+  $fileName = '../../europeana-qa-r/json3/' . $collectionId . '/' . $collectionId . '.languages.json';
   file_put_contents($fileName, json_encode($json));
 }
 
 function sparkOutputToJson($record) {
   $record = preg_replace('/CompactBuffer/', '', $record);
-  $record = preg_replace('/([a-zA-Z_][a-zA-Z0-9_\-]*),/', '"$1",', $record);
+  $record = preg_replace('/([a-zA-Z_][a-zA-Z0-9_\-]* ?),/', '"$1",', $record);
   $record = str_replace(['(', ')'], ['[', ']'], $record);
   return json_decode($record);
 }
@@ -112,8 +112,10 @@ function orderJson($json) {
 
   $ordered = [];
   foreach ($order as $field) {
-    arsort($json[$field]);
-    $ordered[$field] = $json[$field];
+    if (isset($json[$field])) {
+      arsort($json[$field]);
+      $ordered[$field] = $json[$field];
+    }
   }
   return $ordered;
 }
