@@ -10,7 +10,7 @@
 
 OUTPUT=$1
 SKIP_ENRICHMENTS_FLAG=$2
-JAR_VERSION=0.5-SNAPSHOT
+JAR_VERSION=0.6-SNAPSHOT
 HDFS=hdfs://localhost:54310
 HEADER=header-multilingual-saturation.csv
 HEADEROUTPUT=/join/$HEADER
@@ -26,9 +26,11 @@ if [ -e $OUTPUT ]; then
   exit 1
 fi
 
-if [[ ("$SKIP_ENRICHMENTS_FLAG" != "skip-enrichments" && "$SKIP_ENRICHMENTS_FLAG" != "e") ]]; then
+if [[ ("$SKIP_ENRICHMENTS_FLAG" != "--skipEnrichments" && "$SKIP_ENRICHMENTS_FLAG" != "-s") ]]; then
   SKIP_ENRICHMENTS_FLAG=""
 fi
+
+FORMAT="fullbean"
 
 echo "Starting multilingual saturation detection."
 
@@ -43,14 +45,29 @@ if hdfs dfs -test -d $HEADEROUTPUT; then
 fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+# spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation \
+#  --master local[5] \
+#  $JAR \
+#  $HDFS/europeana/*.json \
+#  $HDFS/result \
+#  $HDFS$HEADEROUTPUT \
+#  data-providers.txt \
+#  datasets.txt \
+#  $SKIP_ENRICHMENTS_FLAG
+
+#  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
+#  --inputFileName $HDFS/europeana/*.json \
+#  --inputFileName $HDFS/europeana/*.json.gz \
+
 spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation \
-  --master local[5] \
+  --master local[*] \
   $JAR \
-  $HDFS/europeana/*.json \
-  $HDFS/result \
-  $HDFS$HEADEROUTPUT \
-  data-providers.txt \
-  datasets.txt \
+  --inputFileName $HDFS/europeana/*.json.gz \
+  --outputFileName $HDFS/result \
+  --headerOutputFile $HDFS$HEADEROUTPUT \
+  --dataProvidersFile data-providers.txt \
+  --datasetsFile datasets.txt \
+  --format $FORMAT \
   $SKIP_ENRICHMENTS_FLAG
 
 echo Retrieve $OUTPUT
@@ -67,4 +84,5 @@ if hdfs dfs -test -d $HEADEROUTPUT; then
   sleep 2
 fi
 
+date +"%T"
 echo "Multilingual saturation detection is done!"
