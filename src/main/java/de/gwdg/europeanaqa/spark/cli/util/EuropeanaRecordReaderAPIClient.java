@@ -134,7 +134,6 @@ public class EuropeanaRecordReaderAPIClient implements Serializable {
 		return record;
 	}
 
-
 	private String readStream(InputStream in) throws IOException {
 		BufferedReader rd = new BufferedReader(new InputStreamReader(in));
 
