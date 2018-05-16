@@ -127,13 +127,13 @@ public class GraphByPLDExtractor {
 				}
 			);
 
-		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph4PLD.class);
+		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph4PLD.class).distinct();
 		// statistics.add(Arrays.asList("entity-links", String.valueOf(df.count())));
 		// context.parallelize(statistics).saveAsTextFile(outputDirName + "/statistics");
 		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld-raw");
 
 		Dataset<Row> counted = df
-										.groupBy("type", "entityId")
+										.groupBy("type", "vocabulary")
 										.count();
 		counted.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld-counted");
 
@@ -222,6 +222,16 @@ public class GraphByPLDExtractor {
 			.replaceAll("^#datierung-[0-9a-f]{8}-[0-9a-f]{4}-.*", "#datierung")
 			.replaceAll("^datierung_uuid=[0-9a-f]{8}-[0-9a-f]{4}-.*", "datierung_uuid")
 			;
+
+		if (!pld.contains("data.europeana.eu/agent/")
+			&& !pld.contains("data.europeana.eu/place/")
+			&& !pld.contains("data.europeana.eu/concept/")
+			&& !pld.contains("d-nb.info/gnd/")) {
+			pld = pld.replaceAll("/.+", "/");
+		}
+
+		if (pld == null)
+			pld = "";
 
 		return pld;
 	}

@@ -3,12 +3,12 @@ package de.gwdg.europeanaqa.spark.bean;
 public class Graph4PLD {
 	String providerId;
 	String type;
-	String entityId;
+	String vocabulary;
 
-	public Graph4PLD(String providerId, String type, String entityId) {
+	public Graph4PLD(String providerId, String type, String vocabulary) {
 		this.providerId = providerId;
 		this.type = type;
-		this.entityId = entityId;
+		this.vocabulary = vocabulary;
 	}
 
 	public String getProviderId() {
@@ -27,11 +27,11 @@ public class Graph4PLD {
 		this.type = type;
 	}
 
-	public String getEntityId() {
-		return entityId;
+	public String getVocabulary() {
+		return vocabulary;
 	}
 
-	public void setEntityId(String entityId) {
-		this.entityId = entityId;
+	public void setVocabulary(String vocabulary) {
+		this.vocabulary = vocabulary;
 	}
 }
