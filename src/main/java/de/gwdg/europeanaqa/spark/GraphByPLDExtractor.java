@@ -130,30 +130,18 @@ public class GraphByPLDExtractor {
 		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph4PLD.class);
 		// statistics.add(Arrays.asList("entity-links", String.valueOf(df.count())));
 		// context.parallelize(statistics).saveAsTextFile(outputDirName + "/statistics");
+		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld-raw");
 
 		Dataset<Row> counted = df
 										.groupBy("type", "entityId")
 										.count();
+		counted.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld-counted");
+
 		Dataset<Row> ordered = counted
 										.orderBy(col("type"), col("count").desc());
 
 		// output every individual entity IDs with count
 		ordered.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld");
-
-		/*
-		typeEntityCount
-			.groupBy("type")
-			.count()
-			.orderBy("type")
-			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/entity-nodes");
-
-		df
-			.groupBy("type")
-			.count()
-			.orderBy("type")
-			.write().mode(SaveMode.Overwrite).csv(outputDirName + "/entity-links");
-		*/
-
 	}
 
 	public static String getDataProviderCode(String dataProvider) {
