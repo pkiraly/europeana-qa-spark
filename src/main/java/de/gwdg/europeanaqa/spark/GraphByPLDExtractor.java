@@ -128,8 +128,6 @@ public class GraphByPLDExtractor {
 			);
 
 		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph4PLD.class).distinct();
-		// statistics.add(Arrays.asList("entity-links", String.valueOf(df.count())));
-		// context.parallelize(statistics).saveAsTextFile(outputDirName + "/statistics");
 		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld-raw");
 
 		Dataset<Row> counted = df
