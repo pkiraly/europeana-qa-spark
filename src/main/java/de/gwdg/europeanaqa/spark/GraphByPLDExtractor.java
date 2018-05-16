@@ -71,7 +71,7 @@ public class GraphByPLDExtractor {
 		if (parameters.getFormat() == null
 		    || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
 			qaSchema = new EdmOaiPmhXmlSchema();
-			extractableFields.put("recordId", "$.identifier");
+			// extractableFields.put("recordId", "$.identifier");
 			extractableFields.put("dataProvider", "$.['ore:Aggregation'][0]['edm:dataProvider'][0]");
 			extractableFields.put("provider", "$.['ore:Aggregation'][0]['edm:provider'][0]");
 			extractableFields.put("agent", "$.['edm:Agent'][*]['@about']");
@@ -80,7 +80,7 @@ public class GraphByPLDExtractor {
 			extractableFields.put("timespan", "$.['edm:TimeSpan'][*]['@about']");
 		} else {
 			qaSchema = new EdmFullBeanSchema();
-			extractableFields.put("recordId", "$.identifier");
+			// extractableFields.put("recordId", "$.identifier");
 			extractableFields.put("dataProvider", "$.['aggregations'][0]['edmDataProvider'][0]");
 			extractableFields.put("provider", "$.['aggregations'][0]['edmProvider'][0]");
 			extractableFields.put("agent", "$.['agents'][*]['about']");
@@ -104,9 +104,11 @@ public class GraphByPLDExtractor {
 						JsonPathCache<? extends XmlFieldInstance> cache = new JsonPathCache<>(jsonString);
 						fieldExtractor.measure(cache);
 						Map<String, ? extends Object> map = fieldExtractor.getResultMap();
-						String recordId = ((List<String>) map.get("recordId")).get(0);
-						String dataProvider = ((List<String>) map.get("dataProvider")).get(0);
-						String provider = ((List<String>) map.get("provider")).get(0);
+						// String recordId = ((List<String>) map.get("recordId")).get(0);
+
+						String dataProvider = extractValue(map, "dataProvider");
+						String provider = extractValue(map, "provider");
+
 						String providerId = (dataProvider != null)
 							? getDataProviderCode(dataProvider)
 							: (provider != null ? getDataProviderCode(provider) : "0");
@@ -234,6 +236,13 @@ public class GraphByPLDExtractor {
 			;
 
 		return pld;
+	}
+
+	private static String extractValue(Map map, String key) {
+		String value = null;
+		if (map.get(key) != null && !((List<String>) map.get(key)).isEmpty())
+			value = ((List<String>) map.get(key)).get(0);
+		return value;
 	}
 
 	private static void help() {
