@@ -131,18 +131,18 @@ public class VocabularyCompleteness {
 			);
 
 		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph4PLD.class).distinct();
-		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld-raw");
+		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-raw");
 
 		Dataset<Row> counted = df
 										.groupBy("type", "vocabulary")
 										.count();
-		counted.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld-counted");
+		counted.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-counted");
 
 		Dataset<Row> ordered = counted
 										.orderBy(col("type"), col("count").desc());
 
 		// output every individual entity IDs with count
-		ordered.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-entity-count-pld");
+		ordered.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness");
 	}
 
 	public static String getDataProviderCode(String dataProvider) {
