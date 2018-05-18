@@ -29,7 +29,7 @@ public class VocabularyExtractor implements Serializable {
 		Object entity = cache.getFragment(entityById);
 		for (JsonBranch childPath : childrenPaths) {
 			List<? extends XmlFieldInstance> fieldInstances = cache.get(childPath.getJsonPath(), childPath.getJsonPath(), entity);
-			cardinalities.add(fieldInstances.size());
+			cardinalities.add(fieldInstances != null ? fieldInstances.size() : 0);
 		}
 
 		return cardinalities;
