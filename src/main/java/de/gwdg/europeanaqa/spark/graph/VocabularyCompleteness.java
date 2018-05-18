@@ -137,6 +137,7 @@ public class VocabularyCompleteness {
 		Dataset<Row> df = spark.createDataFrame(idsRDD, Vocabulary.class).distinct();
 		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-raw");
 
+		/*
 		Dataset<Row> counted = df
 										.groupBy("type", "vocabulary")
 										.count();
@@ -147,6 +148,7 @@ public class VocabularyCompleteness {
 
 		// output every individual entity IDs with count
 		ordered.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness");
+		*/
 	}
 
 	public static String getDataProviderCode(String dataProvider) {
