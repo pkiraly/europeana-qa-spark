@@ -5,6 +5,7 @@ import de.gwdg.europeanaqa.api.abbreviation.EdmDataProviderManager;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
 import de.gwdg.europeanaqa.spark.bean.Graph4PLD;
+import de.gwdg.europeanaqa.spark.bean.Vocabulary;
 import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.metadataqa.api.model.JsonPathCache;
 import de.gwdg.metadataqa.api.model.XmlFieldInstance;
@@ -99,9 +100,9 @@ public class VocabularyCompleteness {
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		// statistics.add(Arrays.asList("proxy-nodes", String.valueOf(inputFile.count())));
-		JavaRDD<Graph4PLD> idsRDD = inputFile
+		JavaRDD<Vocabulary> idsRDD = inputFile
 			.flatMap(jsonString -> {
-					List<Graph4PLD> values = new ArrayList<>();
+					List<Vocabulary> values = new ArrayList<>();
 					try {
 						JsonPathCache<? extends XmlFieldInstance> cache = new JsonPathCache<>(jsonString);
 						fieldExtractor.measure(cache);
@@ -118,8 +119,11 @@ public class VocabularyCompleteness {
 						for (String entityType : entities) {
 							for (String entityID : (List<String>) map.get(entityType)) {
 								List<Integer> cardinality = vocabularyExtractor.getCardinality(cache, entityType, entityID);
-								logger.info("cardinality: " + StringUtils.join(cardinality, ", "));
-								values.add(new Graph4PLD(providerId, entityType, extractPLD(entityID)));
+								logger.info(String.format(
+									"cardinality/%s: %s",
+									entityType, StringUtils.join(cardinality, ", ")
+								));
+								values.add(new Vocabulary(providerId, entityType, extractPLD(entityID), cardinality));
 							}
 						}
 					} catch (InvalidJsonException e) {
@@ -130,7 +134,7 @@ public class VocabularyCompleteness {
 				}
 			);
 
-		Dataset<Row> df = spark.createDataFrame(idsRDD, Graph4PLD.class).distinct();
+		Dataset<Row> df = spark.createDataFrame(idsRDD, Vocabulary.class).distinct();
 		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-raw");
 
 		Dataset<Row> counted = df
