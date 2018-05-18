@@ -119,10 +119,6 @@ public class VocabularyCompleteness {
 						for (String entityType : entities) {
 							for (String entityID : (List<String>) map.get(entityType)) {
 								List<Integer> cardinality = vocabularyExtractor.getCardinality(cache, entityType, entityID);
-								logger.info(String.format(
-									"cardinality/%s: %s",
-									entityType, StringUtils.join(cardinality, ", ")
-								));
 								values.add(new Vocabulary(
 									providerId,
 									entityType,
