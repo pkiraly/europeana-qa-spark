@@ -6,9 +6,9 @@ public class Vocabulary {
 	String providerId;
 	String type;
 	String vocabulary;
-	List<Integer> cardinality;
+	String cardinality;
 
-	public Vocabulary(String providerId, String type, String vocabulary, List<Integer> cardinality) {
+	public Vocabulary(String providerId, String type, String vocabulary, String cardinality) {
 		this.providerId = providerId;
 		this.type = type;
 		this.vocabulary = vocabulary;
@@ -39,11 +39,11 @@ public class Vocabulary {
 		this.vocabulary = vocabulary;
 	}
 
-	public List<Integer> getCardinality() {
+	public String getCardinality() {
 		return cardinality;
 	}
 
-	public void setCardinality(List<Integer> cardinality) {
+	public void setCardinality(String cardinality) {
 		this.cardinality = cardinality;
 	}
 }

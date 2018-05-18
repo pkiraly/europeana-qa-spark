@@ -123,7 +123,11 @@ public class VocabularyCompleteness {
 									"cardinality/%s: %s",
 									entityType, StringUtils.join(cardinality, ", ")
 								));
-								values.add(new Vocabulary(providerId, entityType, extractPLD(entityID), cardinality));
+								values.add(new Vocabulary(
+									providerId,
+									entityType,
+									extractPLD(entityID),
+									StringUtils.join(cardinality, ",")));
 							}
 						}
 					} catch (InvalidJsonException e) {
