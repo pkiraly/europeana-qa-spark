@@ -5,11 +5,13 @@ import de.gwdg.metadataqa.api.model.JsonPathCache;
 import de.gwdg.metadataqa.api.model.XmlFieldInstance;
 import de.gwdg.metadataqa.api.schema.Schema;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class VocabularyExtractor {
-	Schema qaSchema;
-	final Map<String, JsonBranch> entitiesPaths = new HashMap<>();
+public class VocabularyExtractor implements Serializable {
+
+	private Schema qaSchema;
+	private final Map<String, JsonBranch> entitiesPaths = new HashMap<>();
 
 	public VocabularyExtractor(Schema qaSchema) {
 		this.qaSchema = qaSchema;
