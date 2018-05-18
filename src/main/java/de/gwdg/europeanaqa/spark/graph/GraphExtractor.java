@@ -1,4 +1,4 @@
-package de.gwdg.europeanaqa.spark;
+package de.gwdg.europeanaqa.spark.graph;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;

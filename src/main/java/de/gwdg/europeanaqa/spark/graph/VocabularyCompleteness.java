@@ -1,4 +1,4 @@
-package de.gwdg.europeanaqa.spark;
+package de.gwdg.europeanaqa.spark.graph;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import de.gwdg.europeanaqa.api.abbreviation.EdmDataProviderManager;
@@ -14,6 +14,7 @@ import de.gwdg.metadataqa.api.schema.Schema;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -32,9 +33,9 @@ import static org.apache.spark.sql.functions.col;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class GraphByPLDExtractor {
+public class VocabularyCompleteness {
 
-	private static final Logger logger = Logger.getLogger(GraphByPLDExtractor.class.getCanonicalName());
+	private static final Logger logger = Logger.getLogger(VocabularyCompleteness.class.getCanonicalName());
 	private static Options options = new Options();
 	private static final EdmDataProviderManager dataProviderManager = new EdmDataProviderManager();
 
@@ -91,6 +92,7 @@ public class GraphByPLDExtractor {
 		qaSchema.setExtractableFields(extractableFields);
 
 		final MultiFieldExtractor fieldExtractor = new MultiFieldExtractor(qaSchema);
+		final VocabularyExtractor vocabularyExtractor = new VocabularyExtractor(qaSchema);
 		List<String> entities = Arrays.asList("agent", "concept", "place", "timespan");
 
 		List<List<String>> statistics = new ArrayList<>();
@@ -113,10 +115,11 @@ public class GraphByPLDExtractor {
 							? getDataProviderCode(dataProvider)
 							: (provider != null ? getDataProviderCode(provider) : "0");
 
-						for (String entity : entities) {
-							for (String item : (List<String>) map.get(entity)) {
-								values.add(new Graph4PLD(providerId, entity, extractPLD(item)));
-
+						for (String entityType : entities) {
+							for (String entityID : (List<String>) map.get(entityType)) {
+								List<Integer> cardinality = vocabularyExtractor.getCardinality(cache, entityType, entityID);
+								logger.info("cardinality: " + StringUtils.join(cardinality, ", "));
+								values.add(new Graph4PLD(providerId, entityType, extractPLD(entityID)));
 							}
 						}
 					} catch (InvalidJsonException e) {
