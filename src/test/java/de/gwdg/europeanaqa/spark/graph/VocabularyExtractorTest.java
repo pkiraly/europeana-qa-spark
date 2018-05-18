@@ -6,7 +6,6 @@ import de.gwdg.metadataqa.api.model.XmlFieldInstance;
 import de.gwdg.metadataqa.api.schema.EdmFullBeanSchema;
 import de.gwdg.metadataqa.api.schema.Schema;
 import org.junit.Test;
-import scala.actors.threadpool.Arrays;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
