@@ -74,8 +74,8 @@ public class VocabularyCompleteness {
 		    || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
 			qaSchema = new EdmOaiPmhXmlSchema();
 			// extractableFields.put("recordId", "$.identifier");
-			extractableFields.put("dataProvider", "$.['ore:Aggregation'][0]['edm:dataProvider'][0]");
-			extractableFields.put("provider", "$.['ore:Aggregation'][0]['edm:provider'][0]");
+			// extractableFields.put("dataProvider", "$.['ore:Aggregation'][0]['edm:dataProvider'][0]");
+			// extractableFields.put("provider", "$.['ore:Aggregation'][0]['edm:provider'][0]");
 			extractableFields.put("agent", "$.['edm:Agent'][*]['@about']");
 			extractableFields.put("concept", "$.['skos:Concept'][*]['@about']");
 			extractableFields.put("place", "$.['edm:Place'][*]['@about']");
@@ -83,8 +83,8 @@ public class VocabularyCompleteness {
 		} else {
 			qaSchema = new EdmFullBeanSchema();
 			// extractableFields.put("recordId", "$.identifier");
-			extractableFields.put("dataProvider", "$.['aggregations'][0]['edmDataProvider'][0]");
-			extractableFields.put("provider", "$.['aggregations'][0]['edmProvider'][0]");
+			// extractableFields.put("dataProvider", "$.['aggregations'][0]['edmDataProvider'][0]");
+			// extractableFields.put("provider", "$.['aggregations'][0]['edmProvider'][0]");
 			extractableFields.put("agent", "$.['agents'][*]['about']");
 			extractableFields.put("concept", "$.['concepts'][*]['about']");
 			extractableFields.put("place", "$.['places'][*]['about']");
@@ -111,12 +111,14 @@ public class VocabularyCompleteness {
 						Map<String, ? extends Object> map = fieldExtractor.getResultMap();
 						// String recordId = ((List<String>) map.get("recordId")).get(0);
 
+						/*
 						String dataProvider = extractValue(map, "dataProvider");
 						String provider = extractValue(map, "provider");
 
 						String providerId = (dataProvider != null)
 							? getDataProviderCode(dataProvider)
 							: (provider != null ? getDataProviderCode(provider) : "0");
+						*/
 
 						for (String entityType : entities) {
 							for (String entityID : (List<String>) map.get(entityType)) {
