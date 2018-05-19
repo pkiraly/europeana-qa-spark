@@ -98,6 +98,7 @@ public class VocabularyCompleteness {
 
 		List<List<String>> statistics = new ArrayList<>();
 		Map<String, String> cardinalityMap = new HashMap<>();
+		Map<String, String> vocabNameMap = new HashMap<>();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		// statistics.add(Arrays.asList("proxy-nodes", String.valueOf(inputFile.count())));
@@ -127,11 +128,18 @@ public class VocabularyCompleteness {
 									cardinality = StringUtils.join(cardinalities, ",");
 									cardinalityMap.put(entityID, cardinality);
 								}
+								String vocabulary = null;
+								if (vocabNameMap.containsKey(entityID)) {
+									vocabulary = vocabNameMap.get(entityID);
+								} else {
+									vocabulary = extractPLD(entityID);
+									vocabNameMap.put(entityID, vocabulary);
+								}
 
 								values.add(new Vocabulary(
 									entityType,
 									entityID,
-									extractPLD(entityID),
+									vocabulary,
 									cardinality
 								));
 							}
