@@ -1,20 +1,20 @@
 package de.gwdg.europeanaqa.spark.bean;
 
-import java.util.List;
-
 public class Vocabulary {
-	String providerId;
-	String type;
+	// String providerId;
+	String entityType;
+	String entityId;
 	String vocabulary;
 	String cardinality;
 
-	public Vocabulary(String providerId, String type, String vocabulary, String cardinality) {
-		this.providerId = providerId;
-		this.type = type;
+	public Vocabulary(String entityType, String entityId, String vocabulary, String cardinality) {
+		this.entityType = entityType;
+		this.entityId = entityId;
 		this.vocabulary = vocabulary;
 		this.cardinality = cardinality;
 	}
 
+	/*
 	public String getProviderId() {
 		return providerId;
 	}
@@ -22,13 +22,22 @@ public class Vocabulary {
 	public void setProviderId(String providerId) {
 		this.providerId = providerId;
 	}
+	*/
 
-	public String getType() {
-		return type;
+	public String getEntityType() {
+		return entityType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
+	}
+
+	public String getEntityId() {
+		return entityId;
+	}
+
+	public void setEntityId(String entityId) {
+		this.entityId = entityId;
 	}
 
 	public String getVocabulary() {

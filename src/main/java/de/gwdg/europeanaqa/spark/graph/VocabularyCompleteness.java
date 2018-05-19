@@ -97,6 +97,7 @@ public class VocabularyCompleteness {
 		List<String> entities = Arrays.asList("agent", "concept", "place", "timespan");
 
 		List<List<String>> statistics = new ArrayList<>();
+		Map<String, String> cardinalityMap = new HashMap<>();
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		// statistics.add(Arrays.asList("proxy-nodes", String.valueOf(inputFile.count())));
@@ -118,12 +119,21 @@ public class VocabularyCompleteness {
 
 						for (String entityType : entities) {
 							for (String entityID : (List<String>) map.get(entityType)) {
-								List<Integer> cardinality = vocabularyExtractor.getCardinality(cache, entityType, entityID);
+								String cardinality = null;
+								if (cardinalityMap.containsKey(entityID)) {
+									cardinality = cardinalityMap.get(entityID);
+								} else {
+									List<Integer> cardinalities = vocabularyExtractor.getCardinality(cache, entityType, entityID);
+									cardinality = StringUtils.join(cardinalities, ",");
+									cardinalityMap.put(entityID, cardinality);
+								}
+
 								values.add(new Vocabulary(
-									providerId,
 									entityType,
+									entityID,
 									extractPLD(entityID),
-									StringUtils.join(cardinality, ",")));
+									cardinality
+								));
 							}
 						}
 					} catch (InvalidJsonException e) {
@@ -134,7 +144,9 @@ public class VocabularyCompleteness {
 				}
 			);
 
-		Dataset<Row> df = spark.createDataFrame(idsRDD, Vocabulary.class).distinct();
+		Dataset<Row> df = spark.createDataFrame(idsRDD, Vocabulary.class)
+			.distinct()
+			.select("entityType", "vocabulary", "cardinality");
 		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-raw");
 
 		/*
