@@ -31,7 +31,7 @@ public class VocabularyExtractor implements Serializable {
 		String entityID)
 	{
 		String entityById = entitiesPaths.get(entityType).getJsonPath()
-			+ "[?(@['about'] == '" + entityID + "')]";
+			+ "[?(@['about'] == '" + entityID.replaceAll("'", "\\'") + "')]";
 
 		List<Integer> cardinalities = new ArrayList<>();
 		Object entities = cache.getFragment(entityById);
