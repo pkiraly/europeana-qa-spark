@@ -161,7 +161,8 @@ public class VocabularyCompleteness {
 			.orderBy(col("entityType"), col("vocabulary"));
 		vocabularies.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-vocabularies");
 
-		Dataset<Row> df = raw.select("entityType", "vocabulary", "cardinality");
+		Dataset<Row> df = raw.select("entityType", "vocabulary", "cardinality")
+			.orderBy(col("entityType"), col("vocabulary"));
 		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-raw");
 
 		/*
@@ -224,6 +225,8 @@ public class VocabularyCompleteness {
 			.replaceAll("^DMS02-.*", "DMS02")
 			.replaceAll("^UJAEN_HASSET_.*", "UJAEN_HASSET")
 			.replaceAll("^5500\\d{5}/", "5500")
+			// agent
+			.replaceAll("^\\/direct\\/\\d*$/", "direct")
 			// concept
 			.replaceAll("^urn:Mood:.*", "urn:Mood")
 			.replaceAll("^urn:Instrument:.*", "urn:Instrument")
