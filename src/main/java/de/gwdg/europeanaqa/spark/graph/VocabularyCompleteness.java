@@ -155,6 +155,7 @@ public class VocabularyCompleteness {
 			);
 
 		Dataset<Row> raw = spark.createDataFrame(idsRDD, Vocabulary.class).distinct();
+		raw.cache();
 		Dataset<Row> vocabularies = raw
 			.select("entityType", "vocabulary", "entityID")
 			.orderBy(col("entityType"), col("vocabulary"));
