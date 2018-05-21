@@ -15,4 +15,12 @@ public class VocabularyUtilsTest {
 		);
 	}
 
+	@Test
+	public void testSanitize() {
+		String original = "http://iconclass.org/41D221(FOOL'S CAP)(+83)";
+		assertEquals(
+			"http://iconclass.org/41D221(FOOL\\'S CAP)(+83)",
+			VocabularyUtils.sanitize(original)
+		);
+	}
 }

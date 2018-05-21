@@ -84,4 +84,8 @@ public class VocabularyUtils {
 		return pld;
 	}
 
+	public static String sanitize(String entityID) {
+		return entityID.replaceAll("'", "\\\\'");
+	}
+
 }

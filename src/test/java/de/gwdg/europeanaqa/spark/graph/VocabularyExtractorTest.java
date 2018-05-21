@@ -30,13 +30,4 @@ public class VocabularyExtractorTest {
 		});
 		assertEquals(expected, cardinality);
 	}
-
-	@Test
-	public void sanitization() {
-		String original = "http://iconclass.org/41D221(FOOL'S CAP)(+83)";
-		assertEquals(
-			"http://iconclass.org/41D221(FOOL\\'S CAP)(+83)",
-			VocabularyExtractor.sanitize(original)
-		);
-	}
 }
