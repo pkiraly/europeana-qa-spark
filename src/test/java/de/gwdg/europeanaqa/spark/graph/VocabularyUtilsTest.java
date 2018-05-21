@@ -8,7 +8,7 @@ public class VocabularyUtilsTest {
 
 	@Test
 	public void testExtractPLD() {
-		String original = "direct/9932";
+		String original = "/direct/9932";
 		assertEquals(
 			"direct",
 			VocabularyUtils.extractPLD(original)

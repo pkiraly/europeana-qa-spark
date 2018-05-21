@@ -37,7 +37,7 @@ public class VocabularyUtils {
 			.replaceAll("^UJAEN_HASSET_.*", "UJAEN_HASSET")
 			.replaceAll("^5500\\d{5}/", "5500")
 			// agent
-			.replaceAll("^\\/direct\\/\\d*$/", "direct")
+			.replaceAll("^/direct/\\d*$", "direct")
 			// concept
 			.replaceAll("^urn:Mood:.*", "urn:Mood")
 			.replaceAll("^urn:Instrument:.*", "urn:Instrument")
@@ -70,6 +70,8 @@ public class VocabularyUtils {
 			.replaceAll("^#datierung-[0-9a-f]{8}-[0-9a-f]{4}-.*", "#datierung")
 			.replaceAll("^datierung_uuid=[0-9a-f]{8}-[0-9a-f]{4}-.*", "datierung_uuid")
 			;
+
+		System.err.println(pld);
 
 		if (!pld.contains("data.europeana.eu/agent/")
 			&& !pld.contains("data.europeana.eu/place/")
