@@ -71,8 +71,6 @@ public class VocabularyUtils {
 			.replaceAll("^datierung_uuid=[0-9a-f]{8}-[0-9a-f]{4}-.*", "datierung_uuid")
 			;
 
-		System.err.println(pld);
-
 		if (!pld.contains("data.europeana.eu/agent/")
 			&& !pld.contains("data.europeana.eu/place/")
 			&& !pld.contains("data.europeana.eu/concept/")
