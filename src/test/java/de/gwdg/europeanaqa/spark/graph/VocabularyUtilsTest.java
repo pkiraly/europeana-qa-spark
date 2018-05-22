@@ -8,11 +8,13 @@ public class VocabularyUtilsTest {
 
 	@Test
 	public void testExtractPLD() {
-		String original = "/direct/9932";
-		assertEquals(
-			"direct",
-			VocabularyUtils.extractPLD(original)
-		);
+		assertEquals("direct", VocabularyUtils.extractPLD("/direct/9932"));
+		assertEquals("THESAURUS_CETI", VocabularyUtils.extractPLD("THESAURUS_CETI_9/SP.1"));
+		assertEquals("6ddd", VocabularyUtils.extractPLD("6629/SP.1"));
+		assertEquals("ddd", VocabularyUtils.extractPLD("162/SP.1"));
+		assertEquals("dddd", VocabularyUtils.extractPLD("4881/SP.1"));
+		assertEquals("2.ddd", VocabularyUtils.extractPLD("2,294/SP.1"));
+		assertEquals("1.ddd", VocabularyUtils.extractPLD("1,167/SP.1"));
 	}
 
 	@Test

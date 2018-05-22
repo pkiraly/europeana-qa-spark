@@ -36,8 +36,10 @@ public class VocabularyUtils {
 			.replaceAll("^DMS02-.*", "DMS02")
 			.replaceAll("^UJAEN_HASSET_.*", "UJAEN_HASSET")
 			.replaceAll("^5500\\d{5}/", "5500")
+
 			// agent
 			.replaceAll("^/direct/\\d*$", "direct")
+
 			// concept
 			.replaceAll("^urn:Mood:.*", "urn:Mood")
 			.replaceAll("^urn:Instrument:.*", "urn:Instrument")
@@ -63,6 +65,13 @@ public class VocabularyUtils {
 			.replaceAll("^context_P_.*", "context_P")
 			.replaceAll("^context_.*", "context")
 			.replaceAll("^#concept-.*", "#concept")
+
+			// place
+			.replaceAll("^THESAURUS_CETI_\\d+/SP.1", "THESAURUS_CETI")
+			.replaceAll("^6\\d\\d\\d/SP.1", "6ddd")
+			.replaceAll("^\\d\\d\\d/SP.1", "ddd")
+			.replaceAll("^\\d\\d\\d\\d/SP.1", "dddd")
+			.replaceAll("^([12]),\\d\\d\\d/SP.1", "$1.ddd")
 
 			// timespan
 			.replaceAll("^#Timesspan_OpenUp!.*", "#Timesspan_OpenUp!")
