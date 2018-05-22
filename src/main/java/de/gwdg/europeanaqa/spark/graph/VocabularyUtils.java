@@ -1,9 +1,10 @@
 package de.gwdg.europeanaqa.spark.graph;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class VocabularyUtils {
+public class VocabularyUtils implements Serializable {
 
 	public static String extractPLD(String identifier) {
 		if (SPANISH.contains(identifier)) {
@@ -51,6 +52,7 @@ public class VocabularyUtils {
 			.replaceAll("^urn:Mood:.*", "urn:Mood")
 			.replaceAll("^urn:Instrument:.*", "urn:Instrument")
 			.replaceAll("^DASI:supL.*", "DASI:supL")
+			.replaceAll("^DASI:textT-[56]$", "DASI:textT")
 			.replaceAll("^context_\\d{4}.*", "context_yyyy")
 			.replaceAll("^context_AUR_\\d{4}.*", "context_AUR_yyyy")
 			.replaceAll("^context_SLA_OU_\\d{4}.*", "context_SLA_OU_yyyy")
@@ -82,13 +84,17 @@ public class VocabularyUtils {
 			.replaceAll("^(oai:nid.pl:2):\\d+/SP.1$", "$1")
 			.replaceAll("^(adlib\\.project)\\.200\\d{5}/SP.1$", "$1")
 			.replaceAll("^#[A-Z]{2,3}_(280_place)\\d{1,2}$", "$1")
-			.replaceAll("^(geo:)\\d{1,2}\\.\\d+,\\d{1,2}\\.\\d+$", "$1xy")
+			.replaceAll("^(geo:)\\d{1,2}\\.\\d+,\\d{1,2}\\.\\d+$", "$1xy1")
+			.replaceAll("^(geo:)\\d+\\.0,\\d+\\.0$", "$1xy2")
 			.replaceAll("^(UAEMAT)-\\d{1,2}/SP\\.1$", "$1")
 			.replaceAll("^(ort_herstellung_uuid)=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", "$1")
 			.replaceAll("^48\\.2[01]\\d{4}#latitude$", "48.2d#latitude")
 			.replaceAll("^(#LIT_place)\\d$", "$1N")
 			.replaceAll("^(#place)\\d$", "$1N")
 			.replaceAll("^(#place)-.+$", "$1-abc")
+			.replaceAll("^#1[678]\\.\\d+\\.\\d+$", "#1N.xy")
+			.replaceAll("^N[OE]_280_00[1-3]#place", "280")
+			.replaceAll("^#(SWE|CYP|POL|DEN)_280(_(014|008))?_(agent|place)\\d?", "#280")
 
 			// timespan
 			.replaceAll("^#Timesspan_OpenUp!.*", "#Timesspan_OpenUp!")

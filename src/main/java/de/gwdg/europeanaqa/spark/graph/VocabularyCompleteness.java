@@ -135,7 +135,7 @@ public class VocabularyCompleteness {
 									vocabulary = vocabNameMap.get(entityID);
 								} else {
 									vocabulary = VocabularyUtils.extractPLD(entityID);
-									if (vocabulary.equals(entityID)) {
+									if (vocabulary.equals(entityID) && !vocabulary.equals("#place")) {
 										logger.severe(String.format("%s -- Undetected vocabulary (%s): %s", recordId, entityType, entityID));
 									}
 									vocabNameMap.put(entityID, vocabulary);
