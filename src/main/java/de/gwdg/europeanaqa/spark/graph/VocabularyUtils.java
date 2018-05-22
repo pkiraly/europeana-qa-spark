@@ -13,9 +13,11 @@ public class VocabularyUtils implements Serializable {
 	public static String extractPLD(String identifier) {
 
 		if (!requested) {
-			logger.severe("SPANISH size: " + SPANISH.size());
+			logger.severe("SPANISH size: " + SPANISH.size() + " " + SPANISH.get(0) + ", " + SPANISH.contains("Abaceria Central, mercat de l'"));
 			requested = true;
 		}
+
+		logger.info(String.format("identifier: '%s'", identifier));
 
 		if (SPANISH.contains(identifier)) {
 			return "SPANISH";
