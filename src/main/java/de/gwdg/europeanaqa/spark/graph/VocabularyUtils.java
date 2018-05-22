@@ -3,10 +3,20 @@ package de.gwdg.europeanaqa.spark.graph;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class VocabularyUtils implements Serializable {
 
+	private static boolean requested = false;
+	private static final Logger logger = Logger.getLogger(VocabularyUtils.class.getCanonicalName());
+
 	public static String extractPLD(String identifier) {
+
+		if (!requested) {
+			logger.severe("SPANISH size: " + SPANISH.size());
+			requested = true;
+		}
+
 		if (SPANISH.contains(identifier)) {
 			return "SPANISH";
 		}
