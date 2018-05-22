@@ -19,7 +19,7 @@ public class VocabularyUtils implements Serializable {
 
 		logger.info(String.format("identifier: '%s'", identifier));
 
-		if (SPANISH.contains(identifier)) {
+		if (SPANISH.contains(identifier.trim())) {
 			return "SPANISH";
 		}
 
