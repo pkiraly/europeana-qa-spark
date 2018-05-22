@@ -73,7 +73,7 @@ public class VocabularyCompleteness {
 		if (parameters.getFormat() == null
 		    || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
 			qaSchema = new EdmOaiPmhXmlSchema();
-			// extractableFields.put("recordId", "$.identifier");
+			extractableFields.put("recordId", "$.identifier");
 			// extractableFields.put("dataProvider", "$.['ore:Aggregation'][0]['edm:dataProvider'][0]");
 			// extractableFields.put("provider", "$.['ore:Aggregation'][0]['edm:provider'][0]");
 			extractableFields.put("agent", "$.['edm:Agent'][*]['@about']");
@@ -82,7 +82,7 @@ public class VocabularyCompleteness {
 			extractableFields.put("timespan", "$.['edm:TimeSpan'][*]['@about']");
 		} else {
 			qaSchema = new EdmFullBeanSchema();
-			// extractableFields.put("recordId", "$.identifier");
+			extractableFields.put("recordId", "$.identifier");
 			// extractableFields.put("dataProvider", "$.['aggregations'][0]['edmDataProvider'][0]");
 			// extractableFields.put("provider", "$.['aggregations'][0]['edmProvider'][0]");
 			extractableFields.put("agent", "$.['agents'][*]['about']");
@@ -109,7 +109,7 @@ public class VocabularyCompleteness {
 						JsonPathCache<? extends XmlFieldInstance> cache = new JsonPathCache<>(jsonString);
 						fieldExtractor.measure(cache);
 						Map<String, ? extends Object> map = fieldExtractor.getResultMap();
-						// String recordId = ((List<String>) map.get("recordId")).get(0);
+						String recordId = ((List<String>) map.get("recordId")).get(0);
 
 						/*
 						String dataProvider = extractValue(map, "dataProvider");
@@ -135,6 +135,9 @@ public class VocabularyCompleteness {
 									vocabulary = vocabNameMap.get(entityID);
 								} else {
 									vocabulary = VocabularyUtils.extractPLD(entityID);
+									if (vocabulary.equals(entityID)) {
+										logger.severe(String.format("%s -- Undetected vocabulary (%s): %s", recordId, entityType, entityID));
+									}
 									vocabNameMap.put(entityID, vocabulary);
 								}
 
