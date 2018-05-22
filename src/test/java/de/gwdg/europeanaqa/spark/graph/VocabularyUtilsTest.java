@@ -34,6 +34,11 @@ public class VocabularyUtilsTest {
 		assertEquals("280", VocabularyUtils.extractPLD("NO_280_001#place"));
 		assertEquals("#280", VocabularyUtils.extractPLD("#POL_280_008_place2"));
 		assertEquals("#280", VocabularyUtils.extractPLD("#DEN_280_place"));
+		assertEquals("N7", VocabularyUtils.extractPLD("0270330/SP.1"));
+		assertEquals("N2", VocabularyUtils.extractPLD("62/SP.1"));
+		assertEquals("N7-N", VocabularyUtils.extractPLD("4058167-6"));
+		assertEquals("KE0", VocabularyUtils.extractPLD("KE042-057003-/SP.1"));
+		assertEquals("KE0", VocabularyUtils.extractPLD("KE021-138----/SP.1"));
 	}
 
 	@Test
