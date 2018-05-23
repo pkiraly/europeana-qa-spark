@@ -1,5 +1,6 @@
 package de.gwdg.europeanaqa.spark.graph;
 
+import com.jayway.jsonpath.JsonPath;
 import de.gwdg.europeanaqa.api.abbreviation.EdmDataProviderManager;
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
@@ -42,6 +43,9 @@ public class VocabularyCompletenessCalculator implements Serializable {
 	JsonBranch providerProxyBranch = null;
 	JsonBranch europeanaProxyBranch = null;
 
+	Object providerProxy = null;
+	Object europeanaProxy = null;
+
 	Map<String, String> extractableFields = new LinkedHashMap<>();
 	final MultiFieldExtractor fieldExtractor;
 	final VocabularyExtractor vocabularyExtractor;
@@ -57,6 +61,9 @@ public class VocabularyCompletenessCalculator implements Serializable {
 	}
 
 	public List<Vocabulary> calculate(String jsonString) {
+		providerProxy = null;
+		europeanaProxy = null;
+
 		List<Vocabulary> values = new ArrayList<>();
 		JsonPathCache<? extends XmlFieldInstance> cache = new JsonPathCache<>(jsonString);
 		fieldExtractor.measure(cache);
@@ -70,7 +77,6 @@ public class VocabularyCompletenessCalculator implements Serializable {
 			? getDataProviderCode(dataProvider)
 			: (provider != null ? getDataProviderCode(provider) : "0");
 
-		boolean hasPrinted = false;
 		for (String entityType : entities) {
 			for (String entityID : (List<String>) map.get(entityType)) {
 				String cardinality = getOrCreateCardinality(cache, entityType, entityID);
@@ -84,13 +90,6 @@ public class VocabularyCompletenessCalculator implements Serializable {
 					cardinality
 				);
 				vocabulary.setLinkage(detectLinkage(cache, entityType, entityID));
-				if (vocabulary.getLinkage() > 0) {
-					if (!hasPrinted) {
-						logger.info(jsonString);
-						hasPrinted = true;
-					}
-					logger.info(String.format("%s (%s): %d", entityType, entityID, vocabulary.getLinkage()));
-				}
 				values.add(vocabulary);
 			}
 		}
@@ -98,22 +97,24 @@ public class VocabularyCompletenessCalculator implements Serializable {
 	}
 
 	private int detectLinkage(JsonPathCache<? extends XmlFieldInstance> cache, String entityType, String entityID) {
-		// logger.info(providerProxyBranch.getJsonPath());
-		// logger.info(europeanaProxyBranch.getJsonPath());
-		Object providerProxy = cache.getFragment(providerProxyBranch.getJsonPath());
-		Object europeanaProxy = cache.getFragment(europeanaProxyBranch.getJsonPath());
 		if (providerProxy == null) {
-			logger.severe(String.format("Entity is null"));
-		} else {
-			if (providerProxy instanceof JSONArray) {
-				providerProxy = ((JSONArray) providerProxy).get(0);
+			providerProxy = cache.getFragment(providerProxyBranch.getJsonPath());
+			if (providerProxy == null) {
+				logger.severe(String.format("Entity is null"));
+			} else {
+				if (providerProxy instanceof JSONArray) {
+					providerProxy = ((JSONArray) providerProxy).get(0);
+				}
 			}
 		}
 		if (europeanaProxy == null) {
-			logger.severe(String.format("Entity is null"));
-		} else {
-			if (europeanaProxy instanceof JSONArray) {
-				europeanaProxy = ((JSONArray) europeanaProxy).get(0);
+			europeanaProxy = cache.getFragment(europeanaProxyBranch.getJsonPath());
+			if (europeanaProxy == null) {
+				logger.severe(String.format("Entity is null"));
+			} else {
+				if (europeanaProxy instanceof JSONArray) {
+					europeanaProxy = ((JSONArray) europeanaProxy).get(0);
+				}
 			}
 		}
 
@@ -124,17 +125,15 @@ public class VocabularyCompletenessCalculator implements Serializable {
 			if (fieldInstances != null && !fieldInstances.isEmpty()) {
 				for (EdmFieldInstance instance : (List<EdmFieldInstance>) fieldInstances) {
 					if (instance != null && isLinkToEntity(instance, entityID)) {
-						logger.info(path + " (provider)");
 						linkage = 1;
 						break;
 					}
 				}
 			}
-			fieldInstances = cache.get(path, path, europeanaProxy);
+			fieldInstances = cache.get(path + "eu", path, europeanaProxy);
 			if (fieldInstances != null && !fieldInstances.isEmpty()) {
 				for (EdmFieldInstance instance : (List<EdmFieldInstance>) fieldInstances) {
 					if (instance != null && isLinkToEntity(instance, entityID)) {
-						logger.info(path + " (europeana)");
 						linkage = (linkage == 0) ? 2 : 3;
 						break;
 					}
@@ -143,7 +142,6 @@ public class VocabularyCompletenessCalculator implements Serializable {
 			if (linkage != 0)
 				break;
 		}
-		// logger.info("linkage: " + linkage);
 		return linkage;
 	}
 
@@ -229,10 +227,10 @@ public class VocabularyCompletenessCalculator implements Serializable {
 	}
 
 	private boolean isLinkToEntity(EdmFieldInstance field, String entityID) {
-		if (field.hasResource() && entityID.equals(field.getResource())) {
+		if (field.hasResource() && entityID.trim().equals(field.getResource().trim())) {
 			return true;
 		}
-		return entityID.equals(field.getValue());
+		return entityID.trim().equals(field.getValue().trim());
 	}
 
 }
