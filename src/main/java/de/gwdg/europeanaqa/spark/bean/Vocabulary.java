@@ -6,6 +6,7 @@ public class Vocabulary {
 	String entityId;
 	String vocabulary;
 	String cardinality;
+	int linkage;
 
 	public Vocabulary(String providerId, String entityType, String entityId, String vocabulary, String cardinality) {
 		this.providerId = providerId;
@@ -53,5 +54,13 @@ public class Vocabulary {
 
 	public void setCardinality(String cardinality) {
 		this.cardinality = cardinality;
+	}
+
+	public int getLinkage() {
+		return linkage;
+	}
+
+	public void setLinkage(int linkage) {
+		this.linkage = linkage;
 	}
 }
