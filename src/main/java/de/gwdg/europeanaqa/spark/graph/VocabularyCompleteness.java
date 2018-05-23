@@ -175,7 +175,7 @@ public class VocabularyCompleteness {
 		Dataset<Row> counted = raw
 			.groupBy("entityType", "vocabulary")
 			.count();
-		counted.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-counted");
+		// counted.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-counted");
 
 		Dataset<Row> ordered = counted
 			.orderBy(col("entityType"), col("count").desc());
