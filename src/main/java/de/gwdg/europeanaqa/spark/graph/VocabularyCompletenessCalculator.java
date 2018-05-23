@@ -14,10 +14,11 @@ import de.gwdg.metadataqa.api.schema.Schema;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class VocabularyCompletenessCalculator {
+public class VocabularyCompletenessCalculator implements Serializable {
 
 	private static final Logger logger = Logger.getLogger(VocabularyCompletenessCalculator.class.getCanonicalName());
 
