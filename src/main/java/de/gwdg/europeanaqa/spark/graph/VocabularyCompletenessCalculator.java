@@ -96,6 +96,8 @@ public class VocabularyCompletenessCalculator implements Serializable {
 	}
 
 	private int detectLinkage(JsonPathCache<? extends XmlFieldInstance> cache, String entityType, String entityID) {
+		logger.info(providerProxyBranch.getJsonPath());
+		logger.info(europeanaProxyBranch.getJsonPath());
 		Object providerProxy = cache.getFragment(providerProxyBranch.getJsonPath());
 		Object europeanaProxy = cache.getFragment(europeanaProxyBranch.getJsonPath());
 		if (providerProxy == null) {
@@ -120,6 +122,7 @@ public class VocabularyCompletenessCalculator implements Serializable {
 			if (fieldInstances != null && !fieldInstances.isEmpty()) {
 				for (EdmFieldInstance instance : (List<EdmFieldInstance>) fieldInstances) {
 					if (instance != null && isLinkToEntity(instance, entityID)) {
+						logger.info(path + " (provider)");
 						linkage = 1;
 						break;
 					}
@@ -129,6 +132,7 @@ public class VocabularyCompletenessCalculator implements Serializable {
 			if (fieldInstances != null && !fieldInstances.isEmpty()) {
 				for (EdmFieldInstance instance : (List<EdmFieldInstance>) fieldInstances) {
 					if (instance != null && isLinkToEntity(instance, entityID)) {
+						logger.info(path + " (europeana)");
 						linkage = (linkage == 0) ? 2 : 3;
 						break;
 					}
