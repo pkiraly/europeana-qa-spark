@@ -74,8 +74,8 @@ public class VocabularyCompleteness {
 		    || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
 			qaSchema = new EdmOaiPmhXmlSchema();
 			extractableFields.put("recordId", "$.identifier");
-			// extractableFields.put("dataProvider", "$.['ore:Aggregation'][0]['edm:dataProvider'][0]");
-			// extractableFields.put("provider", "$.['ore:Aggregation'][0]['edm:provider'][0]");
+			extractableFields.put("dataProvider", "$.['ore:Aggregation'][0]['edm:dataProvider'][0]");
+			extractableFields.put("provider", "$.['ore:Aggregation'][0]['edm:provider'][0]");
 			extractableFields.put("agent", "$.['edm:Agent'][*]['@about']");
 			extractableFields.put("concept", "$.['skos:Concept'][*]['@about']");
 			extractableFields.put("place", "$.['edm:Place'][*]['@about']");
@@ -83,8 +83,8 @@ public class VocabularyCompleteness {
 		} else {
 			qaSchema = new EdmFullBeanSchema();
 			extractableFields.put("recordId", "$.identifier");
-			// extractableFields.put("dataProvider", "$.['aggregations'][0]['edmDataProvider'][0]");
-			// extractableFields.put("provider", "$.['aggregations'][0]['edmProvider'][0]");
+			extractableFields.put("dataProvider", "$.['aggregations'][0]['edmDataProvider'][0]");
+			extractableFields.put("provider", "$.['aggregations'][0]['edmProvider'][0]");
 			extractableFields.put("agent", "$.['agents'][*]['about']");
 			extractableFields.put("concept", "$.['concepts'][*]['about']");
 			extractableFields.put("place", "$.['places'][*]['about']");
@@ -111,14 +111,12 @@ public class VocabularyCompleteness {
 						Map<String, ? extends Object> map = fieldExtractor.getResultMap();
 						String recordId = ((List<String>) map.get("recordId")).get(0);
 
-						/*
 						String dataProvider = extractValue(map, "dataProvider");
 						String provider = extractValue(map, "provider");
 
 						String providerId = (dataProvider != null)
 							? getDataProviderCode(dataProvider)
 							: (provider != null ? getDataProviderCode(provider) : "0");
-						*/
 
 						for (String entityType : entities) {
 							for (String entityID : (List<String>) map.get(entityType)) {
@@ -142,6 +140,7 @@ public class VocabularyCompleteness {
 								}
 
 								values.add(new Vocabulary(
+									providerId,
 									entityType,
 									entityID,
 									vocabulary,
@@ -157,29 +156,32 @@ public class VocabularyCompleteness {
 				}
 			);
 
-		Dataset<Row> raw = spark.createDataFrame(idsRDD, Vocabulary.class).distinct();
+		Dataset<Row> raw = spark.createDataFrame(idsRDD, Vocabulary.class);
 		raw.cache();
-		Dataset<Row> vocabularies = raw
+
+		Dataset<Row> distinct = raw.select("entityType", "vocabulary", "entityID", "cardinality").distinct();
+		distinct.cache();
+
+		Dataset<Row> vocabularies = distinct
 			.select("entityType", "vocabulary", "entityID")
 			.orderBy(col("entityType"), col("vocabulary"));
 		vocabularies.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-vocabularies");
 
-		Dataset<Row> df = raw.select("entityType", "vocabulary", "cardinality")
+		Dataset<Row> df = distinct
+			.select("entityType", "vocabulary", "cardinality")
 			.orderBy(col("entityType"), col("vocabulary"));
 		df.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-raw");
 
-		/*
-		Dataset<Row> counted = df
-										.groupBy("type", "vocabulary")
-										.count();
+		Dataset<Row> counted = raw
+			.groupBy("entityType", "vocabulary")
+			.count();
 		counted.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness-counted");
 
 		Dataset<Row> ordered = counted
-										.orderBy(col("type"), col("count").desc());
+			.orderBy(col("entityType"), col("count").desc());
 
 		// output every individual entity IDs with count
 		ordered.write().mode(SaveMode.Overwrite).csv(outputDirName + "/type-vocabulary-completeness");
-		*/
 	}
 
 	public static String getDataProviderCode(String dataProvider) {
