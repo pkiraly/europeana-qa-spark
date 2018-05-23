@@ -143,7 +143,7 @@ public class VocabularyCompletenessCalculator implements Serializable {
 			if (linkage != 0)
 				break;
 		}
-		logger.info("linkage: " + linkage);
+		// logger.info("linkage: " + linkage);
 		return linkage;
 	}
 
