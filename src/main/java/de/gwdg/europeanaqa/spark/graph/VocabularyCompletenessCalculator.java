@@ -70,8 +70,14 @@ public class VocabularyCompletenessCalculator implements Serializable {
 			? getDataProviderCode(dataProvider)
 			: (provider != null ? getDataProviderCode(provider) : "0");
 
+		boolean hasPrinted = false;
 		for (String entityType : entities) {
 			for (String entityID : (List<String>) map.get(entityType)) {
+				if (!hasPrinted) {
+					logger.info(jsonString);
+					hasPrinted = true;
+				}
+				logger.info(entityType + ", " + entityID);
 				String cardinality = getOrCreateCardinality(cache, entityType, entityID);
 				String vocabularyID = getOrCreateVocabulary(recordId, entityType, entityID);
 
@@ -124,9 +130,12 @@ public class VocabularyCompletenessCalculator implements Serializable {
 				for (EdmFieldInstance instance : (List<EdmFieldInstance>) fieldInstances) {
 					if (instance != null && isLinkToEntity(instance, entityID)) {
 						linkage = (linkage == 0) ? 2 : 3;
+						break;
 					}
 				}
 			}
+			if (linkage != 0)
+				break;
 		}
 		logger.info("linkage: " + linkage);
 		return linkage;
