@@ -53,6 +53,8 @@ public class VocabularyUtils implements Serializable {
 
 			// agent
 			.replaceAll("^/direct/\\d*$", "direct")
+			.replaceAll("^#Muzeul.*", "#Muzeul")
+			.replaceAll("^#Agent.*", "#Agent")
 
 			// concept
 			.replaceAll("^urn:Mood:.*", "urn:Mood")

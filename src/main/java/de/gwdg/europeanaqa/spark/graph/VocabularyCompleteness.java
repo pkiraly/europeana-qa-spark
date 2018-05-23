@@ -88,6 +88,13 @@ public class VocabularyCompleteness {
 		Dataset<Row> raw = spark.createDataFrame(idsRDD, Vocabulary.class);
 		raw.cache();
 
+		raw.select("entityType", "vocabulary", "providerId")
+			.groupBy("entityType", "vocabulary")
+			.count()
+			.write()
+			.mode(SaveMode.Overwrite)
+			.csv(outputDirName + "/type-vocabulary-by-providers");
+
 		Dataset<Row> distinct = raw.select("entityType", "vocabulary", "entityID", "cardinality").distinct();
 		distinct.cache();
 

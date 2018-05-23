@@ -39,6 +39,8 @@ public class VocabularyUtilsTest {
 		assertEquals("N7-N", VocabularyUtils.extractPLD("4058167-6"));
 		assertEquals("KE0", VocabularyUtils.extractPLD("KE042-057003-/SP.1"));
 		assertEquals("KE0", VocabularyUtils.extractPLD("KE021-138----/SP.1"));
+		assertEquals("#Muzeul", VocabularyUtils.extractPLD("#MuzeulDeArtaConstanta"));
+		assertEquals("#Agent", VocabularyUtils.extractPLD("#AgentPublisher"));
 	}
 
 	@Test
