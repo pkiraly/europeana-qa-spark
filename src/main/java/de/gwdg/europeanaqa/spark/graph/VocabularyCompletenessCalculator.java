@@ -111,16 +111,20 @@ public class VocabularyCompletenessCalculator implements Serializable {
 		List<? extends XmlFieldInstance> fieldInstances;
 		for (String path : enrichableFieldPaths) {
 			fieldInstances = cache.get(path, path, providerProxy);
-			for (EdmFieldInstance instance : (List<EdmFieldInstance>)fieldInstances){
-				if (instance != null && isLinkToEntity(instance, entityID)) {
-					linkage = 1;
-					break;
+			if (fieldInstances != null && !fieldInstances.isEmpty()) {
+				for (EdmFieldInstance instance : (List<EdmFieldInstance>) fieldInstances) {
+					if (instance != null && isLinkToEntity(instance, entityID)) {
+						linkage = 1;
+						break;
+					}
 				}
 			}
 			fieldInstances = cache.get(path, path, europeanaProxy);
-			for (EdmFieldInstance instance : (List<EdmFieldInstance>)fieldInstances){
-				if (instance != null && isLinkToEntity(instance, entityID)) {
-					linkage = (linkage == 0) ? 2 : 3;
+			if (fieldInstances != null && !fieldInstances.isEmpty()) {
+				for (EdmFieldInstance instance : (List<EdmFieldInstance>) fieldInstances) {
+					if (instance != null && isLinkToEntity(instance, entityID)) {
+						linkage = (linkage == 0) ? 2 : 3;
+					}
 				}
 			}
 		}
