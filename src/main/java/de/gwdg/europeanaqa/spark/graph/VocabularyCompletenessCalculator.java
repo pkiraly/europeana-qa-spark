@@ -73,11 +73,6 @@ public class VocabularyCompletenessCalculator implements Serializable {
 		boolean hasPrinted = false;
 		for (String entityType : entities) {
 			for (String entityID : (List<String>) map.get(entityType)) {
-				if (!hasPrinted) {
-					logger.info(jsonString);
-					hasPrinted = true;
-				}
-				logger.info(entityType + ", " + entityID);
 				String cardinality = getOrCreateCardinality(cache, entityType, entityID);
 				String vocabularyID = getOrCreateVocabulary(recordId, entityType, entityID);
 
@@ -89,6 +84,13 @@ public class VocabularyCompletenessCalculator implements Serializable {
 					cardinality
 				);
 				vocabulary.setLinkage(detectLinkage(cache, entityType, entityID));
+				if (vocabulary.getLinkage() > 0) {
+					if (!hasPrinted) {
+						logger.info(jsonString);
+						hasPrinted = true;
+					}
+					logger.info(String.format("%s (%s): %d", entityType, entityID, vocabulary.getLinkage()));
+				}
 				values.add(vocabulary);
 			}
 		}
@@ -96,8 +98,8 @@ public class VocabularyCompletenessCalculator implements Serializable {
 	}
 
 	private int detectLinkage(JsonPathCache<? extends XmlFieldInstance> cache, String entityType, String entityID) {
-		logger.info(providerProxyBranch.getJsonPath());
-		logger.info(europeanaProxyBranch.getJsonPath());
+		// logger.info(providerProxyBranch.getJsonPath());
+		// logger.info(europeanaProxyBranch.getJsonPath());
 		Object providerProxy = cache.getFragment(providerProxyBranch.getJsonPath());
 		Object europeanaProxy = cache.getFragment(europeanaProxyBranch.getJsonPath());
 		if (providerProxy == null) {
