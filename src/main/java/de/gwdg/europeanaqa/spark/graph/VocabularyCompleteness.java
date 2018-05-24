@@ -87,6 +87,9 @@ public class VocabularyCompleteness {
 
 		Dataset<Row> raw = spark.createDataFrame(idsRDD, Vocabulary.class);
 		raw.cache();
+		raw.write()
+			.mode(SaveMode.Overwrite)
+			.csv(outputDirName + "/vocabulary-completeness-raw");
 
 		raw.select("entityType", "vocabulary", "providerId")
 			.groupBy("entityType", "vocabulary", "providerId")
