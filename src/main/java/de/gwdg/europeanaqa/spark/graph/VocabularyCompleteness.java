@@ -89,11 +89,26 @@ public class VocabularyCompleteness {
 		raw.cache();
 
 		raw.select("entityType", "vocabulary", "providerId")
+			.groupBy("entityType", "vocabulary", "providerId")
+			.count()
+			.write()
+			.mode(SaveMode.Overwrite)
+			.csv(outputDirName + "/type-vocabulary-providerID-count");
+
+		raw.select("entityType", "vocabulary", "providerId")
+			.distinct()
 			.groupBy("entityType", "vocabulary")
 			.count()
 			.write()
 			.mode(SaveMode.Overwrite)
 			.csv(outputDirName + "/type-vocabulary-by-providers");
+
+		raw.select("entityType", "vocabulary", "entityID")
+			.groupBy("entityType", "vocabulary", "entityID")
+			.count()
+			.write()
+			.mode(SaveMode.Overwrite)
+			.csv(outputDirName + "/type-vocabulary-entityID-count");
 
 		Dataset<Row> distinct = raw.select("entityType", "vocabulary", "entityID", "cardinality").distinct();
 		distinct.cache();
