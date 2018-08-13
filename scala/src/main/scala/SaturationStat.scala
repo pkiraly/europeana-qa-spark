@@ -38,7 +38,22 @@ object SaturationStat {
     )
     data.cache()
 
-    var stat = data.select("NumberOfLanguagesPerPropertyInProviderProxy").describe()
+    var stat = data
+      .select(
+        "NumberOfLanguagesPerPropertyInProviderProxy",
+        "NumberOfLanguagesPerPropertyInEuropeanaProxy",
+        "NumberOfLanguagesPerPropertyInObject",
+        "TaggedLiteralsInProviderProxy",
+        "TaggedLiteralsInEuropeanaProxy",
+        "TaggedLiteralsInObject",
+        "DistinctLanguageCountInProviderProxy",
+        "DistinctLanguageCountInEuropeanaProxy",
+        "DistinctLanguagesInObject",
+        "TaggedLiteralsPerLanguageInProviderProxy",
+        "TaggedLiteralsPerLanguageInEuropeanaProxy",
+        "TaggedLiteralsPerLanguageInObject"
+      )
+      .describe()
     stat.write
       .option("header", "true")
       .csv("hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics")
