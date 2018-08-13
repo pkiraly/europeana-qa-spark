@@ -11,7 +11,7 @@ object SaturationStat {
 
     var inputFile = "hdfs://localhost:54310/join/result29-multilingual-saturation-light.csv";
 
-    val dataWithoutHeader = spark.read
+    val dataWithoutHeader = sc.read
       .option("header", "false")
       .option("inferSchema", "true")
       .format("csv")
