@@ -65,10 +65,78 @@ object SaturationStat {
         "TaggedLiteralsPerLanguageInObject"
       )
       .describe()
+
+    def medianD(inputList: List[Double]): Double = {
+      val count = inputList.size
+      if (count % 2 == 0) {
+        val l = count / 2 - 1
+        val r = l + 1
+        (inputList(l) + inputList(r)).toDouble / 2
+      } else
+        inputList(count / 2).toDouble
+    }
+
+    def medianI(inputList: List[Int]): Double = {
+      val count = inputList.size
+      if (count % 2 == 0) {
+        val l = count / 2 - 1
+        val r = l + 1
+        (inputList(l) + inputList(r)).toDouble / 2
+      } else
+        inputList(count / 2).toDouble
+    }
+
+    var orderedFields = Seq(
+      "NumberOfLanguagesPerPropertyInProviderProxy",
+      "NumberOfLanguagesPerPropertyInEuropeanaProxy",
+      "NumberOfLanguagesPerPropertyInObject",
+      "TaggedLiteralsInProviderProxy",
+      "TaggedLiteralsInEuropeanaProxy",
+      "TaggedLiteralsInObject",
+      "DistinctLanguageCountInProviderProxy",
+      "DistinctLanguageCountInEuropeanaProxy",
+      "DistinctLanguagesInObject",
+      "TaggedLiteralsPerLanguageInProviderProxy",
+      "TaggedLiteralsPerLanguageInEuropeanaProxy",
+      "TaggedLiteralsPerLanguageInObject"
+    )
+
+    var medianRow = Seq.empty[Any]
+    medianRow = medianRow :+ "median"
+
+    val total = data.count
+    for (field <- orderedFields) {
+      // println(field)
+      var med = 0.0;
+      var max = 0.0;
+      var percent = 0.0
+      if (field.startsWith("NumberOfLanguages") || field.startsWith("TaggedLiteralsPerLanguage")) {
+        val sortedList = data.select(field).sort(field).collect().map(r => r.getDouble(0)).toList
+        max = sortedList.last
+        percent = sortedList.filter(_ > 0).size * 100.0 / total
+        med = medianD(sortedList)
+      } else {
+        val sortedList = data.select(field).sort(field).collect().map(r => r.getInt(0)).toList
+        max = sortedList.last
+        percent = sortedList.filter(_ > 0).size * 100.0 / total
+        med = medianI(sortedList)
+      }
+      medianRow = medianRow :+ med
+      // println(s"$field: $med (max: $max, $percent% above 0)")
+    }
+
+    val labels = Seq("summary") ++ orderedFields
+    var strmedian = medianRow.map(x => x.toString)
+    val medianDf = Seq(strmedian).map(
+      x => (
+        x(0), x(1), x(2), x(3), x(4), x(5), x(6), x(7), x(8), x(9), x(10), x(11), x(12)
+      )
+    ).toDF(labels: _*)
+    stat = stat.union(medianDf)
+
     stat.write
       .option("header", "true")
       .csv("hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics")
-
   }
 }
 
