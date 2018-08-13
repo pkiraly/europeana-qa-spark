@@ -9,10 +9,10 @@ object SaturationStat {
     // val conf = new SparkConf().setAppName("SaturationStat")
     // val sc = new SparkContext(conf)
 
-    import spark.implicits._
 
     val log = org.apache.log4j.LogManager.getLogger("SaturationStat")
     val spark = SparkSession.builder.appName("SaturationStat").getOrCreate()
+    import spark.implicits._
 
     var inputFile = "hdfs://localhost:54310/join/result29-multilingual-saturation-light.csv";
 
