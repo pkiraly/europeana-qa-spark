@@ -34,7 +34,18 @@ object SaturationStat {
     )
     val names = id ++ fields
     val data = dataWithoutHeader.toDF(names: _*).select(
-      "NumberOfLanguagesPerPropertyInProviderProxy", "NumberOfLanguagesPerPropertyInEuropeanaProxy"
+      "NumberOfLanguagesPerPropertyInProviderProxy",
+      "NumberOfLanguagesPerPropertyInEuropeanaProxy",
+      "NumberOfLanguagesPerPropertyInObject",
+      "TaggedLiteralsInProviderProxy",
+      "TaggedLiteralsInEuropeanaProxy",
+      "TaggedLiteralsInObject",
+      "DistinctLanguageCountInProviderProxy",
+      "DistinctLanguageCountInEuropeanaProxy",
+      "DistinctLanguagesInObject",
+      "TaggedLiteralsPerLanguageInProviderProxy",
+      "TaggedLiteralsPerLanguageInEuropeanaProxy",
+      "TaggedLiteralsPerLanguageInObject"
     )
     data.cache()
 
