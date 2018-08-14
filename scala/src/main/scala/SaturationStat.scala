@@ -14,7 +14,9 @@ object SaturationStat {
     val spark = SparkSession.builder.appName("SaturationStat").getOrCreate()
     import spark.implicits._
 
-    var inputFile = "hdfs://localhost:54310/join/result29-multilingual-saturation-light.csv";
+    var inputFile = args(0)
+    var outputFile = args(1)
+    // var inputFile = "hdfs://localhost:54310/join/result29-multilingual-saturation-light.csv";
 
     val dataWithoutHeader = spark.read
       .option("header", "false")
@@ -140,7 +142,7 @@ object SaturationStat {
 
     stat.write
       .option("header", "true")
-      .csv("hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics")
+      .csv(outputFile) // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
 
   }
 }
