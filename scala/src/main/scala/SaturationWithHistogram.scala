@@ -3,15 +3,31 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 
-object SaturationStat {
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.functions
+import org.apache.spark.sql.functions.sum
+import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.types.DoubleType
+import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.Row
+
+object SaturationWithHistogram {
+
   def main(args: Array[String]): Unit = {
+
+    // val conf = new SparkConf().setAppName("SaturationStat")
+    // val sc = new SparkContext(conf)
 
     val log = org.apache.log4j.LogManager.getLogger("SaturationStat")
     val spark = SparkSession.builder.appName("SaturationStat").getOrCreate()
+
     import spark.implicits._
 
     val inputFile = args(0)
+    // val inputFile = "/scratch/pkiraly/multilinguality/result29-multilingual-saturation-light.csv.gz"
     val outputFile = args(1)
+    // val outputFile = "/scratch/pkiraly/multilinguality/result29-multilingual-saturation-light-statistics"
+    // var inputFile = "hdfs://localhost:54310/join/result29-multilingual-saturation-light.csv";
 
     val dataWithoutHeader = spark.read
       .option("header", "false")
@@ -63,26 +79,6 @@ object SaturationStat {
       )
       .describe()
 
-    def medianD(inputList: List[Double]): Double = {
-      val count = inputList.size
-      if (count % 2 == 0) {
-        val l = count / 2 - 1
-        val r = l + 1
-        (inputList(l) + inputList(r)).toDouble / 2
-      } else
-        inputList(count / 2).toDouble
-    }
-
-    def medianI(inputList: List[Int]): Double = {
-      val count = inputList.size
-      if (count % 2 == 0) {
-        val l = count / 2 - 1
-        val r = l + 1
-        (inputList(l) + inputList(r)).toDouble / 2
-      } else
-        inputList(count / 2).toDouble
-    }
-
     var orderedFields = Seq(
       "NumberOfLanguagesPerPropertyInProviderProxy",
       "NumberOfLanguagesPerPropertyInEuropeanaProxy",
@@ -98,32 +94,48 @@ object SaturationStat {
       "TaggedLiteralsPerLanguageInObject"
     )
 
+    def getDouble(first: Row): Double = {
+      if (first.schema.fields(0).dataType.equals(DoubleType)) {
+        first.getDouble(0)
+      } else {
+        first.getInt(0).toDouble
+      }
+    }
+
+    var count = data.count()
+    var isImpair = count / 2 == 1
     var medianRow = Seq.empty[Any]
     medianRow = medianRow :+ "median"
 
-    val total = data.count
-    for (field <- orderedFields) {
-      // println(field)
-      var median = 0.0;
-      var max = 0.0;
-      var percent = 0.0
-      if (field.startsWith("NumberOfLanguages") || field.startsWith("TaggedLiteralsPerLanguage")) {
-        percent = (data.select(field).filter(x => x.getDouble(0) > 0).count() * 100 / total)
-        if (percent > 50.0) {
-          val sortedList = data.select(field).sort(field).collect().map(r => r.getDouble(0)).toList
-          max = sortedList.last
-          median = medianD(sortedList)
-        }
+    for (i <- 0 to fields.size) {
+      var l : Long = -1
+      var r : Long = -1
+      var median : Double = -1.0
+      var fieldName = data.schema.fieldNames(i);
+
+      var histogram = data.select(fieldName)
+        .groupBy(fieldName)
+        .count()
+        .toDF("label", "count")
+        .orderBy("label")
+        .withColumn("group", functions.lit(1))
+        .withColumn("end", sum("count")
+          .over(Window.partitionBy("group").orderBy($"label")))
+        .withColumn("start", (col("end") - col("count")))
+
+      if (isImpair) {
+        l = (count / 2)
+        r = l
+        median = getDouble(histogram.filter($"start" <= l && $"end" >= l).select("label").first())
       } else {
-        percent = (data.select(field).filter(x => x.getInt(0) > 0).count() * 100.0 / total)
-        if (percent > 50.0) {
-          val sortedList = data.select(field).sort(field).collect().map(r => r.getInt(0)).toList
-          max = sortedList.last
-          median = medianI(sortedList)
-        }
+        l = (count / 2) - 1
+        r = l + 1
+        var lval = getDouble(histogram.filter($"start" <= l && $"end" >= l).select("label").first())
+        var rval = getDouble(histogram.filter($"start" <= r && $"end" >= r).select("label").first())
+        median = (lval + rval) / 2
       }
+
       medianRow = medianRow :+ median
-      // println(s"$field: $med (max: $max, $percent% above 0)")
     }
 
     val labels = Seq("summary") ++ orderedFields
