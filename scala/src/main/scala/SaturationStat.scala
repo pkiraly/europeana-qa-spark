@@ -107,21 +107,25 @@ object SaturationStat {
     val total = data.count
     for (field <- orderedFields) {
       // println(field)
-      var med = 0.0;
+      var median = 0.0;
       var max = 0.0;
       var percent = 0.0
       if (field.startsWith("NumberOfLanguages") || field.startsWith("TaggedLiteralsPerLanguage")) {
-        val sortedList = data.select(field).sort(field).collect().map(r => r.getDouble(0)).toList
-        max = sortedList.last
-        percent = sortedList.filter(_ > 0).size * 100.0 / total
-        med = medianD(sortedList)
+        percent = (data.select(field).filter(x => x.getDouble(0) > 0).count() * 100 / total)
+        if (percent > 50.0) {
+          val sortedList = data.select(field).sort(field).collect().map(r => r.getDouble(0)).toList
+          max = sortedList.last
+          median = medianD(sortedList)
+        }
       } else {
-        val sortedList = data.select(field).sort(field).collect().map(r => r.getInt(0)).toList
-        max = sortedList.last
-        percent = sortedList.filter(_ > 0).size * 100.0 / total
-        med = medianI(sortedList)
+        percent = (data.select(field).filter(x => x.getInt(0) > 0).count() * 100.0 / total)
+        if (percent > 50.0) {
+          val sortedList = data.select(field).sort(field).collect().map(r => r.getInt(0)).toList
+          max = sortedList.last
+          median = medianI(sortedList)
+        }
       }
-      medianRow = medianRow :+ med
+      medianRow = medianRow :+ median
       // println(s"$field: $med (max: $max, $percent% above 0)")
     }
 
@@ -137,6 +141,7 @@ object SaturationStat {
     stat.write
       .option("header", "true")
       .csv("hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics")
+
   }
 }
 
