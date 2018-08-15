@@ -10,6 +10,7 @@ import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.Row
+import org.apache.spark.sql.DataFrame
 
 object SaturationWithHistogram {
 
@@ -37,13 +38,18 @@ object SaturationWithHistogram {
 
     val id = Seq("id")
     val fields = Seq(
-      "NumberOfLanguagesPerPropertyInProviderProxy", "NumberOfLanguagesPerPropertyInEuropeanaProxy",
-        "NumberOfLanguagesPerPropertyInObject",
-      "TaggedLiteralsInProviderProxy", "TaggedLiteralsInEuropeanaProxy",
-        "DistinctLanguageCountInProviderProxy",
-      "DistinctLanguageCountInEuropeanaProxy", "TaggedLiteralsInObject", "DistinctLanguagesInObject",
-      "TaggedLiteralsPerLanguageInProviderProxy", "TaggedLiteralsPerLanguageInEuropeanaProxy",
-        "TaggedLiteralsPerLanguageInObject"
+      "NumberOfLanguagesPerPropertyInProviderProxy",
+      "NumberOfLanguagesPerPropertyInEuropeanaProxy",
+      "NumberOfLanguagesPerPropertyInObject",
+      "TaggedLiteralsInProviderProxy",
+      "TaggedLiteralsInEuropeanaProxy",
+      "DistinctLanguageCountInProviderProxy",
+      "DistinctLanguageCountInEuropeanaProxy",
+      "TaggedLiteralsInObject",
+      "DistinctLanguagesInObject",
+      "TaggedLiteralsPerLanguageInProviderProxy",
+      "TaggedLiteralsPerLanguageInEuropeanaProxy",
+      "TaggedLiteralsPerLanguageInObject"
     )
     val names = id ++ fields
     val data = dataWithoutHeader.toDF(names: _*).select(
@@ -102,12 +108,19 @@ object SaturationWithHistogram {
       }
     }
 
+    def getMedianFromHistogram(histogram: DataFrame, l: Long): Double = {
+      var first = histogram.filter($"start" <= l && $"end" >= l)
+                           .select("label")
+                           .first()
+      getDouble(first)
+    }
+
     var count = data.count()
     var isImpair = count / 2 == 1
     var medianRow = Seq.empty[Any]
     medianRow = medianRow :+ "median"
 
-    for (i <- 0 to fields.size) {
+    for (i <- 0 to (fields.size - 1)) {
       var l : Long = -1
       var r : Long = -1
       var median : Double = -1.0
@@ -126,12 +139,12 @@ object SaturationWithHistogram {
       if (isImpair) {
         l = (count / 2)
         r = l
-        median = getDouble(histogram.filter($"start" <= l && $"end" >= l).select("label").first())
+        median = getMedianFromHistogram(histogram, l)
       } else {
         l = (count / 2) - 1
         r = l + 1
-        var lval = getDouble(histogram.filter($"start" <= l && $"end" >= l).select("label").first())
-        var rval = getDouble(histogram.filter($"start" <= r && $"end" >= r).select("label").first())
+        var lval = getMedianFromHistogram(histogram, l)
+        var rval = getMedianFromHistogram(histogram, r)
         median = (lval + rval) / 2
       }
 
