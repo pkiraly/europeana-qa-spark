@@ -12,7 +12,7 @@ import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.DataFrame
 
-object SaturationWithHistogram {
+object SaturationWithHistogramForLight {
 
   def main(args: Array[String]): Unit = {
 
