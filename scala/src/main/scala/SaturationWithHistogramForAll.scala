@@ -159,9 +159,13 @@ object SaturationWithHistogramForAll {
 
     def toLongForm(df: DataFrame): DataFrame = {
       df.flatMap(row => {
-        log.info(row)
+        println(row)
         val metric = row.getString(0)
         (1 until row.size).map(i => {
+          println(df.schema(i).name)
+          println(metric == null)
+          println(df.schema(i).name == null)
+          println(row.getString(i).toDouble == null)
           (metric, df.schema(i).name, row.getString(i).toDouble)
         })
       }).toDF("metric", "field", "value")
