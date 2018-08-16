@@ -189,7 +189,8 @@ object SaturationWithHistogramForAll {
       var r : Long = -1
       var median : Double = -1.0
       var fieldName = data.schema.fieldNames(i);
-      log.info(s"calculating the median for $fieldName")
+      var dataType = data.schema.fields(i).dataType;
+      log.info(s"calculating the median for $fieldName ($dataType)")
 
       var histogram = data.select(fieldName)
         .groupBy(fieldName)
@@ -201,7 +202,13 @@ object SaturationWithHistogramForAll {
           .over(Window.partitionBy("group").orderBy($"label")))
         .withColumn("start", (col("end") - col("count")))
 
-      var zeros = histogram.filter($"label" === 0).select("count").first().getLong(0)
+      var lowest = histogram.select("label").first();
+      if (dataType.equals(DoubleType))
+        log.info("lowest: " + lowest.getDouble(0))
+      else
+        log.info("lowest: " + lowest.getInt(0))
+
+      var zeros = histogram.select("count").first().getLong(0)
       zerosRow = zerosRow :+ (zeros * 100 / total)
 
       if (isImpair) {
