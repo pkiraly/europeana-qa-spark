@@ -18,8 +18,12 @@ object SaturationWithHistogramForAll {
 
     val log = org.apache.log4j.LogManager.getLogger("SaturationStat")
     val spark = SparkSession.builder.appName("SaturationStat").getOrCreate()
-
     import spark.implicits._
+
+    val configMap : Map[String, String] = spark.conf.getAll
+    for ((k,v) <- configMap) {
+      printf("key: %s, value: %s\n", k, v)
+    }
 
     val inputFile = args(0)
     val outputFile = args(1)
@@ -148,8 +152,10 @@ object SaturationWithHistogramForAll {
       "TaggedLiteralsPerLanguageInObject"
     )
     val names = ids ++ individualFields ++ genericFields
-    val data = dataWithoutHeader.toDF(names: _*).select(individualFields.map(col): _*)
+    val data = dataWithoutHeader.toDF(names: _*).select(individualFields.take(10).map(col): _*)
     data.cache()
+
+    data.printSchema()
 
     var stat = data
       .select()
@@ -170,8 +176,8 @@ object SaturationWithHistogramForAll {
       getDouble(first)
     }
 
-    var count = data.count()
-    var isImpair = count / 2 == 1
+    var total = data.count()
+    var isImpair = total / 2 == 1
     var medianRow = Seq.empty[Any]
     medianRow = medianRow :+ "median"
 
@@ -192,11 +198,11 @@ object SaturationWithHistogramForAll {
         .withColumn("start", (col("end") - col("count")))
 
       if (isImpair) {
-        l = (count / 2)
+        l = (total / 2)
         r = l
         median = getMedianFromHistogram(histogram, l)
       } else {
-        l = (count / 2) - 1
+        l = (total / 2) - 1
         r = l + 1
         var lval = getMedianFromHistogram(histogram, l)
         var rval = getMedianFromHistogram(histogram, r)
@@ -208,9 +214,9 @@ object SaturationWithHistogramForAll {
 
     val labels = Seq("summary") ++ data.schema.fieldNames
     var strmedian = medianRow.map(x => x.toString)
-    log.info(labels.size)
-    log.info(medianRow.size)
-    log.info(strmedian.size)
+    log.info("labels.size: " + labels.size)
+    log.info("medianRow.size: " + medianRow.size)
+    log.info("strmedian.size: " + strmedian.size)
 
     var medianDf = Seq((strmedian(0))).toDF(labels(0))
     for (i <- 1 to strmedian.size - 1) {
