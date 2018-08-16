@@ -192,7 +192,11 @@ object SaturationWithHistogramForAll {
       var dataType = data.schema.fields(i).dataType;
       log.info(s"calculating the median for $fieldName ($dataType)")
 
-      var histogram = data.select(fieldName)
+      var existing = data.filter(col(fieldName) > -1).select(fieldName)
+      total = existing.count()
+      isImpair = total / 2 == 1
+
+      var histogram = existing
         .groupBy(fieldName)
         .count()
         .toDF("label", "count")
@@ -209,7 +213,8 @@ object SaturationWithHistogramForAll {
         log.info("lowest: " + lowest.getInt(0))
 
       var zeros = histogram.select("count").first().getLong(0)
-      zerosRow = zerosRow :+ (zeros * 100 / total)
+      var zerosPerc = zeros * 100.0 / total
+      zerosRow = zerosRow :+ zerosPerc
 
       if (isImpair) {
         l = (total / 2)
