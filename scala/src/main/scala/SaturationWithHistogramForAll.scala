@@ -188,6 +188,7 @@ object SaturationWithHistogramForAll {
       var l : Long = -1
       var r : Long = -1
       var median : Double = -1.0
+      var zerosPerc : Double = -1.0
       var fieldName = data.schema.fieldNames(i);
       var dataType = data.schema.fields(i).dataType;
       log.info(s"calculating the median for $fieldName ($dataType)")
@@ -197,40 +198,42 @@ object SaturationWithHistogramForAll {
       isImpair = total / 2 == 1
       log.info("total: " + total)
 
-      var histogram = existing
-        .groupBy(fieldName)
-        .count()
-        .toDF("label", "count")
-        .orderBy("label")
-        .withColumn("group", functions.lit(1))
-        .withColumn("end", sum("count")
-          .over(Window.partitionBy("group").orderBy($"label")))
-        .withColumn("start", (col("end") - col("count")))
+      if (total > 0) {
+        var histogram = existing
+          .groupBy(fieldName)
+          .count()
+          .toDF("label", "count")
+          .orderBy("label")
+          .withColumn("group", functions.lit(1))
+          .withColumn("end", sum("count")
+            .over(Window.partitionBy("group").orderBy($"label")))
+          .withColumn("start", (col("end") - col("count")))
 
-      var lowest = histogram.select("label").first();
-      if (dataType.equals(DoubleType))
-        log.info("lowest: " + lowest.getDouble(0))
-      else
-        log.info("lowest: " + lowest.getInt(0))
+        var lowest = histogram.select("label").first();
+        if (dataType.equals(DoubleType))
+          log.info("lowest: " + lowest.getDouble(0))
+        else
+          log.info("lowest: " + lowest.getInt(0))
 
-      var zeros = histogram.select("count").first().getLong(0)
-      var zerosPerc = zeros * 100.0 / total
-      zerosRow = zerosRow :+ zerosPerc
+        var zeros = histogram.select("count").first().getLong(0)
+        zerosPerc = zeros * 100.0 / total
 
-      if (isImpair) {
-        l = (total / 2)
-        r = l
-        median = getMedianFromHistogram(histogram, l)
-      } else {
-        l = (total / 2) - 1
-        r = l + 1
-        var lval = getMedianFromHistogram(histogram, l)
-        var rval = getMedianFromHistogram(histogram, r)
-        median = (lval + rval) / 2
+        if (isImpair) {
+          l = (total / 2)
+          r = l
+          median = getMedianFromHistogram(histogram, l)
+        } else {
+          l = (total / 2) - 1
+          r = l + 1
+          var lval = getMedianFromHistogram(histogram, l)
+          var rval = getMedianFromHistogram(histogram, r)
+          median = (lval + rval) / 2
+        }
       }
 
       log.info(s"$fieldName: $median (zeros: $zerosPerc%)")
       medianRow = medianRow :+ median
+      zerosRow = zerosRow :+ zerosPerc
     }
 
     val labels = Seq("summary") ++ data.schema.fieldNames
