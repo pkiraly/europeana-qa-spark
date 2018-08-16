@@ -16,8 +16,8 @@ object SaturationWithHistogramForAll {
 
   def main(args: Array[String]): Unit = {
 
-    val log = org.apache.log4j.LogManager.getLogger("SaturationStat")
-    val spark = SparkSession.builder.appName("SaturationStat").getOrCreate()
+    val log = org.apache.log4j.LogManager.getLogger("SaturationWithHistogramForAll")
+    val spark = SparkSession.builder.appName("SaturationWithHistogramForAll").getOrCreate()
     import spark.implicits._
 
     val configMap : Map[String, String] = spark.conf.getAll
