@@ -157,9 +157,7 @@ object SaturationWithHistogramForAll {
 
     data.printSchema()
 
-    var stat = data
-      .select()
-      .describe()
+    var stat = data.describe()
 
     def getDouble(first: Row): Double = {
       if (first.schema.fields(0).dataType.equals(DoubleType)) {
