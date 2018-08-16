@@ -201,7 +201,8 @@ object SaturationWithHistogramForAll {
           .over(Window.partitionBy("group").orderBy($"label")))
         .withColumn("start", (col("end") - col("count")))
 
-      zerosRow = zerosRow :+ histogram.filter($"label" === 0).select("count").first().getInt(0)
+      var zeros = histogram.filter($"label" === 0).select("count").first().getInt(0)
+      zerosRow = zerosRow :+ (zeros * 100 / total)
 
       if (isImpair) {
         l = (total / 2)
