@@ -21,8 +21,8 @@ object SaturationWithHistogramForAll {
     import spark.implicits._
 
     val configMap : Map[String, String] = spark.conf.getAll
-    for ((k,v) <- configMap) {
-      printf("key: %s, value: %s\n", k, v)
+    for ((key, value) <- configMap) {
+      log.info(s"key: $key, value: $value")
     }
 
     val inputFile = args(0)
@@ -157,8 +157,18 @@ object SaturationWithHistogramForAll {
 
     data.printSchema()
 
+    def toLongForm(df: DataFrame): DataFrame = {
+      df.flatMap(row => {
+        val metric = row.getString(0)
+        (1 until row.size).map(i => {
+          (metric, df.schema(i).name, row.getString(i).toDouble)
+        })
+      }).toDF("metric", "field", "value")
+    }
+
     log.info("calculating the basic statistics")
-    var stat = data.describe()
+    var stat = toLongForm(data.describe())
+    stat.show()
     log.info("basic statistics: done")
 
     def getDouble(first: Row): Double = {
@@ -184,6 +194,8 @@ object SaturationWithHistogramForAll {
     var zerosRow = Seq.empty[Any]
     zerosRow = zerosRow :+ "zeros"
 
+    var stat2 = Seq(("fake", "fake", 0.0)).toDF("metric", "field", "value")
+
     for (i <- 0 to (data.schema.fieldNames.size - 1)) {
       var l : Long = -1
       var r : Long = -1
@@ -196,9 +208,11 @@ object SaturationWithHistogramForAll {
       var existing = data.filter(col(fieldName) > -1).select(fieldName)
       total = existing.count()
       isImpair = total / 2 == 1
-      log.info("total: " + total)
+      log.info(s"total: $total")
 
       if (total > 0) {
+        stat2 = stat2.union(toLongForm(existing.describe()))
+
         var histogram = existing
           .groupBy(fieldName)
           .count()
@@ -229,11 +243,24 @@ object SaturationWithHistogramForAll {
           var rval = getMedianFromHistogram(histogram, r)
           median = (lval + rval) / 2
         }
+      } else {
+        stat2 = stat2.union(Seq(
+          ("count", fieldName, 0),
+          ("mean", fieldName, 0),
+          ("stddev", fieldName, 0),
+          ("min", fieldName, 0),
+          ("max", fieldName, 0)
+        ).toDF("metric", "field", "value"))
       }
 
       log.info(s"$fieldName: $median (zeros: $zerosPerc%)")
       medianRow = medianRow :+ median
       zerosRow = zerosRow :+ zerosPerc
+
+      stat2 = stat2.union(Seq(
+        ("median", fieldName, median),
+        ("zerosPerc", fieldName, zerosPerc)
+      ).toDF("metric", "field", "value"))
     }
 
     val labels = Seq("summary") ++ data.schema.fieldNames
@@ -281,6 +308,11 @@ object SaturationWithHistogramForAll {
     stat.write
       .option("header", "true")
       .csv(outputFile) // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
+
+    log.info("write stat2")
+    stat2.write
+      .option("header", "false")
+      .csv(outputFile + "-longform") // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
 
     // val medianDf = Seq(strmedian).toDF();
     log.info("write medianDf")
