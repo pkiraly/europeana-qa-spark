@@ -218,10 +218,16 @@ object SaturationWithHistogramForAll {
     log.info("medianRow.size: " + medianRow.size)
     log.info("strmedian.size: " + strmedian.size)
 
+    log.info("Creating medianDf")
     var medianDf = Seq((strmedian(0))).toDF(labels(0))
     for (i <- 1 to strmedian.size - 1) {
       medianDf = medianDf.withColumn(labels(i), functions.lit(strmedian(i)))
     }
+    log.info("medianDf:")
+    medianDf.show()
+
+    log.info("stat:")
+    stat.show(5)
     stat = stat.union(medianDf)
 
     /*
@@ -233,11 +239,13 @@ object SaturationWithHistogramForAll {
     // stat = stat.union(medianDf)
     */
 
+    log.info("write stat")
     stat.write
       .option("header", "true")
       .csv(outputFile) // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
 
     // val medianDf = Seq(strmedian).toDF();
+    log.info("write medianDf")
     medianDf.write
       .option("header", "true")
       .csv(outputFile + "-median") // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
