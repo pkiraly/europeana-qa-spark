@@ -201,6 +201,8 @@ object SaturationWithHistogramForAll {
           .over(Window.partitionBy("group").orderBy($"label")))
         .withColumn("start", (col("end") - col("count")))
 
+      zerosRow = zerosRow :+ histogram.filter($"label" === 0).select("count").first().getInt(0)
+
       if (isImpair) {
         l = (total / 2)
         r = l
@@ -213,15 +215,17 @@ object SaturationWithHistogramForAll {
         median = (lval + rval) / 2
       }
 
-      log.info(s"$field: $median")
+      log.info(s"$fieldName: $median")
       medianRow = medianRow :+ median
     }
 
     val labels = Seq("summary") ++ data.schema.fieldNames
     var strmedian = medianRow.map(x => x.toString)
+    var strzeros = zerosRow.map(x => x.toString)
     log.info("labels.size: " + labels.size)
     log.info("medianRow.size: " + medianRow.size)
     log.info("strmedian.size: " + strmedian.size)
+    log.info("zerosRow.size: " + zerosRow.size)
 
     log.info("Creating medianDf")
     var medianDf = Seq((strmedian(0))).toDF(labels(0))
@@ -231,9 +235,21 @@ object SaturationWithHistogramForAll {
     log.info("medianDf:")
     medianDf.show()
 
-    log.info("stat:")
-    stat.show(5)
-    stat = stat.union(medianDf)
+    log.info("Creating zerosDf")
+    var zerosDf = Seq((strzeros(0))).toDF(labels(0))
+    for (i <- 1 to strzeros.size - 1) {
+      zerosDf = zerosDf.withColumn(labels(i), functions.lit(strzeros(i)))
+    }
+    log.info("zerosDf:")
+    zerosDf.show()
+
+    log.info("stat before:")
+    stat.show()
+
+    stat = stat.union(medianDf).union(zerosDf)
+
+    log.info("stat after:")
+    stat.show()
 
     /*
     // val medianDf = Seq(strmedian).map(
