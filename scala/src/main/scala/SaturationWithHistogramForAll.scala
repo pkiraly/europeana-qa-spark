@@ -195,6 +195,7 @@ object SaturationWithHistogramForAll {
       var existing = data.filter(col(fieldName) > -1).select(fieldName)
       total = existing.count()
       isImpair = total / 2 == 1
+      log.info("total: " + total)
 
       var histogram = existing
         .groupBy(fieldName)
@@ -228,7 +229,7 @@ object SaturationWithHistogramForAll {
         median = (lval + rval) / 2
       }
 
-      log.info(s"$fieldName: $median (zeros: $zerosPerc%")
+      log.info(s"$fieldName: $median (zeros: $zerosPerc%)")
       medianRow = medianRow :+ median
     }
 
