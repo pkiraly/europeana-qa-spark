@@ -162,11 +162,11 @@ object SaturationWithHistogramForAll {
         println(row)
         val metric = row.getString(0)
         (1 until row.size).map(i => {
-          println(df.schema(i).name)
+          println(df.schema.fieldNames(i))
           println(metric == null)
-          println(df.schema(i).name == null)
+          println(df.schema.fieldNames(i) == null)
           println(row.getString(i).toDouble == null)
-          (metric, df.schema(i).name, row.getString(i).toDouble)
+          (metric, df.schema.fieldNames(i), row.getString(i).toDouble)
         })
       }).toDF("metric", "field", "value")
     }
