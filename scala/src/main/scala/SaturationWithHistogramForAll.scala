@@ -157,7 +157,9 @@ object SaturationWithHistogramForAll {
 
     data.printSchema()
 
+    log.info("calculating the basic statistics")
     var stat = data.describe()
+    log.info("basic statistics: done")
 
     def getDouble(first: Row): Double = {
       if (first.schema.fields(0).dataType.equals(DoubleType)) {
@@ -179,11 +181,15 @@ object SaturationWithHistogramForAll {
     var medianRow = Seq.empty[Any]
     medianRow = medianRow :+ "median"
 
+    var zerosRow = Seq.empty[Any]
+    zerosRow = zerosRow :+ "zeros"
+
     for (i <- 0 to (data.schema.fieldNames.size - 1)) {
       var l : Long = -1
       var r : Long = -1
       var median : Double = -1.0
       var fieldName = data.schema.fieldNames(i);
+      log.info(s"calculating the median for $fieldName")
 
       var histogram = data.select(fieldName)
         .groupBy(fieldName)
@@ -207,6 +213,7 @@ object SaturationWithHistogramForAll {
         median = (lval + rval) / 2
       }
 
+      log.info(s"$field: $median")
       medianRow = medianRow :+ median
     }
 
