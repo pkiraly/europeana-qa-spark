@@ -228,7 +228,7 @@ object SaturationWithHistogramForAll {
         median = (lval + rval) / 2
       }
 
-      log.info(s"$fieldName: $median")
+      log.info(s"$fieldName: $median (zeros: $zerosPerc%")
       medianRow = medianRow :+ median
     }
 
