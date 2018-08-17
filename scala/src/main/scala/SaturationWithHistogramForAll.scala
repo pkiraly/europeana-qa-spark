@@ -7,6 +7,7 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions
 import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.functions.first
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.Row
@@ -146,14 +147,17 @@ object SaturationWithHistogramForAll {
       "DistinctLanguageCountInProviderProxy",
       "DistinctLanguageCountInEuropeanaProxy",
       "TaggedLiteralsInObject",
-      "DistinctLanguagesInObject",
+      "DistinctLanguageCountInObject",
       "TaggedLiteralsPerLanguageInProviderProxy",
       "TaggedLiteralsPerLanguageInEuropeanaProxy",
       "TaggedLiteralsPerLanguageInObject"
     )
     val names = ids ++ individualFields ++ genericFields
+
+    log.info("reading the data")
     val data = dataWithoutHeader.toDF(names: _*).select(individualFields.take(10).map(col): _*)
     data.cache()
+    log.info("reading the data: done")
 
     data.printSchema()
 
@@ -273,6 +277,21 @@ object SaturationWithHistogramForAll {
       ).toDF("metric", "field", "value"))
     }
 
+    val wideDf = stat2
+      .filter(col("field") =!= "fake")
+      .groupBy("field")
+      .pivot("metric", Seq("count", "median", "zerosPerc", "mean", "stddev", "min", "max")).agg(first("value"))
+
+    log.info("write wideDf")
+    Seq(wideDf.schema.fieldNames).toDF().write
+      .option("header", "false")
+      .csv(outputFile + "-header")
+
+    wideDf.write
+      .option("header", "false")
+      .csv(outputFile + "-longform")
+
+
     /*
     val labels = Seq("summary") ++ data.schema.fieldNames
     var strmedian = medianRow.map(x => x.toString)
@@ -322,11 +341,6 @@ object SaturationWithHistogramForAll {
     // stat.write
     //   .option("header", "true")
     //   .csv(outputFile)
-
-    log.info("write stat2")
-    stat2.write
-      .option("header", "false")
-      .csv(outputFile + "-longform")
 
     /*
     log.info("write medianDf")
