@@ -206,7 +206,13 @@ object SaturationWithHistogramForAll {
       var dataType = data.schema.fields(i).dataType;
       log.info(s"calculating the median for $fieldName ($dataType)")
 
-      var existing = data.filter(col(fieldName) > -1).select(fieldName)
+      var filterField = fieldName
+      if (filterField.endsWith("_languages"))
+        filterField = filterField.replace("_languages", "_taggedLiterals")
+      else if (filterField.endsWith("_literalsPerLanguage"))
+        filterField = filterField.replace("_languages", "_literalsPerLanguage")
+
+      var existing = data.filter(col(filterField) > -1).select(fieldName)
       total = existing.count()
       isImpair = total / 2 == 1
       log.info(s"total: $total")
