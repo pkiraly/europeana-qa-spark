@@ -321,18 +321,19 @@ object SaturationWithHistogramForAll {
     // log.info("write stat")
     // stat.write
     //   .option("header", "true")
-    //   .csv(outputFile) // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
+    //   .csv(outputFile)
 
     log.info("write stat2")
     stat2.write
       .option("header", "false")
-      .csv(outputFile + "-longform") // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
+      .csv(outputFile + "-longform")
 
-    // val medianDf = Seq(strmedian).toDF();
+    /*
     log.info("write medianDf")
     medianDf.write
       .option("header", "true")
-      .csv(outputFile + "-median") // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
+      .csv(outputFile + "-median")
+    */
   }
 }
 
