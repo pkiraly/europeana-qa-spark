@@ -210,7 +210,8 @@ object SaturationWithHistogramForAll {
       if (filterField.endsWith("_languages"))
         filterField = filterField.replace("_languages", "_taggedLiterals")
       else if (filterField.endsWith("_literalsPerLanguage"))
-        filterField = filterField.replace("_languages", "_literalsPerLanguage")
+        filterField = filterField.replace("_literalsPerLanguage", "_taggedLiterals")
+      log.info(s"filterField: $filterField")
 
       var existing = data.filter(col(filterField) > -1).select(fieldName)
       total = existing.count()
