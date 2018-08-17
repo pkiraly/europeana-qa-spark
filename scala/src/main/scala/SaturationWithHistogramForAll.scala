@@ -8,10 +8,12 @@ import org.apache.spark.sql.functions
 import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.functions.first
+import org.apache.spark.sql.functions.regexp_replace
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.SaveMode
 
 object SaturationWithHistogramForAll {
 
@@ -29,12 +31,14 @@ object SaturationWithHistogramForAll {
     val inputFile = args(0)
     val outputFile = args(1)
 
-    val dataWithoutHeader = spark.read
-      .option("header", "false")
-      .option("inferSchema", "true")
-      .format("csv")
-      .load(inputFile)
+    log.info("reading the data")
+    val dataWithoutHeader = spark.read.
+      option("header", "false").
+      option("inferSchema", "true").
+      format("csv").
+      load(inputFile)
 
+    log.info("setting names")
     val ids = Seq("id", "c", "d")
     val individualFields = Seq(
       "provider_dc_title_taggedLiterals", "provider_dc_title_languages", "provider_dc_title_literalsPerLanguage",
@@ -153,9 +157,9 @@ object SaturationWithHistogramForAll {
       "TaggedLiteralsPerLanguageInObject"
     )
     val names = ids ++ individualFields ++ genericFields
+    val selectedNames = individualFields ++ genericFields
 
-    log.info("reading the data")
-    val data = dataWithoutHeader.toDF(names: _*).select(individualFields.take(10).map(col): _*)
+    val data = dataWithoutHeader.toDF(names: _*).select(selectedNames.map(col): _*)
     data.cache()
     log.info("reading the data: done")
 
@@ -277,20 +281,35 @@ object SaturationWithHistogramForAll {
       ).toDF("metric", "field", "value"))
     }
 
-    val wideDf = stat2
-      .filter(col("field") =!= "fake")
-      .groupBy("field")
-      .pivot("metric", Seq("count", "median", "zerosPerc", "mean", "stddev", "min", "max")).agg(first("value"))
+    val wideDf = stat2.
+      filter(col("field") =!= "fake").
+      groupBy("field").
+      pivot("metric", Seq("count", "median", "zerosPerc", "mean", "stddev", "min", "max")).
+      agg(first("value")).
+      withColumn("source", regexp_replace(regexp_replace($"field", "europeana_.*", "b"), "provider_.*", "a")).
+      withColumn("type", regexp_replace(regexp_replace(regexp_replace($"field", ".*_taggedLiterals$", "a"), ".*_languages", "b"), ".*_literalsPerLanguage", "c")).
+      withColumn("main", regexp_replace($"field", "^(provider|europeana)_(.*)_(taggedLiterals|languages|literalsPerLanguage)$", "$2")).
+      orderBy("main", "source", "type").
+      select("field", "count", "median", "zerosPerc", "mean", "stddev", "min", "max")
+
+    stat2.repartition(1).write.
+      option("header", "true").
+      csv(outputFile + "-longform")
+
+    wideDf.repartition(1).write.
+      option("header", "true").
+      mode(SaveMode.Overwrite).
+      csv(outputFile)
 
     log.info("write wideDf")
-    Seq(wideDf.schema.fieldNames).toDF().write
-      .option("header", "false")
-      .csv(outputFile + "-header")
 
-    wideDf.write
-      .option("header", "false")
-      .csv(outputFile + "-longform")
-
+    spark.sparkContext.parallelize(List(wideDf.schema.fieldNames.mkString(","))).
+      repartition(1).
+      toDF().
+      write.
+      mode(SaveMode.Overwrite).
+      format("text").
+      save(outputFile + "-header")
 
     /*
     val labels = Seq("summary") ++ data.schema.fieldNames
