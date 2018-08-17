@@ -167,10 +167,12 @@ object SaturationWithHistogramForAll {
       }).toDF("metric", "field", "value")
     }
 
+    /*
     log.info("calculating the basic statistics")
     var stat = data.describe()
     stat.show()
     log.info("basic statistics: done")
+    */
 
     def getDouble(first: Row): Double = {
       if (first.schema.fields(0).dataType.equals(DoubleType)) {
@@ -189,11 +191,11 @@ object SaturationWithHistogramForAll {
 
     var total = data.count()
     var isImpair = total / 2 == 1
-    var medianRow = Seq.empty[Any]
-    medianRow = medianRow :+ "median"
+    // var medianRow = Seq.empty[Any]
+    // medianRow = medianRow :+ "median"
 
-    var zerosRow = Seq.empty[Any]
-    zerosRow = zerosRow :+ "zeros"
+    // var zerosRow = Seq.empty[Any]
+    // zerosRow = zerosRow :+ "zeros"
 
     var stat2 = Seq(("fake", "fake", 0.0)).toDF("metric", "field", "value")
 
@@ -262,8 +264,8 @@ object SaturationWithHistogramForAll {
       }
 
       log.info(s"$fieldName: $median (zeros: $zerosPerc%)")
-      medianRow = medianRow :+ median
-      zerosRow = zerosRow :+ zerosPerc
+      // medianRow = medianRow :+ median
+      // zerosRow = zerosRow :+ zerosPerc
 
       stat2 = stat2.union(Seq(
         ("median", fieldName, median),
@@ -271,6 +273,7 @@ object SaturationWithHistogramForAll {
       ).toDF("metric", "field", "value"))
     }
 
+    /*
     val labels = Seq("summary") ++ data.schema.fieldNames
     var strmedian = medianRow.map(x => x.toString)
     var strzeros = zerosRow.map(x => x.toString)
@@ -294,7 +297,9 @@ object SaturationWithHistogramForAll {
     }
     log.info("zerosDf:")
     zerosDf.show()
+    */
 
+    /*
     log.info("stat before:")
     stat.show()
 
@@ -302,6 +307,7 @@ object SaturationWithHistogramForAll {
 
     log.info("stat after:")
     stat.show()
+    */
 
     /*
     // val medianDf = Seq(strmedian).map(
@@ -312,10 +318,10 @@ object SaturationWithHistogramForAll {
     // stat = stat.union(medianDf)
     */
 
-    log.info("write stat")
-    stat.write
-      .option("header", "true")
-      .csv(outputFile) // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
+    // log.info("write stat")
+    // stat.write
+    //   .option("header", "true")
+    //   .csv(outputFile) // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
 
     log.info("write stat2")
     stat2.write
