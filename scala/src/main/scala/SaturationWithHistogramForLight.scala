@@ -94,8 +94,7 @@ object SaturationWithHistogramForLight {
       var dataType = data.schema.fields(i).dataType;
       log.info(s"calculating the median for $fieldName ($dataType)")
 
-      var existing = data.filter(col(fieldName) > -1).select(fieldName)
-      stat2 = stat2.union(toLongForm(existing.describe()))
+      stat2 = stat2.union(toLongForm(data.select(fieldName).describe()))
 
       var histogram = data.select(fieldName).
         groupBy(fieldName).
