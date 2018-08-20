@@ -175,13 +175,6 @@ object SaturationWithHistogramForAll {
       }).toDF("metric", "field", "value")
     }
 
-    /*
-    log.info("calculating the basic statistics")
-    var stat = data.describe()
-    stat.show()
-    log.info("basic statistics: done")
-    */
-
     def getDouble(first: Row): Double = {
       if (first.schema.fields(0).dataType.equals(DoubleType)) {
         first.getDouble(0)
@@ -199,11 +192,6 @@ object SaturationWithHistogramForAll {
 
     var total = data.count()
     var isImpair = total / 2 == 1
-    // var medianRow = Seq.empty[Any]
-    // medianRow = medianRow :+ "median"
-
-    // var zerosRow = Seq.empty[Any]
-    // zerosRow = zerosRow :+ "zeros"
 
     var stat2 = Seq(("fake", "fake", 0.0)).toDF("metric", "field", "value")
 
@@ -272,8 +260,6 @@ object SaturationWithHistogramForAll {
       }
 
       log.info(s"$fieldName: $median (zeros: $zerosPerc%)")
-      // medianRow = medianRow :+ median
-      // zerosRow = zerosRow :+ zerosPerc
 
       stat2 = stat2.union(Seq(
         ("median", fieldName, median),
@@ -310,63 +296,6 @@ object SaturationWithHistogramForAll {
       mode(SaveMode.Overwrite).
       format("text").
       save(outputFile + "-header")
-
-    /*
-    val labels = Seq("summary") ++ data.schema.fieldNames
-    var strmedian = medianRow.map(x => x.toString)
-    var strzeros = zerosRow.map(x => x.toString)
-    log.info("labels.size: " + labels.size)
-    log.info("medianRow.size: " + medianRow.size)
-    log.info("strmedian.size: " + strmedian.size)
-    log.info("zerosRow.size: " + zerosRow.size)
-
-    log.info("Creating medianDf")
-    var medianDf = Seq((strmedian(0))).toDF(labels(0))
-    for (i <- 1 to strmedian.size - 1) {
-      medianDf = medianDf.withColumn(labels(i), functions.lit(strmedian(i)))
-    }
-    log.info("medianDf:")
-    medianDf.show()
-
-    log.info("Creating zerosDf")
-    var zerosDf = Seq((strzeros(0))).toDF(labels(0))
-    for (i <- 1 to strzeros.size - 1) {
-      zerosDf = zerosDf.withColumn(labels(i), functions.lit(strzeros(i)))
-    }
-    log.info("zerosDf:")
-    zerosDf.show()
-    */
-
-    /*
-    log.info("stat before:")
-    stat.show()
-
-    stat = stat.union(medianDf).union(zerosDf)
-
-    log.info("stat after:")
-    stat.show()
-    */
-
-    /*
-    // val medianDf = Seq(strmedian).map(
-    //   x => (
-    //     x(0), x(1), x(2), x(3), x(4), x(5), x(6), x(7), x(8), x(9), x(10), x(11), x(12)
-    //   )
-    // ).toDF(labels: _*)
-    // stat = stat.union(medianDf)
-    */
-
-    // log.info("write stat")
-    // stat.write
-    //   .option("header", "true")
-    //   .csv(outputFile)
-
-    /*
-    log.info("write medianDf")
-    medianDf.write
-      .option("header", "true")
-      .csv(outputFile + "-median")
-    */
   }
 }
 

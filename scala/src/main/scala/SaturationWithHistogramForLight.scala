@@ -7,98 +7,63 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions
 import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.functions.first
+import org.apache.spark.sql.functions.regexp_replace
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.SaveMode
 
 object SaturationWithHistogramForLight {
 
   def main(args: Array[String]): Unit = {
 
-    // val conf = new SparkConf().setAppName("SaturationStat")
-    // val sc = new SparkContext(conf)
-
     val log = org.apache.log4j.LogManager.getLogger("SaturationStat")
     val spark = SparkSession.builder.appName("SaturationStat").getOrCreate()
-
     import spark.implicits._
 
-    val inputFile = args(0)
-    // val inputFile = "/scratch/pkiraly/multilinguality/result29-multilingual-saturation-light.csv.gz"
-    val outputFile = args(1)
-    // val outputFile = "/scratch/pkiraly/multilinguality/result29-multilingual-saturation-light-statistics"
-    // var inputFile = "hdfs://localhost:54310/join/result29-multilingual-saturation-light.csv";
+    val configMap : Map[String, String] = spark.conf.getAll
+    for ((key, value) <- configMap) {
+      log.info(s"key: $key, value: $value")
+    }
 
-    val dataWithoutHeader = spark.read
-      .option("header", "false")
-      .option("inferSchema", "true")
-      .format("csv")
-      .load(inputFile)
+    val inputFile = args(0)
+    val outputFile = args(1)
+
+    log.info("reading the data")
+    val dataWithoutHeader = spark.read.
+      option("header", "false").
+      option("inferSchema", "true").
+      format("csv").
+      load(inputFile)
+    log.info("setting names")
 
     val id = Seq("id")
     val fields = Seq(
-      "NumberOfLanguagesPerPropertyInProviderProxy",
-      "NumberOfLanguagesPerPropertyInEuropeanaProxy",
-      "NumberOfLanguagesPerPropertyInObject",
-      "TaggedLiteralsInProviderProxy",
-      "TaggedLiteralsInEuropeanaProxy",
-      "DistinctLanguageCountInProviderProxy",
-      "DistinctLanguageCountInEuropeanaProxy",
-      "TaggedLiteralsInObject",
-      "DistinctLanguagesInObject",
-      "TaggedLiteralsPerLanguageInProviderProxy",
-      "TaggedLiteralsPerLanguageInEuropeanaProxy",
-      "TaggedLiteralsPerLanguageInObject"
+      "NumberOfLanguagesPerPropertyInProviderProxy", "NumberOfLanguagesPerPropertyInEuropeanaProxy", "NumberOfLanguagesPerPropertyInObject",
+      "TaggedLiteralsInProviderProxy", "TaggedLiteralsInEuropeanaProxy", "DistinctLanguageCountInProviderProxy",
+      "DistinctLanguageCountInEuropeanaProxy", "TaggedLiteralsInObject", "DistinctLanguageCountInObject",
+      "TaggedLiteralsPerLanguageInProviderProxy", "TaggedLiteralsPerLanguageInEuropeanaProxy", "TaggedLiteralsPerLanguageInObject"
     )
+
     val names = id ++ fields
-    val data = dataWithoutHeader.toDF(names: _*).select(
-      "NumberOfLanguagesPerPropertyInProviderProxy",
-      "NumberOfLanguagesPerPropertyInEuropeanaProxy",
-      "NumberOfLanguagesPerPropertyInObject",
-      "TaggedLiteralsInProviderProxy",
-      "TaggedLiteralsInEuropeanaProxy",
-      "TaggedLiteralsInObject",
-      "DistinctLanguageCountInProviderProxy",
-      "DistinctLanguageCountInEuropeanaProxy",
-      "DistinctLanguagesInObject",
-      "TaggedLiteralsPerLanguageInProviderProxy",
-      "TaggedLiteralsPerLanguageInEuropeanaProxy",
-      "TaggedLiteralsPerLanguageInObject"
-    )
+    val data = dataWithoutHeader.toDF(names: _*).select(fields.map(col): _*)
     data.cache()
 
-    var stat = data
-      .select(
-        "NumberOfLanguagesPerPropertyInProviderProxy",
-        "NumberOfLanguagesPerPropertyInEuropeanaProxy",
-        "NumberOfLanguagesPerPropertyInObject",
-        "TaggedLiteralsInProviderProxy",
-        "TaggedLiteralsInEuropeanaProxy",
-        "TaggedLiteralsInObject",
-        "DistinctLanguageCountInProviderProxy",
-        "DistinctLanguageCountInEuropeanaProxy",
-        "DistinctLanguagesInObject",
-        "TaggedLiteralsPerLanguageInProviderProxy",
-        "TaggedLiteralsPerLanguageInEuropeanaProxy",
-        "TaggedLiteralsPerLanguageInObject"
-      )
-      .describe()
+    log.info("reading the data: done")
 
-    var orderedFields = Seq(
-      "NumberOfLanguagesPerPropertyInProviderProxy",
-      "NumberOfLanguagesPerPropertyInEuropeanaProxy",
-      "NumberOfLanguagesPerPropertyInObject",
-      "TaggedLiteralsInProviderProxy",
-      "TaggedLiteralsInEuropeanaProxy",
-      "TaggedLiteralsInObject",
-      "DistinctLanguageCountInProviderProxy",
-      "DistinctLanguageCountInEuropeanaProxy",
-      "DistinctLanguagesInObject",
-      "TaggedLiteralsPerLanguageInProviderProxy",
-      "TaggedLiteralsPerLanguageInEuropeanaProxy",
-      "TaggedLiteralsPerLanguageInObject"
-    )
+    data.printSchema()
+
+    def toLongForm(df: DataFrame): DataFrame = {
+      val schema = df.schema
+      df.flatMap(row => {
+        val metric = row.getString(0)
+        (1 until row.size).map(i => {
+          (metric, schema.fieldNames(i), row.getString(i).toDouble)
+        })
+      }).toDF("metric", "field", "value")
+    }
 
     def getDouble(first: Row): Double = {
       if (first.schema.fields(0).dataType.equals(DoubleType)) {
@@ -115,58 +80,76 @@ object SaturationWithHistogramForLight {
       getDouble(first)
     }
 
-    var count = data.count()
-    var isImpair = count / 2 == 1
-    var medianRow = Seq.empty[Any]
-    medianRow = medianRow :+ "median"
+    var total = data.count()
+    var isImpair = total / 2 == 1
 
-    for (i <- 0 to (fields.size - 1)) {
+    var stat2 = Seq(("fake", "fake", 0.0)).toDF("metric", "field", "value")
+
+    for (i <- 0 to (data.schema.fieldNames.size - 1)) {
       var l : Long = -1
       var r : Long = -1
       var median : Double = -1.0
+      var zerosPerc : Double = -1.0
       var fieldName = data.schema.fieldNames(i);
+      var dataType = data.schema.fields(i).dataType;
+      log.info(s"calculating the median for $fieldName ($dataType)")
 
-      var histogram = data.select(fieldName)
-        .groupBy(fieldName)
-        .count()
-        .toDF("label", "count")
-        .orderBy("label")
-        .withColumn("group", functions.lit(1))
-        .withColumn("end", sum("count")
-          .over(Window.partitionBy("group").orderBy($"label")))
-        .withColumn("start", (col("end") - col("count")))
+      var histogram = data.select(fieldName).
+        groupBy(fieldName).
+        count().
+        toDF("label", "count").
+        orderBy("label").
+        withColumn("group", functions.lit(1)).
+        withColumn("end", sum("count").
+          over(Window.partitionBy("group").orderBy($"label"))).
+        withColumn("start", (col("end") - col("count"))).
+        select("label", "count", "start", "end")
+
+      histogram.write.
+        option("header", "true").
+        mode(SaveMode.Overwrite).
+        csv(outputFile + "-histogram-" + fieldName)
+
+      var lowest = histogram.select("label").first();
+      if (dataType.equals(DoubleType))
+        log.info("lowest: " + lowest.getDouble(0))
+      else
+        log.info("lowest: " + lowest.getInt(0))
+
+      var zeros = histogram.select("count").first().getLong(0)
+      zerosPerc = zeros * 100.0 / total
 
       if (isImpair) {
-        l = (count / 2)
+        l = (total / 2)
         r = l
         median = getMedianFromHistogram(histogram, l)
       } else {
-        l = (count / 2) - 1
+        l = (total / 2) - 1
         r = l + 1
         var lval = getMedianFromHistogram(histogram, l)
         var rval = getMedianFromHistogram(histogram, r)
         median = (lval + rval) / 2
       }
 
-      medianRow = medianRow :+ median
+      log.info(s"$fieldName: $median (zeros: $zerosPerc%)")
+
+      stat2 = stat2.union(Seq(
+        ("median", fieldName, median),
+        ("zerosPerc", fieldName, zerosPerc)
+      ).toDF("metric", "field", "value"))
     }
 
-    val labels = Seq("summary") ++ orderedFields
-    var strmedian = medianRow.map(x => x.toString)
-    log.info(labels.size)
-    log.info(medianRow.size)
-    log.info(strmedian.size)
-    val medianDf = Seq(strmedian).map(
-      x => (
-        x(0), x(1), x(2), x(3), x(4), x(5), x(6), x(7), x(8), x(9), x(10), x(11), x(12)
-      )
-    ).toDF(labels: _*)
-    stat = stat.union(medianDf)
+    val wideDf = stat2.
+      filter(col("field") =!= "fake").
+      groupBy("field").
+      pivot("metric", Seq("count", "median", "zerosPerc", "mean", "stddev", "min", "max")).
+      agg(first("value")).
+      orderBy("field")
 
-    stat.write
-      .option("header", "true")
-      .csv(outputFile) // "hdfs://localhost:54310/join/result29-multilingual-saturation-light-statistics"
-
+    wideDf.write.
+      option("header", "true").
+      mode(SaveMode.Overwrite).
+      csv(outputFile)
   }
 }
 
