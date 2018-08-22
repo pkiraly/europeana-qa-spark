@@ -8,6 +8,7 @@ import org.apache.spark.sql.functions
 import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.functions.first
+import org.apache.spark.sql.functions.max
 import org.apache.spark.sql.functions.regexp_replace
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
