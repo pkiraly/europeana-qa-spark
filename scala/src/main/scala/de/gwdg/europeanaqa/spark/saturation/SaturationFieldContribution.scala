@@ -1,3 +1,5 @@
+package de.gwdg.europeanaqa.spark.saturation
+
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
@@ -8,6 +10,7 @@ import org.apache.spark.sql.functions
 import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.functions.first
+import org.apache.spark.sql.functions.max
 import org.apache.spark.sql.functions.regexp_replace
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
@@ -15,12 +18,12 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SaveMode
 
-object SaturationWithHistogramForAll {
+object SaturationFieldContribution {
 
   def main(args: Array[String]): Unit = {
 
-    val log = org.apache.log4j.LogManager.getLogger("SaturationWithHistogramForAll")
-    val spark = SparkSession.builder.appName("SaturationWithHistogramForAll").getOrCreate()
+    val log = org.apache.log4j.LogManager.getLogger("SaturationFieldContribution")
+    val spark = SparkSession.builder.appName("SaturationFieldContribution").getOrCreate()
     import spark.implicits._
 
     val configMap : Map[String, String] = spark.conf.getAll
@@ -157,13 +160,43 @@ object SaturationWithHistogramForAll {
       "TaggedLiteralsPerLanguageInObject"
     )
     val names = ids ++ individualFields ++ genericFields
-    val selectedNames = individualFields ++ genericFields
+    val selectedNames = individualFields.filter(x => (x.endsWith("_taggedLiterals")))
 
     val data = dataWithoutHeader.toDF(names: _*).select(selectedNames.map(col): _*)
     data.cache()
     log.info("reading the data: done")
 
     data.printSchema()
+
+    val statData = data.map{r =>
+      var fieldNames = r.schema.fieldNames
+      var prTagged = 0
+      var prTotal = 0
+      var euTagged = 0
+      var euTotal = 0
+      for (i <- 0 until r.size) {
+        val isPr = fieldNames(i).startsWith("provider_")
+        val value = r.getInt(i)
+        if (value > -1) {
+          if (isPr) {
+            prTotal = prTotal + 1
+          } else {
+            euTotal = euTotal + 1
+          }
+          if (value > 0) {
+            if (isPr)
+              prTagged = prTagged + 1
+            else
+              euTagged = euTagged + 1
+          }
+        }
+      }
+      val prPerc = if (prTotal == 0) 0.0 else (prTagged/prTotal)
+      val euPerc = if (euTotal == 0) 0.0 else (euTagged/euTotal)
+      (prTagged, prTotal, prPerc, euTagged, euTotal, euPerc)
+    }.toDF("prTagged", "prTotal", "prPerc", "euTagged", "euTotal", "euPerc")
+
+    statData.agg(max("prTagged"), max("prPerc"), max("euPerc")).show()
 
     def toLongForm(df: DataFrame): DataFrame = {
       val schema = df.schema
@@ -190,34 +223,21 @@ object SaturationWithHistogramForAll {
       getDouble(first)
     }
 
-    var total = data.count()
+    var total = statData.count()
     var isImpair = total / 2 == 1
 
     var stat2 = Seq(("fake", "fake", 0.0)).toDF("metric", "field", "value")
 
-    // val tls = data.schema.fieldNames.filter(x => (x.startsWith("provider_") && x.endsWith("_taggedLiterals")))
-    // data.schema.fieldNames.filter(startsWith("provider_") && endsWith("_taggedLiterals"))
-    // data.select()
-    // provider_xxxx_taggedLiterals
-    // europeana_xxxx_taggedLiterals
-
-    for (i <- 0 to (data.schema.fieldNames.size - 1)) {
+    for (i <- 0 to (statData.schema.fieldNames.size - 1)) {
       var l : Long = -1
       var r : Long = -1
       var median : Double = -1.0
       var zerosPerc : Double = -1.0
-      var fieldName = data.schema.fieldNames(i);
-      var dataType = data.schema.fields(i).dataType;
+      var fieldName = statData.schema.fieldNames(i);
+      var dataType = statData.schema.fields(i).dataType;
       log.info(s"calculating the median for $fieldName ($dataType)")
 
-      var filterField = fieldName
-      if (filterField.endsWith("_languages"))
-        filterField = filterField.replace("_languages", "_taggedLiterals")
-      else if (filterField.endsWith("_literalsPerLanguage"))
-        filterField = filterField.replace("_literalsPerLanguage", "_taggedLiterals")
-      log.info(s"filterField: $filterField")
-
-      var existing = data.filter(col(filterField) > -1).select(fieldName)
+      var existing = statData.select(fieldName)
       total = existing.count()
       isImpair = total / 2 == 1
       log.info(s"total: $total")
@@ -295,13 +315,6 @@ object SaturationWithHistogramForAll {
 
     log.info("write wideDf")
 
-    spark.sparkContext.parallelize(List(wideDf.schema.fieldNames.mkString(","))).
-      repartition(1).
-      toDF().
-      write.
-      mode(SaveMode.Overwrite).
-      format("text").
-      save(outputFile + "-header")
   }
 }
 
