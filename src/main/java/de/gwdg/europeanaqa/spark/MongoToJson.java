@@ -51,6 +51,7 @@ public class MongoToJson implements Serializable {
 				String id = record.get("about", String.class);
 				try {
 					String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
+					logger.info(id + ": " + jsonString.length());
 					return jsonString;
 					// return id;
 				} catch (IOException e) {
