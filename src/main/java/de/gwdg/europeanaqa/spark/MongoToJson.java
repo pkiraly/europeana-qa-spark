@@ -18,6 +18,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class MongoToJson implements Serializable {
@@ -43,15 +44,14 @@ public class MongoToJson implements Serializable {
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			TaskContext tc = TaskContext.get();
+			// int partitionId = tc.partitionId();
 
-			if (tc.partitionId() == 2
-			    || tc.partitionId() == 413
-			    || tc.partitionId() > 1238) {
+			// if (isProcessable(partitionId)) {
 				String jsonFragment = JSON.serialize(record);
 				String id = record.get("about", String.class);
 				try {
 					String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
-					logger.info(id + ": " + jsonString.length());
+					// logger.info(partitionId + ") " + id + ": " + jsonString.length());
 					return jsonString;
 					// return id;
 				} catch (IOException e) {
@@ -64,7 +64,7 @@ public class MongoToJson implements Serializable {
 					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
 						jsonString, e.getLocalizedMessage()));
 				}
-			}
+			// }
 			return "";
 		});
 		String outputFileName = "hdfs://localhost:54310/mongo-result2";
@@ -88,5 +88,9 @@ public class MongoToJson implements Serializable {
 			.config("spark.mongodb.input.partitionerOptions.partitionKey", "_id")
 			.config("spark.mongodb.input.partitionerOptions.partitionSizeMB", "64")
 			.getOrCreate();
+	}
+
+	private static boolean isProcessable(int partitionId) {
+		return (partitionId == 2 || partitionId == 413 || partitionId > 1238);
 	}
 }
