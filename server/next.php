@@ -2,7 +2,6 @@
 require_once('common.php');
 
 $status = parse_status(read_status());
-print_r($status->raw);
 
 if ($status->raw == 'IDLE') {
   $next = 'MONGO_EXPORT:STARTED';
