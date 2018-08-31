@@ -44,6 +44,7 @@ public class MongoToJson implements Serializable {
 
 		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
 			TaskContext tc = TaskContext.get();
+			// tc.stageId();
 			// int partitionId = tc.partitionId();
 
 			// if (isProcessable(partitionId)) {
