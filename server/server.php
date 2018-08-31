@@ -1,15 +1,5 @@
 <?php
-
-$status_list = [
-  'IDLE',
-  'MONGO_EXPORT', 'MONGO_UPLOAD',
-  'SPARK_COMPLETENESS', 'SPARK_SATURATION', 'SPARK_LANGUAGE',
-  'SPLIT_COMPLETENESS', 'SPLIT_SATURATION',
-  'R_COMPLETENESS', 'R_SATURATION',
-];
-
-define('FILENAME', 'status.txt');
-define('DEFAULT_STATUS', 'IDLE');
+require_once('common.php');
 
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET': 
