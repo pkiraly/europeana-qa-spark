@@ -23,7 +23,3 @@ switch ($_SERVER['REQUEST_METHOD']) {
 }
 
 echo $status, "\n";
-
-function read_status() {
-  return file_exists(FILENAME) ? file_get_contents(FILENAME) : DEFAULT_STATUS;
-}
