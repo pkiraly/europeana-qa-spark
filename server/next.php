@@ -1,10 +1,20 @@
 <?php
 require_once('common.php');
 
-$status = read_status();
+$status = parse_status(read_status());
 
-$i = array_search($status, $status_list);
-if (count($status_list) != $i-1) {
-  $i++;
+if ($status->raw == 'IDLE') {
+  $next = 'MONGO_EXPORT:STARTED';
+} else if ($status->raw == 'R_SATURATION:FINISHED') {
+  $next = 'FINISHED';
+} else if ($status->state == 'STARTED') {
+  $next = $status->task . ':FINISHED';
+} else {
+  $i = array_search($status->task, $task_list);
+  if (count($task_list) != $i-1) {
+    $i++;
+  }
+  $next = $task_list[$i] . ':STARTED';
 }
-echo $status_list[$i], "\n";
+
+echo $next;
