@@ -47,11 +47,12 @@ FORMAT="fullbean"
 #  --inputFileName hdfs://localhost:54310/europeana/*.json \
 #  --inputFileName hdfs://localhost:54310/europeana/*.json.gz \
 #  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
+#  --inputFileName /projects/pkiraly/data-export/2018-08-23/\*.json.gz \
 
 spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
   --master local[*] \
   $JAR \
-  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
+  --inputFileName hdfs://localhost:54310/europeana/*.json.gz \
   --outputFileName hdfs://localhost:54310/result \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
