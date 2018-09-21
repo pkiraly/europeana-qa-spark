@@ -11,11 +11,15 @@ import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.functions.first
 import org.apache.spark.sql.functions.regexp_replace
-import org.apache.spark.sql.types.DoubleType
-import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, StructField, StructType}
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.types._
+import org.apache.spark.sql._
+
+import scala.collection.JavaConverters._
+import java.io.ByteArrayOutputStream
 
 object SaturationWithHistogramForAll {
 
@@ -24,6 +28,9 @@ object SaturationWithHistogramForAll {
     val log = org.apache.log4j.LogManager.getLogger("SaturationWithHistogramForAll")
     val spark = SparkSession.builder.appName("SaturationWithHistogramForAll").getOrCreate()
     import spark.implicits._
+    // import sqlContext.implicits._
+    // val sqlContext = new SQLContext(spark.sparkContext)
+    // import sqlContext.implicits._
 
     val configMap : Map[String, String] = spark.conf.getAll
     for ((key, value) <- configMap) {
@@ -102,10 +109,45 @@ object SaturationWithHistogramForAll {
     }
 
     def getMedianFromHistogram(histogram: DataFrame, l: Long): Double = {
+      var start = System.currentTimeMillis();
       var first = histogram.filter($"start" <= l && $"end" >= l)
                            .select("label")
                            .first()
-      getDouble(first)
+      var median = getDouble(first)
+      log.info(s"- getMedianFromHistogram took ${System.currentTimeMillis() - start}")
+
+      return median
+    }
+
+    def calculateMedian(histogram: DataFrame, isUneven: Boolean, total: Long): Double = {
+      var l : Long = -1
+      var r : Long = -1
+      var median : Double = -1.0
+
+      if (isUneven) {
+        l = (total / 2)
+        r = l
+        median = getMedianFromHistogram(histogram, l)
+      } else {
+        l = (total / 2) - 1
+        r = l + 1
+        var lval = getMedianFromHistogram(histogram, l)
+        var rval = getMedianFromHistogram(histogram, r)
+        median = (lval + rval) / 2
+      }
+      return median
+    }
+
+    def createHistogram(input: DataFrame, fieldName: String): DataFrame = {
+      input
+        .groupBy(fieldName)
+        .count()
+        .toDF("label", "count")
+        .orderBy("label")
+        .withColumn("group", functions.lit(1))
+        .withColumn("end", sum("count")
+          .over(Window.partitionBy("group").orderBy($"label")))
+        .withColumn("start", (col("end") - col("count") + 1))
     }
 
     var total = data.count()
@@ -119,7 +161,9 @@ object SaturationWithHistogramForAll {
     // provider_xxxx_taggedLiterals
     // europeana_xxxx_taggedLiterals
 
+    var startFields = System.currentTimeMillis();
     for (i <- 0 to (data.schema.fieldNames.size - 1)) {
+      var startField = System.currentTimeMillis();
       var l : Long = -1
       var r : Long = -1
       var median : Double = -1.0
@@ -133,46 +177,48 @@ object SaturationWithHistogramForAll {
         filterField = filterField.replace("_languages", "_taggedLiterals")
       else if (filterField.endsWith("_literalsPerLanguage"))
         filterField = filterField.replace("_literalsPerLanguage", "_taggedLiterals")
-      log.info(s"filterField: $filterField")
+      log.info(s"- filterField: $filterField")
 
-      var existing = data.filter(col(filterField) > -1).select(fieldName)
+      var start = System.currentTimeMillis();
+      var filteredValues = data.filter(col(filterField) > -1).select(fieldName).collect().toList.asJava
+      val aStruct = new StructType(Array(StructField(fieldName, dataType, nullable = true)))
+      var existing = spark.createDataFrame(filteredValues, aStruct)
+      log.info(s"- existing took ${System.currentTimeMillis() - start}")
+
+      start = System.currentTimeMillis();
+      existing.cache()
       total = existing.count()
-      isImpair = total / 2 == 1
-      log.info(s"total: $total")
+      var isUneven = (total == 1) || ((total / 2) == 1)
+      log.info(s"- total: $total, took ${System.currentTimeMillis() - start}")
 
       if (total > 0) {
+        start = System.currentTimeMillis();
         stat2 = stat2.union(toLongForm(existing.describe()))
+        log.info(s"- describe took ${System.currentTimeMillis() - start}")
 
-        var histogram = existing
-          .groupBy(fieldName)
-          .count()
-          .toDF("label", "count")
-          .orderBy("label")
-          .withColumn("group", functions.lit(1))
-          .withColumn("end", sum("count")
-            .over(Window.partitionBy("group").orderBy($"label")))
-          .withColumn("start", (col("end") - col("count")))
+        start = System.currentTimeMillis();
+        var histogram = createHistogram(existing, fieldName)
+        histogram.cache()
+        log.info(s"- histogram: ${histogram.count()}")
+        /*
+        var outCapture = new ByteArrayOutputStream
+        Console.withOut(outCapture) {
+          histogram.show()
+        }
+        var histogramAsString = new String(outCapture.toByteArray)
+        log.info(histogramAsString)
+        */
+        log.info(s"- histogram took ${System.currentTimeMillis() - start}")
 
-        var lowest = histogram.select("label").first();
-        if (dataType.equals(DoubleType))
-          log.info("lowest: " + lowest.getDouble(0))
-        else
-          log.info("lowest: " + lowest.getInt(0))
+        start = System.currentTimeMillis();
+        median = calculateMedian(histogram, isUneven, total)
+        log.info(s"- median took ${System.currentTimeMillis() - start}")
 
+        start = System.currentTimeMillis();
         var zeros = histogram.select("count").first().getLong(0)
         zerosPerc = zeros * 100.0 / total
+        log.info(s"- zerosPerc took ${System.currentTimeMillis() - start}")
 
-        if (isImpair) {
-          l = (total / 2)
-          r = l
-          median = getMedianFromHistogram(histogram, l)
-        } else {
-          l = (total / 2) - 1
-          r = l + 1
-          var lval = getMedianFromHistogram(histogram, l)
-          var rval = getMedianFromHistogram(histogram, r)
-          median = (lval + rval) / 2
-        }
       } else {
         stat2 = stat2.union(Seq(
           ("count", fieldName, 0),
@@ -183,14 +229,21 @@ object SaturationWithHistogramForAll {
         ).toDF("metric", "field", "value"))
       }
 
-      log.info(s"$fieldName: $median (zeros: $zerosPerc%)")
+      log.info(s"- median: $median (zeros: $zerosPerc%)")
 
+      start = System.currentTimeMillis();
       stat2 = stat2.union(Seq(
         ("median", fieldName, median),
         ("zerosPerc", fieldName, zerosPerc)
       ).toDF("metric", "field", "value"))
+      log.info(s"- union took ${System.currentTimeMillis() - start}")
+
+      log.info(s"- took ${System.currentTimeMillis() - startField}")
     }
 
+    log.info("write wideDf")
+
+    var start = System.currentTimeMillis();
     val wideDf = stat2.
       filter(col("field") =!= "fake").
       groupBy("field").
@@ -201,25 +254,35 @@ object SaturationWithHistogramForAll {
       withColumn("main", regexp_replace($"field", "^(provider|europeana)_(.*)_(taggedLiterals|languages|literalsPerLanguage)$", "$2")).
       orderBy("main", "source", "type").
       select("field", "count", "median", "zerosPerc", "mean", "stddev", "min", "max")
+    log.info(s"Creating wideDf took ${System.currentTimeMillis() - start}")
 
+    start = System.currentTimeMillis();
     stat2.repartition(1).write.
       option("header", "true").
-      csv(outputFile + "-longform")
+      mode(SaveMode.Overwrite).
+      csv(s"$outputFile-longform")
+    log.info(s"Saving longDF took ${System.currentTimeMillis() - start}")
 
+    start = System.currentTimeMillis();
     wideDf.repartition(1).write.
       option("header", "true").
       mode(SaveMode.Overwrite).
-      csv(outputFile)
+      csv(s"$outputFile-csv")
+    log.info(s"Saving wideDf took ${System.currentTimeMillis() - start}")
 
-    log.info("write wideDf")
-
+    /*
+    start = System.currentTimeMillis();
     spark.sparkContext.parallelize(List(wideDf.schema.fieldNames.mkString(","))).
       repartition(1).
       toDF().
       write.
       mode(SaveMode.Overwrite).
       format("text").
-      save(outputFile + "-header")
+      save(s"$outputFile-header")
+    log.info(s"- union took ${System.currentTimeMillis() - start}")
+    */
+
+    log.info(s"ALL took ${System.currentTimeMillis() - startFields}")
   }
 }
 
