@@ -1,10 +1,10 @@
 package de.gwdg.europeanaqa.spark.completeness
 
-import java.nio.file.{Paths, Files}
+import java.nio.file.{Files, Paths}
 import java.nio.charset.StandardCharsets
+
 import scala.collection.mutable.ListBuffer
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.Row
+import org.apache.spark.sql.{Row, SaveMode, SparkSession}
 import org.apache.spark.SparkContext._
 import org.apache.log4j._
 import org.apache.spark.sql.functions.desc
@@ -89,7 +89,10 @@ object ProfilePerDataProvider {
       val names = Seq("profile", "nr-of-fields", "occurence", "percent")
       val df2 = spark.sparkContext.parallelize(edges).toDF(names: _*)
       var profilesFile = s"profiles/d${pid}-profiles-csv"
-      df2.orderBy(desc("_3")).write.csv(profilesFile)
+      df2.orderBy(desc("_3")).
+        write.
+        mode(SaveMode.Overwrite).
+        csv(profilesFile)
     }
   }
 }

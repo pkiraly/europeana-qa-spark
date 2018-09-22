@@ -134,5 +134,7 @@ object CompletenessToMinimalParquet {
     df.write.
       mode(SaveMode.Overwrite).
       save(parquetFile)
+
+    log.info("DONE")
   }
 }
