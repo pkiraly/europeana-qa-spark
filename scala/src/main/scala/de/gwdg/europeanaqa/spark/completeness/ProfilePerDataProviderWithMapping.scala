@@ -115,7 +115,7 @@ object ProfilePerDataProviderWithMapping {
     }
 
     def saveResult(id: Any, rows: Iterable[org.apache.spark.sql.Row]): Unit = {
-      println(s"Saving $id (${rows.size} patterns)")
+      log.info(s"Saving $id (${rows.size} patterns)")
       saveFields(id, rows)
       saveProfiles(id, rows)
     }
