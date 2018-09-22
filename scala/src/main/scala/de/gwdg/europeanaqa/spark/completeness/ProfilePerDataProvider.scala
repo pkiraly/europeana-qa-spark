@@ -13,6 +13,7 @@ object ProfilePerDataProvider {
 
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.ERROR)
+    val log = org.apache.log4j.LogManager.getLogger("ProfilePerDataProvider")
 
     val spark = SparkSession.builder.
       appName("ProfilePerDataProvider").
@@ -20,7 +21,7 @@ object ProfilePerDataProvider {
     import spark.implicits._
 
     val parquetFile = args(0)
-    log.info(s"ProfilePerDataProvider $parquetFile")
+    log.info(s"reading parquetFile: $parquetFile")
 
     val df = spark.read.load(parquetFile)
     val nrOfRecords = df.count()
