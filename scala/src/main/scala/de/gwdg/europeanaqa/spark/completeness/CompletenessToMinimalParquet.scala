@@ -22,7 +22,7 @@ object CompletenessToMinimalParquet {
 
     val inputFile = args(0)
     val parquetFile = args(1)
-    log.info(s"CompletenessToParquet $inputFile -> $parquetFile")
+    log.info(s"CompletenessToMinimalParquet $inputFile -> $parquetFile")
 
     val dataWithoutHeader = spark.read.
       option("header", "false").
@@ -30,7 +30,7 @@ object CompletenessToMinimalParquet {
       format("csv").
       load(inputFile)
 
-    dataWithoutHeader.printSchema()
+    // dataWithoutHeader.printSchema()
 
     val names = Seq(
       "id", "collection", "provider",
@@ -96,6 +96,7 @@ object CompletenessToMinimalParquet {
 
     // data.select("crd_Proxy_dc_description").describe().show()
 
+    log.info(s"select columns")
     var columns = data.
       columns.
       filter(field =>
@@ -113,7 +114,9 @@ object CompletenessToMinimalParquet {
           )
       ).
       map(data(_))
+    log.info(s"select data")
     var existence = data.select(columns: _*)
+
     var simplenames = existence.columns.map(field =>
       field.replace("existence_of_Proxy_", "")
         // .replace("edm_type", "edmtype")
@@ -122,8 +125,11 @@ object CompletenessToMinimalParquet {
         .replace("edm_", "edm:")
         .replace("ore_", "ore:")
     )
+
+    log.info(s"rename columns")
     val df = existence.toDF(simplenames: _*)
 
+    log.info(s"save to $parquetFile")
     df.write.save(parquetFile)
   }
 }

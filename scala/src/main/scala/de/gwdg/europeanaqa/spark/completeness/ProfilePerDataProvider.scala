@@ -82,7 +82,7 @@ object ProfilePerDataProvider {
 
       val names = Seq("profile", "nr-of-fields", "occurence", "percent")
       val df2 = spark.sparkContext.parallelize(edges).toDF(names: _*)
-      var profilesFile = s"hdfs://localhost:54310/join/d${pid}-profiles.csv"
+      var profilesFile = s"profiles/d${pid}-profiles-csv"
       df2.orderBy(desc("_3")).write.csv(profilesFile)
     }
   }
