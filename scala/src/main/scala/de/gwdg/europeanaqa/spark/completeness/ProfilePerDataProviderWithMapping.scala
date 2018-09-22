@@ -120,6 +120,10 @@ object ProfilePerDataProviderWithMapping {
       saveProfiles(id, rows)
     }
 
-    resolved.rdd.groupBy(row => row(0)).take(3).foreach(r => saveResult(r._1, r._2))
+    resolved.rdd.
+      groupBy(row => row(0)).
+      foreach(r => saveResult(r._1, r._2))
+
+    log.info("DONE")
   }
 }
