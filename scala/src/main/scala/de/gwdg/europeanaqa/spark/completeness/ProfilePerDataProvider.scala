@@ -1,9 +1,10 @@
+package de.gwdg.europeanaqa.spark.completeness
+
 import java.nio.file.{Paths, Files}
 import java.nio.charset.StandardCharsets
 import scala.collection.mutable.ListBuffer
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.Row
-// import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.SparkContext._
 import org.apache.log4j._
 import org.apache.spark.sql.functions.desc
@@ -14,12 +15,13 @@ object ProfilePerDataProvider {
     Logger.getLogger("org").setLevel(Level.ERROR)
 
     val spark = SparkSession.builder.
-      appName("CompletenessToMinimalParquet").
+      appName("ProfilePerDataProvider").
       getOrCreate()
     import spark.implicits._
 
-    var parquetFile = "hdfs://localhost:54310/join/completeness2.parquet"
-    // var parquetFile = "completeness.parquet"
+    val parquetFile = args(0)
+    log.info(s"ProfilePerDataProvider $parquetFile")
+
     val df = spark.read.load(parquetFile)
     val nrOfRecords = df.count()
     var simplenames = df.columns

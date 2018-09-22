@@ -1,12 +1,12 @@
+package de.gwdg.europeanaqa.spark.completeness
+
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 
-// import org.apache.spark.ml.regression.LinearRegression
 import scala.collection.mutable.ListBuffer
 
-// Optional: Use the following code below to set the Error reporting
 import org.apache.log4j._
 
 object CompletenessToMinimalParquet {
