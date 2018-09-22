@@ -31,9 +31,12 @@ object ProfilePerDataProvider {
     var range = Range(1, (len - 1))
 
     var providers = df.select("provider").distinct().orderBy("provider").collect()
+    var total = providers.length
 
+    var i = 0
     for (providerId <- providers) {
       var pid = providerId(0)
+      log.info(s"${i += 1}/$total")
 
       var pairs = df.filter(s"provider == $pid").map { r =>
         var fields = new ListBuffer[Int]();
@@ -47,6 +50,7 @@ object ProfilePerDataProvider {
       }
 
       var counts = pairs.groupByKey(identity).count().collect()
+
       var participatingFieldsArray = counts.map { case (pair, count) =>
         var parts = pair.split(",");
         var fields = new ListBuffer[Int]();
@@ -55,9 +59,11 @@ object ProfilePerDataProvider {
         }
         fields.toList
       }.flatMap(identity)
+
       var participatingFields = spark.sparkContext.
         parallelize(participatingFieldsArray).
         toDF()
+
       var f = participatingFields.
         groupBy("value").
         count().
@@ -66,7 +72,7 @@ object ProfilePerDataProvider {
         collect().
         mkString(";")
 
-      Files.write(Paths.get(s"d$pid-fields.csv"), f.getBytes(StandardCharsets.UTF_8))
+      Files.write(Paths.get(s"profiles/d$pid-fields.csv"), f.getBytes(StandardCharsets.UTF_8))
 
       var edges = counts.map { case (pair, count) =>
         var parts = pair.split(",");
