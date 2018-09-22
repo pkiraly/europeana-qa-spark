@@ -35,6 +35,8 @@ object CompletenessToParquet {
     val headerOption = if (fromParquet) "true" else "false"
     val formatOption = if (fromParquet) "parquet" else "csv"
 
+    log.info(s"CompletenessToParquet $inputFile -> $outputFile")
+
     log.info(s"reading the data from $inputFile")
     val dataWithoutHeader = spark.read.
       option("header", headerOption).
