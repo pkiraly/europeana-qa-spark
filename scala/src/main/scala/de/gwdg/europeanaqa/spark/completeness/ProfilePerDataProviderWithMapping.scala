@@ -56,6 +56,7 @@ object ProfilePerDataProviderWithMapping {
       fields.toList.mkString(";")
     }
 
+    log.info("create dfCount")
     var dfCount = df.flatMap{row =>
         var cid = row.getAs[Int]("collection")
         var did = row.getAs[Int]("provider")
@@ -70,14 +71,17 @@ object ProfilePerDataProviderWithMapping {
       count().
       orderBy("id", "count")
 
+    log.info("create countById")
     var countById = dfCount.groupBy("id").agg(sum("count").as("total")).
       toDF("id2", "total")
 
+    log.info("join")
     var dfCountWithTotal = dfCount.
       join(countById, dfCount.col("id") === countById.col("id2"), "inner").
       withColumn("percent", col("count")*100/col("total")).
       select("id", "pattern", "count", "total", "percent")
 
+    log.info("resolve")
     var resolved = dfCountWithTotal.map{row =>
         var id = row.getAs[String]("id")
         var count = row.getAs[Long]("count")
@@ -90,36 +94,74 @@ object ProfilePerDataProviderWithMapping {
       orderBy("id", "count")
 
     def saveFields(id: Any, rows: Iterable[org.apache.spark.sql.Row]): Unit = {
-      var fieldList = rows.flatMap(r => r.getAs[String]("pattern").split(";")).groupBy(x => x).map(x => x._1).mkString(";")
-      Files.write(Paths.get(s"profiles/$id-fields.csv"), fieldList.getBytes(StandardCharsets.UTF_8))
+      // println(s"Saving fields for $id")
+      var fieldList = rows.
+        flatMap(r => r.getAs[String]("pattern").split(";")).
+        groupBy(x => x).
+        map(x => x._1).
+        mkString(";")
+
+      Files.write(
+        Paths.get(s"profiles/$id-fields.csv"),
+        fieldList.getBytes(StandardCharsets.UTF_8)
+      )
     }
 
     def saveProfiles(id: Any, rows: Iterable[org.apache.spark.sql.Row]): Unit = {
+      // println(s"Saving profiles for $id")
+      val spark = SparkSession.builder.
+        appName(this.getClass().getCanonicalName).
+        getOrCreate()
+
       var patterns = rows.map{row =>
-        (
+        Seq(
           row.getAs[String]("pattern"),
           row.getAs[Int]("length"),
           row.getAs[Long]("total"),
           row.getAs[Double]("percent")
-        )
-      }.toList
-      var patternsDF = spark.sparkContext.parallelize(patterns).
-        toDF(Seq("profile", "nr-of-fields", "occurence", "percent"): _*).
-        orderBy(desc("occurence"))
+        ).toList.mkString(",")
+      }.toList.
+        mkString("\n")
 
-      var profilesFile = s"profiles-raw/${id}-profiles-csv"
-      patternsDF.
-        write.
-        mode(SaveMode.Overwrite).
-        csv(profilesFile)
+      Files.write(
+        Paths.get(s"profiles/$id-profiles.csv"),
+        patterns.getBytes(StandardCharsets.UTF_8)
+      )
+
+      /*
+      println(patterns != null)
+      println(spark != null)
+      println(patterns.size)
+
+      var patternsRDD = spark.sparkContext.makeRDD(patterns)
+      if (patternsRDD != null) {
+        // var fieldNames = Seq("profile", "nr-of-fields", "occurence", "percent")
+        var patternsDF = patternsRDD.toDF()
+
+        if (patternsDF != null) {
+          var profilesFile = s"profiles-raw/${id}-profiles-csv"
+          patternsDF.
+            repartition(1).
+            // orderBy(desc("occurence")).
+            write.
+            mode(SaveMode.Overwrite).
+            csv(profilesFile)
+        } else {
+          println("patternsDF is NULL")
+        }
+      } else {
+        println("patternsRDD is NULL")
+      }
+      */
     }
 
     def saveResult(id: Any, rows: Iterable[org.apache.spark.sql.Row]): Unit = {
-      println(s"Saving $id (${rows.size} patterns)")
+      // println(s"Saving $id (${rows.size} patterns)")
       saveFields(id, rows)
       saveProfiles(id, rows)
     }
 
+    log.info("save it all")
     resolved.rdd.
       groupBy(row => row(0)).
       foreach(r => saveResult(r._1, r._2))
