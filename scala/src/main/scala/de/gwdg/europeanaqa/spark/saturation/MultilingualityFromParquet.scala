@@ -41,7 +41,7 @@ object MultilingualityFromParquet {
     log.info(s"runing phase: $phase")
 
     if (phase.equals("prepare")) {
-      this.runPrepare()
+      this.runPrepare(inputFile)
     } else if (phase.equals("statistics")) {
       this.runStatistics()
     } else if (phase.equals("median")) {
@@ -55,7 +55,7 @@ object MultilingualityFromParquet {
     log.info(s"ALL took ${System.currentTimeMillis() - startFields}")
   }
 
-  def runPrepare(): Unit = {
+  def runPrepare(inputFile: String): Unit = {
     log.info("reading the data")
     val data = spark.read.load(inputFile)
     data.printSchema()
