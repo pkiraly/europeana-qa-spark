@@ -15,10 +15,23 @@ object Cardinality {
 
     // "hdfs://localhost:54310/join/result11.csv"
     val csv = sc.textFile(args(0)).filter(_.nonEmpty);
+    val count = csv.count()
     val data = csv.map(line => line.split(",").map(elem => elem.trim)) //lines in rows
 
     val cardinality = data.flatMap(
       x => List(
+
+        "total." + x(3),
+        "mandatory" + x(4),
+        "descriptiveness" + x(5),
+        "searchability" + x(6),
+        "contextualization" + x(7),
+        "identification" + x(8),
+        "browsing" + x(9),
+        "viewing" + x(10),
+        "reusability" + x(11),
+        "multilinguality" + x(12),
+
         "providedcho_rdf_about." + x(138),
         "proxy_rdf_about." + x(139),
         "proxy_dc_title." + x(140),

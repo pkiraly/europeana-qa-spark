@@ -30,6 +30,7 @@ object MultilingualityFromParquet {
   val internalParquet = "multilinguality-csv.parquet"
   val statisticsParquet = "multilinguality-csv-statistics.parquet"
   val medianParquet = "multilinguality-csv-median.parquet"
+  val histogramCsv = "multilinguality-histogram"
 
   def main(args: Array[String]): Unit = {
 
@@ -46,6 +47,8 @@ object MultilingualityFromParquet {
       this.runStatistics()
     } else if (phase.equals("median")) {
       this.runMedian()
+    } else if (phase.equals("histogram")) {
+      this.runHistogram()
     } else if (phase.equals("join")) {
       this.runJoin()
     } else {
@@ -178,6 +181,49 @@ object MultilingualityFromParquet {
     mediansDF.write.
       mode(SaveMode.Overwrite).
       save(medianParquet)
+  }
+
+  def runHistogram(): Unit = {
+    val filtered = spark.read.load(internalParquet)
+    log.info("create median")
+
+    val histogram = filtered.
+      groupBy("id", "field", "value").
+      count()
+
+    var groupped = histogram.
+      sort("id", "field", "value").
+      rdd.
+      groupBy(row => (row(0), row(1)))
+
+    groupped.cache()
+
+    case class Counter(value: Double, count: Long)
+
+    var histogramRDD = groupped.map{x =>
+      Row.fromSeq(
+        Seq(
+          x._1._1,
+          x._1._2,
+          x._2.map{y =>
+            s"${y.getDouble(2)}:${y.getLong(3)}"
+          }.mkString(";")
+        )
+      )
+    }
+
+    val histogramFields = StructType(List(
+      StructField("id", StringType, nullable = false),
+      StructField("field", IntegerType, nullable = false),
+      StructField("histogram", StringType, nullable = false)
+    ))
+
+    var histogramDF = spark.createDataFrame(histogramRDD, histogramFields)
+    histogramDF.
+      repartition(1).
+      write.
+      mode(SaveMode.Overwrite).
+      csv(histogramCsv)
   }
 
   def runJoin(): Unit = {
