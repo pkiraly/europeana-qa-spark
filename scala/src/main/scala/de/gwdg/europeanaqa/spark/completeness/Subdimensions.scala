@@ -44,7 +44,7 @@ object Subdimensions {
       }).
       toDF("statistic", "field", "value").
       groupBy("field").
-      pivot("statistic").
+      pivot("statistic", Seq("count", "mean", "stddev", "min", "max")).
       agg(first("value"))
 
     var ordered = transposed.
