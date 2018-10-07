@@ -198,19 +198,72 @@ object MultilingualityFromParquet {
 
     groupped.cache()
 
-    case class Counter(value: Double, count: Long)
+    case class Counter(value: Double, count: Double)
+    case class HistogramUnit(from: Double, until: Double, count: Double)
+
+    def listToHistogram(numbers: Seq[Double]): Seq[Counter] = {
+      var values = numbers.zipWithIndex.filter(x => x._2 % 2 == 0).map(x => x._1)
+      var counts = numbers.zipWithIndex.filter(x => x._2 % 2 == 1).map(x => x._1)
+      values.zip(counts).map(x => Counter(x._1, x._2))
+    }
+
+    def minifyHistogram(histogram: Seq[Counter]): Seq[HistogramUnit] = {
+      var len = histogram.length
+      var minified: Seq[HistogramUnit] = Seq()
+      if (len <= 10) {
+        for (counter <- histogram) {
+          var unit = HistogramUnit(counter.value, counter.value, counter.count)
+          minified = minified :+ unit
+        }
+      } else {
+        var firstIndex = if (histogram(0).value == 0.0) 1 else 0
+        var firstValue = histogram(firstIndex).value
+        var lastValue = histogram(len - 1).value
+        var scale = lastValue - firstValue
+        var decilisRange = Math.round(scale / 10.0).toDouble
+        var decilisIndices = (firstIndex until 10).map(x => (x * decilisRange) + firstValue) :+ lastValue
+
+        var i = firstIndex
+        for (decilisIndex <- 1 until decilisIndices.length) {
+          var decilis = decilisIndices(decilisIndex)
+          var cumsum = 0.0
+          var value = 0.0
+          var count = 0.0
+
+          while (i <= (histogram.length-1) && histogram(i).value < decilis) {
+            value = histogram(i).value
+            count = histogram(i).count
+            cumsum += count
+              // println(s"i: $i, decilis: $decilis, value: $value/$count, cumsum: $cumsum")
+            i += 1
+          }
+          // println(s"===> i: $i, decilis: $decilis, value: $value/$count, cumsum: $cumsum")
+          var unit = HistogramUnit(decilisIndices(decilisIndex-1), decilis, cumsum)
+          minified = minified :+ unit
+        }
+      }
+      minified
+    }
 
     var histogramRDD = groupped.map{x =>
       Row.fromSeq(
         Seq(
           x._1._1,
           x._1._2,
-          x._2.map{y =>
-            s"${y.getDouble(2)}:${y.getLong(3)}"
-          }.mkString(";")
+          minifyHistogram(
+            x._2.
+              map{y =>
+                Counter(y.getDouble(2), y.getLong(3).toDouble)
+              }.
+              toSeq
+            ).
+            map(unit => s"${unit.from}-${unit.until}:${unit.count}").
+            mkString(";")
         )
       )
     }
+
+    histogramRDD.take(10).foreach(println)
 
     val histogramFields = StructType(List(
       StructField("id", StringType, nullable = false),
@@ -218,7 +271,24 @@ object MultilingualityFromParquet {
       StructField("histogram", StringType, nullable = false)
     ))
 
-    var histogramDF = spark.createDataFrame(histogramRDD, histogramFields)
+    val fieldIndexDF = spark.read.
+      option("inferSchema", "true").
+      format("csv").
+      load("multilinguality-fieldIndex")
+
+    var fieldMap = fieldIndexDF.collect.
+      map(row => (row.getInt(1), row.getString(0))).
+      toMap
+
+    val getFieldName = udf((fieldIndex:Int) => fieldMap(fieldIndex))
+
+    var histogramDF = spark.createDataFrame(histogramRDD, histogramFields).
+      sort("id", "field").
+      withColumn("name", getFieldName(col("field"))).
+      drop("field").
+      withColumnRenamed("name", "field").
+      select("id", "field", "histogram")
+
     histogramDF.
       repartition(1).
       write.
