@@ -300,11 +300,26 @@ object MultilingualityFromParquet {
     val statisticsDF = spark.read.load(statisticsParquet)
     val mediansDF = spark.read.load(medianParquet)
 
+    val fieldIndexDF = spark.read.
+      option("inferSchema", "true").
+      format("csv").
+      load("multilinguality-fieldIndex")
+
+    var fieldMap = fieldIndexDF.collect.
+      map(row => (row.getInt(1), row.getString(0))).
+      toMap
+
+    val getFieldName = udf((fieldIndex:Int) => fieldMap(fieldIndex))
+
     log.info("join all")
     var statisticsAll = statisticsDF.
       join(mediansDF, Seq("id", "field"), "inner").
       select("id", "field", "mean", "min", "max", "count", "median").
-      orderBy("id", "field")
+      orderBy("id", "field").
+      withColumn("name", getFieldName(col("field"))).
+      drop("field").
+      withColumnRenamed("name", "field").
+      select("id", "field", "mean", "min", "max", "count", "median")
 
     log.info("save")
     statisticsAll.
