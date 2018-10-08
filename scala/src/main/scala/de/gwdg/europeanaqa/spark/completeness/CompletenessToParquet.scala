@@ -1,19 +1,12 @@
-import org.apache.spark.SparkContext
+package de.gwdg.europeanaqa.spark.completeness
+
+import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
-import org.apache.spark.sql.SparkSession
 
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions
-import org.apache.spark.sql.functions.sum
-import org.apache.spark.sql.functions.col
-import org.apache.spark.sql.functions.first
-import org.apache.spark.sql.functions.regexp_replace
-import org.apache.spark.sql.types.DoubleType
-import org.apache.spark.sql.types.IntegerType
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.functions.{sum, col, first, regexp_replace}
+import org.apache.spark.sql.types.{DoubleType, IntegerType}
+import org.apache.spark.sql.{SparkSession, Row, DataFrame, SaveMode}
 
 object CompletenessToParquet {
 
@@ -143,7 +136,12 @@ object CompletenessToParquet {
     val names = ids ++ completeness ++ instanceFields ++ cardinalityFields ++ problemFields
     val selectedNames = completeness ++ instanceFields ++ cardinalityFields ++ problemFields
 
-    val data = dataWithoutHeader.toDF(names: _*).select(names.filterNot(_ == "id").map(col): _*)
+    val data = dataWithoutHeader.toDF(names: _*).
+      select(
+        names.
+          filterNot(_ == "id").
+          map(col): _*
+      )
     log.info("reading the data: done")
 
     data.write.
