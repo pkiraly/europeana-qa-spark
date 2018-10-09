@@ -219,27 +219,37 @@ object CompletenessFromParquet {
         }
       } else {
         var firstIndex = if (histogram(0).value == 0.0) 1 else 0
+        if (firstIndex == 1) {
+          minified = minified :+ HistogramUnit(histogram(0).value, histogram(0).value, histogram(0).count)
+        }
         var firstValue = histogram(firstIndex).value
         var lastValue = histogram(len - 1).value
-        var scale = lastValue - firstValue
-        var decilisRange = Math.round(scale / 10.0).toDouble
-        var decilisIndices = (firstIndex until 10).map(x => (x * decilisRange) + firstValue) :+ lastValue
+        var range = lastValue - firstValue
+        var decilisRange: Double = 0.0
+        var decilisIndices: Seq[Double] = Seq()
+        if (firstIndex == 0) {
+          decilisRange = Math.round(range / 10.0).toDouble
+          decilisIndices = (firstIndex until 10).map(x => (x * decilisRange) + firstValue) :+ lastValue
+        } else {
+          decilisRange = Math.round(range / 9.0).toDouble
+          decilisIndices = (firstIndex until 10).map(x => ((x-1) * decilisRange) + firstValue) :+ lastValue
+        }
 
         var i = firstIndex
         for (decilisIndex <- 1 until decilisIndices.length) {
+          var isLast = decilisIndex == decilisIndices.length - 1
           var decilis = decilisIndices(decilisIndex)
           var cumsum = 0.0
           var value = 0.0
           var count = 0.0
 
-          while (i <= (histogram.length-1) && histogram(i).value < decilis) {
+          while (i <= (histogram.length-1)
+            && (isLast || histogram(i).value < decilis)) {
             value = histogram(i).value
             count = histogram(i).count
             cumsum += count
-              // println(s"i: $i, decilis: $decilis, value: $value/$count, cumsum: $cumsum")
             i += 1
           }
-          // println(s"===> i: $i, decilis: $decilis, value: $value/$count, cumsum: $cumsum")
           var unit = HistogramUnit(decilisIndices(decilisIndex-1), decilis, cumsum)
           minified = minified :+ unit
         }
