@@ -3,17 +3,30 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 
 object Frequency {
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
 
     val conf = new SparkConf().setAppName("Frequency")
     val sc = new SparkContext(conf)
 
     // "hdfs://localhost:54310/join/result11.csv"
     val csv = sc.textFile(args(0)).filter(_.nonEmpty)
+    val count = csv.count()
     val data = csv.map(line => line.split(",").map(elem => elem.trim)) //lines in rows
 
     val frequencies = data
       .flatMap(x => List(
+
+        "total." + x(3),
+        "mandatory" + x(4),
+        "descriptiveness" + x(5),
+        "searchability" + x(6),
+        "contextualization" + x(7),
+        "identification" + x(8),
+        "browsing" + x(9),
+        "viewing" + x(10),
+        "reusability" + x(11),
+        "multilinguality" + x(12),
+
         "identifier." + x(13),
         "proxy_dc_title." + x(14),
         "proxy_dcterms_alternative." + x(15),
