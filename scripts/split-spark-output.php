@@ -23,6 +23,8 @@ $in = fopen($fileName, "r");
 $out = [];
 // $intersections = ['c' => [], 'd' => []];
 $ln = 1;
+$prevId = '';
+$lines = [];
 while (($line = fgets($in)) != false) {
   if (strpos($line, ',') != false) {
     if ($ln++ % 10000 == 0) {
@@ -30,10 +32,27 @@ while (($line = fgets($in)) != false) {
     }
     $row = str_getcsv($line);
     $id = $row[0];
-    file_put_contents(sprintf("%s/%s/%s.%s.csv", $outputDir, $id, $id, $options['suffix']), $line, FILE_APPEND);
+    if ($id != $prevId && $prevId != "") {
+      saveContent($prevId, $lines);
+      $lines = [];
+      $prevId = $id;
+    }
+    $lines = [$line];
   }
 }
 fclose($in);
 
 $duration = microtime(TRUE) - $start;
 echo 'DONE in ', gmdate("H:i:s", (int)$duration), "\n";
+
+function saveContent($id, $lines) {
+  globals $outputDir, $options;
+
+  $dir = sprintf("%s/%s", $outputDir, $id);
+  if (!file_exists($dir)) {
+    echo "Making directory: $dir\n";
+    mkdir($dir);
+  }
+  $outputFile = sprintf("%s/%s.%s.csv", $dir, $id, $options['suffix']);
+  file_put_contents($outputFile, implode('', $lines));
+}
