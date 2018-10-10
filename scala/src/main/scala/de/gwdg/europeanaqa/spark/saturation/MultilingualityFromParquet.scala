@@ -27,10 +27,12 @@ object MultilingualityFromParquet {
   val spark = SparkSession.builder.appName("MultilingualityFromParquet").getOrCreate()
   import spark.implicits._
 
-  val internalParquet = "multilinguality-csv.parquet"
-  val statisticsParquet = "multilinguality-csv-statistics.parquet"
-  val medianParquet = "multilinguality-csv-median.parquet"
+  val longformParquet = "multilinguality-longform.parquet"
+  val statisticsParquet = "multilinguality-statistics.parquet"
+  val medianParquet = "multilinguality-median.parquet"
+  val fieldIndexCsv = "multilinguality-fieldIndex"
   val histogramCsv = "multilinguality-histogram"
+  val statisticsCsv = "multilinguality-csv"
 
   def main(args: Array[String]): Unit = {
 
@@ -72,7 +74,7 @@ object MultilingualityFromParquet {
       write.
       option("header", "false").
       mode(SaveMode.Overwrite).
-      csv("multilinguality-fieldIndex")
+      csv(fieldIndexCsv)
 
     log.info("create flatted")
     var flatted = data.flatMap { row =>
@@ -98,11 +100,11 @@ object MultilingualityFromParquet {
 
     flatted.write.
       mode(SaveMode.Overwrite).
-      save(internalParquet)
+      save(longformParquet)
   }
 
   def runStatistics(): Unit = {
-    val filtered = spark.read.load(internalParquet)
+    val filtered = spark.read.load(longformParquet)
     log.info("create statistics")
 
     var statistics = filtered.
@@ -121,7 +123,7 @@ object MultilingualityFromParquet {
   }
 
   def runMedian(): Unit = {
-    val filtered = spark.read.load(internalParquet)
+    val filtered = spark.read.load(longformParquet)
     log.info("create median")
 
     val histogram = filtered.
@@ -184,7 +186,7 @@ object MultilingualityFromParquet {
   }
 
   def runHistogram(): Unit = {
-    val filtered = spark.read.load(internalParquet)
+    val filtered = spark.read.load(longformParquet)
     log.info("create median")
 
     val histogram = filtered.
@@ -284,7 +286,7 @@ object MultilingualityFromParquet {
     val fieldIndexDF = spark.read.
       option("inferSchema", "true").
       format("csv").
-      load("multilinguality-fieldIndex")
+      load(fieldIndexCsv)
 
     var fieldMap = fieldIndexDF.collect.
       map(row => (row.getInt(1), row.getString(0))).
@@ -313,7 +315,7 @@ object MultilingualityFromParquet {
     val fieldIndexDF = spark.read.
       option("inferSchema", "true").
       format("csv").
-      load("multilinguality-fieldIndex")
+      load(fieldIndexCsv)
 
     var fieldMap = fieldIndexDF.collect.
       map(row => (row.getInt(1), row.getString(0))).
@@ -337,7 +339,7 @@ object MultilingualityFromParquet {
       write.
       option("header", "false").
       mode(SaveMode.Overwrite).
-      csv("multilinguality-csv")
+      csv(statisticsCsv)
   }
 }
 
