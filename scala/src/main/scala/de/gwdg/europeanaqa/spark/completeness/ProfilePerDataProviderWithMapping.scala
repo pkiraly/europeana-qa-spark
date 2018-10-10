@@ -117,6 +117,7 @@ object ProfilePerDataProviderWithMapping {
         Seq(
           row.getAs[String]("pattern"),
           row.getAs[Int]("length"),
+          row.getAs[Long]("count"),
           row.getAs[Long]("total"),
           row.getAs[Double]("percent")
         ).toList.mkString(",")
