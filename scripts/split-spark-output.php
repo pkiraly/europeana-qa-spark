@@ -37,7 +37,7 @@ while (($line = fgets($in)) != false) {
       $lines = [];
     }
     $prevId = $id;
-    $lines = [$line];
+    $lines[] = $line;
   }
 }
 fclose($in);
