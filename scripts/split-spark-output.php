@@ -35,8 +35,8 @@ while (($line = fgets($in)) != false) {
     if ($id != $prevId && $prevId != "") {
       saveContent($prevId, $lines);
       $lines = [];
-      $prevId = $id;
     }
+    $prevId = $id;
     $lines = [$line];
   }
 }
