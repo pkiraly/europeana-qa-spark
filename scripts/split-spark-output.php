@@ -48,6 +48,7 @@ echo 'DONE in ', gmdate("H:i:s", (int)$duration), "\n";
 
 function saveContent($id, $lines) {
   global $outputDir, $options;
+  echo $id, "\n";
 
   $dir = sprintf("%s/%s", $outputDir, $id);
   if (!file_exists($dir)) {
