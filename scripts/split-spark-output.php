@@ -15,7 +15,7 @@ if (!file_exists($fileName))
 
 // '/projects/pkiraly/2018-03-23/split/multilinguality';
 $outputDir = $options['outputDir'];
-if (!file_exists($dir))
+if (!file_exists($outputDir))
   die("The output dir ($outputDir) is not existing.\n");
 
 $start = microtime(TRUE);
