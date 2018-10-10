@@ -29,7 +29,7 @@ while (($line = fgets($in)) != false) {
       echo number_format($ln, 0, '.', '.'), ' ';
     }
     $row = str_getcsv($line);
-    $id = $row[1];
+    $id = $row[0];
     file_put_contents(sprintf("%s/%s/%s.%s.csv", $outputDir, $id, $id, $options['suffix']), $line, FILE_APPEND);
   }
 }
