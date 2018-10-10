@@ -32,9 +32,9 @@ spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "me
 spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "histogram"
 spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "join"
 
-cat completeness-csv/part-* > completeness.csv
-cat completeness-histogram/part-* > completeness-histogram.csv
-cat completeness-fieldIndex/part-* > completeness-fieldIndex.csv
+cat completeness-csv/part-* > ../output/completeness.csv
+cat completeness-histogram/part-* > ../output/completeness-histogram.csv
+cat completeness-fieldIndex/part-* > ../output/completeness-fieldIndex.csv
 
 if [[ ("$DO_KEEP" -eq 0) ]]; then
   # delete dirs

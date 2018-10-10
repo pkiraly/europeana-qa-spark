@@ -33,9 +33,9 @@ spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "me
 spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "histogram"
 spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "join"
 
-cat multilinguality-csv/part-* > multilinguality.csv
-cat multilinguality-histogram/part-* > multilinguality-histogram.csv
-cat multilinguality-fieldIndex/part-* > multilinguality-fieldIndex.csv
+cat multilinguality-csv/part-* > ../output/multilinguality.csv
+cat multilinguality-histogram/part-* > ../output/multilinguality-histogram.csv
+cat multilinguality-fieldIndex/part-* > ../output/multilinguality-fieldIndex.csv
 
 if [[ ("$DO_KEEP" -eq 0) ]]; then
   # delete dirs
