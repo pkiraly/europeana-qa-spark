@@ -9,6 +9,13 @@
 #   languages.csv
 
 INPUT=$1
+KEEP_DIRS=$2
+
+if [[ ("$KEEP_DIR" == "keep_dir") ]]; then
+  DO_KEEP=1
+else
+  DO_KEEP=0
+fi
 
 #if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
 #  echo "You should add an input file!"
@@ -27,6 +34,17 @@ spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "jo
 
 cat completeness-csv/part-* > completeness.csv
 cat completeness-histogram/part-* > completeness-histogram.csv
+cat completeness-fieldIndex/part-* > completeness-fieldIndex.csv
+
+if [[ ("$DO_KEEP" -eq 0) ]]; then
+  # delete dirs
+  rm -rf completeness-longform.parquet
+  rm -rf completeness-statistics.parquet
+  rm -rf completeness-median.parquet
+  rm -rf completeness-histogram
+  rm -rf completeness-fieldIndex
+  rm -rf completeness-csv
+fi
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))
