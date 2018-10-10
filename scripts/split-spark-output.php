@@ -41,6 +41,7 @@ while (($line = fgets($in)) != false) {
   }
 }
 fclose($in);
+saveContent($id, $lines);
 
 $duration = microtime(TRUE) - $start;
 echo 'DONE in ', gmdate("H:i:s", (int)$duration), "\n";
