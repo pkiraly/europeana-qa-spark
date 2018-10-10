@@ -27,11 +27,11 @@ object CompletenessFromParquet {
   val spark = SparkSession.builder.appName("CompletenessFromParquet").getOrCreate()
   import spark.implicits._
 
-  val internalParquet = "completeness-csv.parquet"
+  val longformParquet = "completeness-longform.parquet"
   val statisticsParquet = "completeness-statistics.parquet"
   val medianParquet = "completeness-median.parquet"
-  val histogramCsv = "completeness-histogram"
   val fieldIndexCsv = "completeness-fieldIndex"
+  val histogramCsv = "completeness-histogram"
   val statisticsCsv = "completeness-csv"
 
   def main(args: Array[String]): Unit = {
@@ -100,11 +100,11 @@ object CompletenessFromParquet {
 
     flatted.write.
       mode(SaveMode.Overwrite).
-      save(internalParquet)
+      save(longformParquet)
   }
 
   def runStatistics(): Unit = {
-    val filtered = spark.read.load(internalParquet)
+    val filtered = spark.read.load(longformParquet)
     log.info("create statistics")
 
     var statistics = filtered.
@@ -123,7 +123,7 @@ object CompletenessFromParquet {
   }
 
   def runMedian(): Unit = {
-    val filtered = spark.read.load(internalParquet)
+    val filtered = spark.read.load(longformParquet)
     log.info("create median")
 
     val histogram = filtered.
@@ -186,7 +186,7 @@ object CompletenessFromParquet {
   }
 
   def runHistogram(): Unit = {
-    val filtered = spark.read.load(internalParquet)
+    val filtered = spark.read.load(longformParquet)
     log.info("create median")
 
     val histogram = filtered.
