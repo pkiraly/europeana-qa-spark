@@ -32,8 +32,14 @@ object ProfilePerDataProviderWithMapping {
     var len = simplenames.length
     var range = Range(2, (len - 1))
 
-    var datasets = df.select("collection").distinct().orderBy("collection").collect()
-    var providers = df.select("provider").distinct().orderBy("provider").collect()
+    var datasets = df.select("collection").
+      distinct().
+      orderBy("collection").
+      collect()
+    var providers = df.select("provider").
+      distinct().
+      orderBy("provider").
+      collect()
     var total = providers.length
 
     def getFieldsByRow(row: Row): String = {
@@ -62,6 +68,7 @@ object ProfilePerDataProviderWithMapping {
         var did = row.getAs[Int]("provider")
         var fields = getFieldsByRow(row)
         Seq(
+          ("all", fields),
           (s"c$cid", fields),
           (s"d$did", fields),
           (s"cd-$cid-$did", fields)
@@ -72,12 +79,18 @@ object ProfilePerDataProviderWithMapping {
       orderBy("id", "count")
 
     log.info("create countById")
-    var countById = dfCount.groupBy("id").agg(sum("count").as("total")).
+    var countById = dfCount.
+      groupBy("id").
+      agg(sum("count").as("total")).
       toDF("id2", "total")
 
     log.info("join")
     var dfCountWithTotal = dfCount.
-      join(countById, dfCount.col("id") === countById.col("id2"), "inner").
+      join(
+        countById,
+        dfCount.col("id") === countById.col("id2"),
+        "inner"
+      ).
       withColumn("percent", col("count")*100/col("total")).
       select("id", "pattern", "count", "total", "percent")
 
@@ -93,8 +106,7 @@ object ProfilePerDataProviderWithMapping {
       toDF(Seq("id", "pattern", "length", "count", "total", "percent"): _*).
       orderBy("id", "count")
 
-    def saveFields(id: Any, rows: Iterable[org.apache.spark.sql.Row]): Unit = {
-      // println(s"Saving fields for $id")
+    def saveFields(id: Any, rows: Iterable[Row]): Unit = {
       var fieldList = rows.
         flatMap(r => r.getAs[String]("pattern").split(";")).
         groupBy(x => x).
@@ -107,57 +119,32 @@ object ProfilePerDataProviderWithMapping {
       )
     }
 
-    def saveProfiles(id: Any, rows: Iterable[org.apache.spark.sql.Row]): Unit = {
-      // println(s"Saving profiles for $id")
+    def saveProfiles(id: Any, rows: Iterable[Row]): Unit = {
       val spark = SparkSession.builder.
         appName(this.getClass().getCanonicalName).
         getOrCreate()
 
       var patterns = rows.map{row =>
-        Seq(
-          row.getAs[String]("pattern"),
-          row.getAs[Int]("length"),
-          row.getAs[Long]("count"),
-          row.getAs[Long]("total"),
-          row.getAs[Double]("percent")
-        ).toList.mkString(",")
-      }.toList.
+          Seq(
+            row.getAs[String]("pattern"),
+            row.getAs[Int]("length"),
+            row.getAs[Long]("count"),
+            row.getAs[Long]("total"),
+            row.getAs[Double]("percent")
+          ).
+          toList.
+          mkString(",")
+        }.
+        toList.
         mkString("\n")
 
       Files.write(
         Paths.get(s"profiles/$id-profiles.csv"),
         patterns.getBytes(StandardCharsets.UTF_8)
       )
-
-      /*
-      println(patterns != null)
-      println(spark != null)
-      println(patterns.size)
-
-      var patternsRDD = spark.sparkContext.makeRDD(patterns)
-      if (patternsRDD != null) {
-        // var fieldNames = Seq("profile", "nr-of-fields", "occurence", "percent")
-        var patternsDF = patternsRDD.toDF()
-
-        if (patternsDF != null) {
-          var profilesFile = s"profiles-raw/${id}-profiles-csv"
-          patternsDF.
-            repartition(1).
-            // orderBy(desc("occurence")).
-            write.
-            mode(SaveMode.Overwrite).
-            csv(profilesFile)
-        } else {
-          println("patternsDF is NULL")
-        }
-      } else {
-        println("patternsRDD is NULL")
-      }
-      */
     }
 
-    def saveResult(id: Any, rows: Iterable[org.apache.spark.sql.Row]): Unit = {
-      // println(s"Saving $id (${rows.size} patterns)")
+    def saveResult(id: Any, rows: Iterable[Row]): Unit = {
       saveFields(id, rows)
       saveProfiles(id, rows)
     }
