@@ -47,7 +47,7 @@ $duration = microtime(TRUE) - $start;
 echo 'DONE in ', gmdate("H:i:s", (int)$duration), "\n";
 
 function saveContent($id, $lines) {
-  globals $outputDir, $options;
+  global $outputDir, $options;
 
   $dir = sprintf("%s/%s", $outputDir, $id);
   if (!file_exists($dir)) {
