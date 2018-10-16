@@ -7,19 +7,19 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions
 import org.apache.spark.sql.functions.{col, first, regexp_replace, sum, udf}
-import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, StructField, StructType, ArrayType}
+import org.apache.spark.sql.types.{ArrayType, DoubleType, IntegerType, StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row, SaveMode}
 import org.apache.spark.sql.types._
 import org.apache.spark.sql._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
-
 import scala.util.control.Breaks.{break, breakable}
-
 import java.io.ByteArrayOutputStream
 
 import org.apache.log4j.{Level, Logger}
+
+import de.gwdg.europeanaqa.spark.common.HistogramHelper._
 
 object MultilingualityFromParquet {
 
@@ -32,6 +32,7 @@ object MultilingualityFromParquet {
   val medianParquet = "multilinguality-median.parquet"
   val fieldIndexCsv = "multilinguality-fieldIndex"
   val histogramCsv = "multilinguality-histogram"
+  val histogramRawCsv = "multilinguality-histogram-raw"
   val statisticsCsv = "multilinguality-csv"
 
   def main(args: Array[String]): Unit = {
@@ -187,7 +188,7 @@ object MultilingualityFromParquet {
 
   def runHistogram(): Unit = {
     val filtered = spark.read.load(longformParquet)
-    log.info("create median")
+    log.info("create histogram")
 
     val histogram = filtered.
       groupBy("id", "field", "value").
@@ -197,91 +198,6 @@ object MultilingualityFromParquet {
       sort("id", "field", "value").
       rdd.
       groupBy(row => (row(0), row(1)))
-
-    groupped.cache()
-
-    case class Counter(value: Double, count: Double)
-    case class HistogramUnit(from: Double, until: Double, count: Double)
-
-    def listToHistogram(numbers: Seq[Double]): Seq[Counter] = {
-      var values = numbers.zipWithIndex.filter(x => x._2 % 2 == 0).map(x => x._1)
-      var counts = numbers.zipWithIndex.filter(x => x._2 % 2 == 1).map(x => x._1)
-      values.zip(counts).map(x => Counter(x._1, x._2))
-    }
-
-    def minifyHistogram(histogram: Seq[Counter]): Seq[HistogramUnit] = {
-      var len = histogram.length
-      var minified: Seq[HistogramUnit] = Seq()
-      if (len <= 10) {
-        for (counter <- histogram) {
-          var unit = HistogramUnit(counter.value, counter.value, counter.count)
-          minified = minified :+ unit
-        }
-      } else {
-        var firstIndex = if (histogram(0).value == 0.0) 1 else 0
-        if (firstIndex == 1) {
-          minified = minified :+ HistogramUnit(histogram(0).value, histogram(0).value, histogram(0).count)
-        }
-        var firstValue = histogram(firstIndex).value
-        var lastValue = histogram(len - 1).value
-        var range = lastValue - firstValue
-        var decilisRange: Double = 0.0
-        var decilisIndices: Seq[Double] = Seq()
-        if (firstIndex == 0) {
-          decilisRange = Math.round(range / 10.0).toDouble
-          decilisIndices = (firstIndex until 10).map(x => (x * decilisRange) + firstValue) :+ lastValue
-        } else {
-          decilisRange = Math.round(range / 9.0).toDouble
-          decilisIndices = (firstIndex until 10).map(x => ((x-1) * decilisRange) + firstValue) :+ lastValue
-        }
-
-        var i = firstIndex
-        for (decilisIndex <- 1 until decilisIndices.length) {
-          var isLast = decilisIndex == decilisIndices.length - 1
-          var decilis = decilisIndices(decilisIndex)
-          var cumsum = 0.0
-          var value = 0.0
-          var count = 0.0
-
-          while (i <= (histogram.length-1)
-            && (isLast || histogram(i).value < decilis)) {
-            value = histogram(i).value
-            count = histogram(i).count
-            cumsum += count
-            i += 1
-          }
-          var unit = HistogramUnit(decilisIndices(decilisIndex-1), decilis, cumsum)
-          minified = minified :+ unit
-        }
-      }
-      minified
-    }
-
-    var histogramRDD = groupped.map{x =>
-      Row.fromSeq(
-        Seq(
-          x._1._1,
-          x._1._2,
-          minifyHistogram(
-            x._2.
-              map{y =>
-                Counter(y.getDouble(2), y.getLong(3).toDouble)
-              }.
-              toSeq
-            ).
-            map(unit => s"${unit.from}-${unit.until}:${unit.count}").
-            mkString(";")
-        )
-      )
-    }
-
-    histogramRDD.take(10).foreach(println)
-
-    val histogramFields = StructType(List(
-      StructField("id", StringType, nullable = false),
-      StructField("field", IntegerType, nullable = false),
-      StructField("histogram", StringType, nullable = false)
-    ))
 
     val fieldIndexDF = spark.read.
       option("inferSchema", "true").
@@ -293,6 +209,57 @@ object MultilingualityFromParquet {
       toMap
 
     val getFieldName = udf((fieldIndex:Int) => fieldMap(fieldIndex))
+
+    var rawHistogramRDD = groupped.map{x =>
+      (
+        x._1._1,
+        x._1._2,
+        x._2.
+          map{y =>
+            Counter(y.getDouble(2), y.getLong(3).toDouble)
+          }.
+          toSeq
+      )
+    }
+    rawHistogramRDD.cache()
+
+    var rawHistogramFinalRDD = rawHistogramRDD.map{x =>
+      Row.fromSeq(
+        Seq(
+          x._1,
+          x._2,
+          x._3.
+            map(counter => s"${counter.value}:${counter.count}").
+            mkString(";")
+        )
+      )
+    }
+    var rawHistogramDF = spark.createDataFrame(rawHistogramFinalRDD, histogramFields).
+      sort("id", "field").
+      withColumn("name", getFieldName(col("field"))).
+      drop("field").
+      withColumnRenamed("name", "field").
+      select("id", "field", "histogram")
+
+    rawHistogramDF.
+      repartition(1).
+      write.
+      mode(SaveMode.Overwrite).
+      csv(histogramRawCsv)
+
+    var histogramRDD = rawHistogramRDD.map{x =>
+      Row.fromSeq(
+        Seq(
+          x._1,
+          x._2,
+          minifyHistogram(x._3).
+            map(unit => s"${unit.from}-${unit.until}:${unit.count}").
+            mkString(";")
+        )
+      )
+    }
+
+    histogramRDD.take(10).foreach(println)
 
     var histogramDF = spark.createDataFrame(histogramRDD, histogramFields).
       sort("id", "field").
