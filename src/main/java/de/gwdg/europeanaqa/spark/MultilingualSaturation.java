@@ -24,8 +24,6 @@ import org.apache.spark.api.java.function.Function;
 public class MultilingualSaturation {
 
 	private static final Logger logger = Logger.getLogger(MultilingualSaturation.class.getCanonicalName());
-	private static final boolean withLabel = false;
-	private static final boolean compressed = true;
 
 	public static void main(String[] args)
 			throws FileNotFoundException, ParseException {
@@ -41,34 +39,21 @@ public class MultilingualSaturation {
 
 		Parameters parameters = new Parameters(args);
 
-		/*
-		String inputFileName = args[0];
-		String outputFileName = args[1];
-		String headerOutputFile = args[2];
-		String dataProvidersFile = args[3];
-		String datasetsFile = args[4];
-		boolean skipEnrichments = (args.length >= 6 && args[5].equals("skip-enrichments"));
-		*/
-
-		String inputFileName = parameters.getInputFileName();
-		String outputFileName = parameters.getOutputFileName();
-		String headerOutputFile = parameters.getHeaderOutputFile();
-		String dataProvidersFile = parameters.getDataProvidersFile();
-		String datasetsFile = parameters.getDatasetsFile();
-		EdmCalculatorFacade.Formats format = parameters.getFormat();
-		boolean skipEnrichments = parameters.getSkipEnrichments();
-
-		logger.log(Level.INFO, "Input file is {0}", inputFileName);
-		logger.log(Level.INFO, "Output file is {0}", outputFileName);
-		logger.log(Level.INFO, "Header output is {0}", headerOutputFile);
-		logger.log(Level.INFO, "DataProviders file is {0}", dataProvidersFile);
-		logger.log(Level.INFO, "Datasets file is {0}", datasetsFile);
-		logger.log(Level.INFO, "Skip enrichments is {0}", skipEnrichments);
+		logger.log(Level.INFO, "Input file is {0}", parameters.getInputFileName());
+		logger.log(Level.INFO, "Output file is {0}", parameters.getOutputFileName());
+		logger.log(Level.INFO, "Header output is {0}", parameters.getHeaderOutputFile());
+		logger.log(Level.INFO, "DataProviders file is {0}", parameters.getDataProvidersFile());
+		logger.log(Level.INFO, "Datasets file is {0}", parameters.getDatasetsFile());
+		logger.log(Level.INFO, "Skip enrichments is {0}", parameters.getSkipEnrichments());
+		logger.log(Level.INFO, "Extended field extraction: {0}", parameters.getExtendedFieldExtraction());
 
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.createMultilingualSaturationCalculator(parameters);
+		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.createMultilingualSaturationCalculator(
+			parameters
+		);
+		calculator.setExtendedFieldExtraction(parameters.getExtendedFieldExtraction());
 
 		logger.info("Running with the following calculators:");
 		for (Calculator calc : calculator.getCalculators()) {
@@ -79,9 +64,9 @@ public class MultilingualSaturation {
 			Arrays.asList(
 				StringUtils.join(
 					calculator.getHeader(), ",")));
-		headerRDD.saveAsTextFile(headerOutputFile);
+		headerRDD.saveAsTextFile(parameters.getHeaderOutputFile());
 
-		JavaRDD<String> inputFile = context.textFile(inputFileName);
+		JavaRDD<String> inputFile = context.textFile(parameters.getInputFileName());
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
@@ -96,11 +81,11 @@ public class MultilingualSaturation {
 		};
 
 		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
-		baseCountsRDD.saveAsTextFile(outputFileName);
+		baseCountsRDD.saveAsTextFile(parameters.getOutputFileName());
 
 		try {
-			calculator.saveDataProviders(dataProvidersFile);
-			calculator.saveDatasets(datasetsFile);
+			calculator.saveDataProviders(parameters.getDataProvidersFile());
+			calculator.saveDatasets(parameters.getDatasetsFile());
 		} catch (UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}

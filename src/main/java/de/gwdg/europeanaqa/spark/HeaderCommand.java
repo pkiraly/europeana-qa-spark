@@ -26,6 +26,7 @@ public class HeaderCommand {
 		EdmCalculatorFacade.Formats format = parameters.getFormat();
 
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.createByAnalysis(parameters);
+		facade.setExtendedFieldExtraction(parameters.getExtendedFieldExtraction());
 
 		List<String> header = new ArrayList<>();
 		for (Calculator calculator : facade.getCalculators()) {

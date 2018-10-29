@@ -43,6 +43,7 @@ public class LanguageCount {
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.createLanguageCalculator(parameters);
+		calculator.setExtendedFieldExtraction(parameters.getExtendedFieldExtraction());
 
 		JavaRDD<String> inputFile = context.textFile(inputFileName);
 		Function<String, String> baseCounts = new Function<String, String>() {

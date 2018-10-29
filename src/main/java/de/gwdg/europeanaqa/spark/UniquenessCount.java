@@ -37,14 +37,14 @@ public class UniquenessCount {
 
 		Parameters parameters = new Parameters(args);
 
-		String inputFileName = parameters.getInputFileName();
-		logger.info("Input file is " + inputFileName);
-		SparkConf conf = new SparkConf().setAppName("LanguageCount");
+		logger.info("Input file is " + parameters.getInputFileName());
+		SparkConf conf = new SparkConf().setAppName("UniquenessCount");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.createUniquenessCalculator(parameters);
+		calculator.setExtendedFieldExtraction(parameters.getExtendedFieldExtraction());
 
-		JavaRDD<String> inputFile = context.textFile(inputFileName);
+		JavaRDD<String> inputFile = context.textFile(parameters.getInputFileName());
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {

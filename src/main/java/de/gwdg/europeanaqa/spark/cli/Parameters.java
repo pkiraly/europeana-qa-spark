@@ -37,6 +37,7 @@ public class Parameters implements Serializable {
 	private EdmCalculatorFacade.Formats format;
 	private Analysis analysis;
 	private Boolean skipEnrichments = false;
+	private Boolean extendedFieldExtraction = false;
 
 	protected Options options = new Options();
 	protected static CommandLineParser parser = new DefaultParser();
@@ -53,6 +54,7 @@ public class Parameters implements Serializable {
 			options.addOption("s", "skipEnrichments", false, "skip enrichments");
 			options.addOption("f", "format", true, "format");
 			options.addOption("a", "analysis", true, "format");
+			options.addOption("e", "extendedFieldExtraction", false, "Extended field extraction");
 			isOptionSet = true;
 		}
 	}
@@ -86,6 +88,7 @@ public class Parameters implements Serializable {
 		}
 
 		skipEnrichments = cmd.hasOption("skipEnrichments");
+		extendedFieldExtraction = cmd.hasOption("extendedFieldExtraction");
 	}
 
 	public Options getOptions() {
@@ -120,6 +123,10 @@ public class Parameters implements Serializable {
 
 	public Boolean getSkipEnrichments() {
 		return skipEnrichments;
+	}
+
+	public Boolean getExtendedFieldExtraction() {
+		return extendedFieldExtraction;
 	}
 
 	public Analysis getAnalysis() {
