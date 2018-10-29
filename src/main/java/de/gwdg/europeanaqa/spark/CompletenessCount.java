@@ -38,36 +38,24 @@ public class CompletenessCount {
 		}
 		Parameters parameters = new Parameters(args);
 
-		/*
-		final String inputFileName = args[0];
-		final String outputFileName = args[1];
-		final String dataProvidersFileName = args[2];
-		final String datasetsFileName = args[3];
-		final boolean checkSkippableCollections = (args.length >= 5 && args[4].equals("checkSkippableCollections"));
-		*/
-
-		String inputFileName = parameters.getInputFileName();
-		String outputFileName = parameters.getOutputFileName();
-		String headerOutputFile = parameters.getHeaderOutputFile();
-		String dataProvidersFile = parameters.getDataProvidersFile();
-		String datasetsFile = parameters.getDatasetsFile();
-		EdmCalculatorFacade.Formats format = parameters.getFormat();
-		boolean skipEnrichments = parameters.getSkipEnrichments();
-
 		logger.info("arg length: " + args.length);
-		logger.info("Input file is " + inputFileName);
-		logger.info("Output file is " + outputFileName);
-		logger.info("checkSkippableCollections: " + skipEnrichments);
-		System.err.println("Input file is " + inputFileName);
+		logger.info("Input file is " + parameters.getInputFileName());
+		logger.info("Output file is " + parameters.getOutputFileName());
+		logger.info("data providers file: " + parameters.getDataProvidersFile());
+		logger.info("datasets file: " + parameters.getDatasetsFile());
+		logger.info("format: " + parameters.getFormat());
+		logger.info("check skippable collections: " + parameters.getSkipEnrichments());
+		logger.info("Extended field extraction: " + parameters.getExtendedFieldExtraction());
+
 		SparkConf conf = new SparkConf().setAppName("CompletenessCount"); //.setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.createCompletenessCalculator(
-			skipEnrichments, format
+			parameters.getSkipEnrichments(), parameters.getFormat()
 		);
 		facade.setExtendedFieldExtraction(parameters.getExtendedFieldExtraction());
 
-		JavaRDD<String> inputFile = context.textFile(inputFileName);
+		JavaRDD<String> inputFile = context.textFile(parameters.getInputFileName());
 		Function<String, String> baseCounts = new Function<String, String>() {
 			@Override
 			public String call(String jsonString) throws Exception {
@@ -75,18 +63,18 @@ public class CompletenessCount {
 					return facade.measure(jsonString);
 				} catch (InvalidJsonException e) {
 					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
-							inputFileName, jsonString, e.getLocalizedMessage()));
+						parameters.getInputFileName(), jsonString, e.getLocalizedMessage()));
 				}
 				return "";
 			}
 		};
 
 		JavaRDD<String> baseCountsRDD = inputFile.map(baseCounts);
-		baseCountsRDD.saveAsTextFile(outputFileName);
+		baseCountsRDD.saveAsTextFile(parameters.getOutputFileName());
 
 		try {
-			facade.saveDataProviders(dataProvidersFile);
-			facade.saveDatasets(datasetsFile);
+			facade.saveDataProviders(parameters.getDataProvidersFile());
+			facade.saveDatasets(parameters.getDatasetsFile());
 		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
