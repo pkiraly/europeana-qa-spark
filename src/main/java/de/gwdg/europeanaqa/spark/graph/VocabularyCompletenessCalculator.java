@@ -1,9 +1,8 @@
 package de.gwdg.europeanaqa.spark.graph;
 
-import com.jayway.jsonpath.JsonPath;
 import de.gwdg.europeanaqa.api.abbreviation.EdmDataProviderManager;
-import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
+import de.gwdg.europeanaqa.api.model.Format;
 import de.gwdg.europeanaqa.spark.bean.Vocabulary;
 import de.gwdg.metadataqa.api.json.JsonBranch;
 import de.gwdg.metadataqa.api.model.EdmFieldInstance;
@@ -54,7 +53,7 @@ public class VocabularyCompletenessCalculator implements Serializable {
 	private static final EdmDataProviderManager dataProviderManager = new EdmDataProviderManager();
 	private static final List<String> entities = Arrays.asList("agent", "concept", "place", "timespan");
 
-	public VocabularyCompletenessCalculator(EdmCalculatorFacade.Formats format) {
+	public VocabularyCompletenessCalculator(Format format) {
 		setSchema(format);
 		fieldExtractor = new MultiFieldExtractor(qaSchema);
 		vocabularyExtractor = new VocabularyExtractor(qaSchema);
@@ -190,8 +189,8 @@ public class VocabularyCompletenessCalculator implements Serializable {
 		return value;
 	}
 
-	public void setSchema(EdmCalculatorFacade.Formats format) {
-		if (format == null || format.equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
+	public void setSchema(Format format) {
+		if (format == null || format.equals(Format.OAI_PMH_XML)) {
 			qaSchema = new EdmOaiPmhXmlSchema();
 			extractableFields.put("recordId", "$.identifier");
 			extractableFields.put("dataProvider", "$.['ore:Aggregation'][0]['edm:dataProvider'][0]");

@@ -1,6 +1,7 @@
 package de.gwdg.europeanaqa.spark;
 
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.api.model.Format;
 import de.gwdg.europeanaqa.spark.cli.CalculatorFacadeFactory;
 import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.metadataqa.api.interfaces.Calculator;
@@ -23,7 +24,7 @@ public class HeaderCommand {
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
 
 		Parameters parameters = new Parameters(args);
-		EdmCalculatorFacade.Formats format = parameters.getFormat();
+		Format format = parameters.getFormat();
 
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.createByAnalysis(parameters);
 		facade.setExtendedFieldExtraction(parameters.getExtendedFieldExtraction());

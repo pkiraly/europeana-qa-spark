@@ -13,7 +13,7 @@ import org.apache.commons.cli.ParseException;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class CLIArgs {
+public class CliArgs {
 
 	private static Options options = new Options();
 

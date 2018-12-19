@@ -1,8 +1,8 @@
 package de.gwdg.europeanaqa.spark.graph;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
 import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
+import de.gwdg.europeanaqa.api.model.Format;
 import de.gwdg.europeanaqa.spark.bean.Graph;
 import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.metadataqa.api.model.JsonPathCache;
@@ -64,7 +64,7 @@ public class GraphExtractor {
 		Map<String, String> extractableFields = new LinkedHashMap<>();
 		Schema qaSchema = null;
 		if (parameters.getFormat() == null
-		    || parameters.getFormat().equals(EdmCalculatorFacade.Formats.OAI_PMH_XML)) {
+		    || parameters.getFormat().equals(Format.OAI_PMH_XML)) {
 			qaSchema = new EdmOaiPmhXmlSchema();
 			extractableFields.put("recordId", "$.identifier");
 			extractableFields.put("agent", "$.['edm:Agent'][*]['@about']");

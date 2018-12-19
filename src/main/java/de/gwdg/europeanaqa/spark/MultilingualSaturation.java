@@ -50,9 +50,8 @@ public class MultilingualSaturation {
 		SparkConf conf = new SparkConf().setAppName("LanguageSaturation"); //.setMaster("local[*]");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
-		final EdmCalculatorFacade calculator = CalculatorFacadeFactory.createMultilingualSaturationCalculator(
-			parameters
-		);
+		final EdmCalculatorFacade calculator = CalculatorFacadeFactory
+			.createMultilingualSaturationCalculator(parameters);
 		calculator.setExtendedFieldExtraction(parameters.getExtendedFieldExtraction());
 
 		logger.info("Running with the following calculators:");

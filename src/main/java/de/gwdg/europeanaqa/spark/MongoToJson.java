@@ -18,7 +18,6 @@ import org.bson.codecs.configuration.CodecRegistry;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class MongoToJson implements Serializable {

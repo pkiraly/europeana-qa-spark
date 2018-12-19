@@ -1,6 +1,7 @@
 package de.gwdg.europeanaqa.spark.cli;
 
 import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.api.model.Format;
 import de.gwdg.metadataqa.api.calculator.CalculatorFacade;
 import de.gwdg.metadataqa.api.schema.MarcJsonSchema;
 import de.gwdg.metadataqa.api.schema.Schema;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class CalculatorFacadeFactory {
 
 	public static EdmCalculatorFacade createCompletenessCalculator(boolean checkSkippableCollections,
-	                                                               EdmCalculatorFacade.Formats format) {
+	                                                               Format format) {
 
 		final EdmCalculatorFacade facade = new EdmCalculatorFacade();
 		facade.abbreviate(true);
@@ -119,7 +120,7 @@ public class CalculatorFacadeFactory {
 		calculator.enableTfIdfMeasurement(false);
 		calculator.enableProblemCatalogMeasurement(false);
 		calculator.enableLanguageMeasurement(false);
-		calculator.enableUniquenessMeasurementEnabled(true);
+		calculator.enableUniquenessMeasurement(true);
 		if (parameters.getFormat() != null)
 			calculator.setFormat(parameters.getFormat());
 		calculator.configure();
@@ -134,13 +135,42 @@ public class CalculatorFacadeFactory {
 					calculator = createLanguageCalculator(parameters); break;
 				case MULTILINGUAL_SATURATION:
 					calculator = createMultilingualSaturationCalculator(parameters); break;
+				case PROXY_BASED_COMPLETENESS:
+					calculator = createProxyBasedCompletenessCalculator(
+						false, parameters.getFormat()
+					);
+					break;
 				case COMPLETENESS:
 				default:
-					calculator = createCompletenessCalculator(false, parameters.getFormat()); break;
+					calculator = createCompletenessCalculator(
+						false, parameters.getFormat()
+					);
+					break;
 			}
 		} else {
 			calculator = createCompletenessCalculator(false, parameters.getFormat());
 		}
 		return calculator;
 	}
+
+	public static EdmCalculatorFacade createProxyBasedCompletenessCalculator(boolean checkSkippableCollections,
+																																 Format format) {
+
+		final EdmCalculatorFacade facade = new EdmCalculatorFacade();
+		facade.abbreviate(true);
+		facade.enableProxyBasedCompleteness(true);
+		facade.enableCompletenessMeasurement(false);
+		facade.enableFieldCardinalityMeasurement(false);
+		facade.enableFieldExistenceMeasurement(false);
+		facade.enableTfIdfMeasurement(false);
+		facade.enableProblemCatalogMeasurement(false);
+		facade.setExtendedFieldExtraction(true);
+		facade.setCheckSkippableCollections(checkSkippableCollections);
+		if (format != null)
+			facade.setFormat(format);
+		facade.configure();
+
+		return facade;
+	}
+
 }

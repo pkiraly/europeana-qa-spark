@@ -1,23 +1,11 @@
 package de.gwdg.europeanaqa.spark.graph;
 
 import com.jayway.jsonpath.InvalidJsonException;
-import de.gwdg.europeanaqa.api.abbreviation.EdmDataProviderManager;
-import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
-import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
-import de.gwdg.europeanaqa.spark.bean.Graph4PLD;
 import de.gwdg.europeanaqa.spark.bean.Vocabulary;
 import de.gwdg.europeanaqa.spark.cli.Parameters;
-import de.gwdg.metadataqa.api.json.JsonBranch;
-import de.gwdg.metadataqa.api.model.EdmFieldInstance;
-import de.gwdg.metadataqa.api.model.JsonPathCache;
-import de.gwdg.metadataqa.api.model.XmlFieldInstance;
-import de.gwdg.metadataqa.api.schema.EdmFullBeanSchema;
-import de.gwdg.metadataqa.api.schema.EdmOaiPmhXmlSchema;
-import de.gwdg.metadataqa.api.schema.Schema;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;

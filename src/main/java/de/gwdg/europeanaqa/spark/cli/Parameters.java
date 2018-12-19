@@ -1,6 +1,6 @@
 package de.gwdg.europeanaqa.spark.cli;
 
-import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.api.model.Format;
 import org.apache.commons.cli.*;
 
 import java.io.Serializable;
@@ -11,7 +11,8 @@ public class Parameters implements Serializable {
 
 		COMPLETENESS("completeness"),
 		LANGUAGES("languages"),
-		MULTILINGUAL_SATURATION("multilingual-saturation")
+		MULTILINGUAL_SATURATION("multilingual-saturation"),
+		PROXY_BASED_COMPLETENESS("proxy-based-completeness")
 		;
 
 		private final String name;
@@ -34,7 +35,7 @@ public class Parameters implements Serializable {
 	private String headerOutputFile;
 	private String dataProvidersFile;
 	private String datasetsFile;
-	private EdmCalculatorFacade.Formats format;
+	private Format format;
 	private Analysis analysis;
 	private Boolean skipEnrichments = false;
 	private Boolean extendedFieldExtraction = false;
@@ -79,7 +80,7 @@ public class Parameters implements Serializable {
 
 		if (cmd.hasOption("format")) {
 			String schemaName = cmd.getOptionValue("format");
-			format = EdmCalculatorFacade.Formats.byCode(schemaName);
+			format = Format.byCode(schemaName);
 		}
 
 		if (cmd.hasOption("analysis")) {
@@ -117,7 +118,7 @@ public class Parameters implements Serializable {
 		return datasetsFile;
 	}
 
-	public EdmCalculatorFacade.Formats getFormat() {
+	public Format getFormat() {
 		return format;
 	}
 

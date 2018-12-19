@@ -1,6 +1,6 @@
 package de.gwdg.europeanaqa.spark.graph;
 
-import de.gwdg.europeanaqa.api.calculator.EdmCalculatorFacade;
+import de.gwdg.europeanaqa.api.model.Format;
 import de.gwdg.europeanaqa.spark.TestUtils;
 import de.gwdg.europeanaqa.spark.bean.Vocabulary;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class VocabularyCompletenessCalculatorTest {
 
 	@Test
 	public void test() throws IOException, URISyntaxException {
-		VocabularyCompletenessCalculator calculator = new VocabularyCompletenessCalculator(EdmCalculatorFacade.Formats.FULLBEAN);
+		VocabularyCompletenessCalculator calculator = new VocabularyCompletenessCalculator(Format.FULLBEAN);
 		String jsonString = TestUtils.readFirstLine("edm-fullbean2.json");
 		List<Vocabulary> vocabs = calculator.calculate(jsonString);
 

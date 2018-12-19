@@ -14,9 +14,9 @@ import org.codehaus.jackson.map.ObjectMapper;
  *
  * @author Péter Király <peter.kiraly at gwdg.de>
  */
-public class CLI {
+public class Cli {
 
-	private static final Logger LOGGER = Logger.getLogger(CLI.class.getCanonicalName());
+	private static final Logger LOGGER = Logger.getLogger(Cli.class.getCanonicalName());
 
 	private static Cluster cluster;
 	private static Session session;
