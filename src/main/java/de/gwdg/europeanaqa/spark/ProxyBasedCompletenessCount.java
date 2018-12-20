@@ -38,15 +38,15 @@ public class ProxyBasedCompletenessCount {
 		Parameters parameters = new Parameters(args);
 
 		logger.info("arg length: " + args.length);
-		logger.info("Input file is " + parameters.getInputFileName());
-		logger.info("Output file is " + parameters.getOutputFileName());
+		logger.info("input file is " + parameters.getInputFileName());
+		logger.info("output file is " + parameters.getOutputFileName());
 		logger.info("data providers file: " + parameters.getDataProvidersFile());
 		logger.info("datasets file: " + parameters.getDatasetsFile());
 		logger.info("format: " + parameters.getFormat());
 		logger.info("check skippable collections: " + parameters.getSkipEnrichments());
-		logger.info("Extended field extraction: " + parameters.getExtendedFieldExtraction());
+		logger.info("extended field extraction: " + parameters.getExtendedFieldExtraction());
 
-		SparkConf conf = new SparkConf().setAppName("CompletenessCount"); //.setMaster("local");
+		SparkConf conf = new SparkConf().setAppName("ProxyBasedCompletenessCount");
 		JavaSparkContext context = new JavaSparkContext(conf);
 
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.createProxyBasedCompletenessCalculator(
