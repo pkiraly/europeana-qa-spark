@@ -67,7 +67,13 @@ object ProxyBasedCompletenessFromParquet {
     data.printSchema()
 
     log.info("reading the data: done")
-    var simplenames = data.columns.filterNot(x => x == "id" || x == "c" || x == "d")
+    var simplenames = data.columns
+      .filterNot(x => x == "id" ||
+                      x == "dataset" ||
+                      x == "dataProvider" ||
+                      x == "provider" ||
+                      x == "country" ||
+                      x == "language")
     var typeMap = data.schema.map(x => (x.name, x.dataType)).toMap
     var fieldIndex = simplenames.zipWithIndex.toMap
 
@@ -79,11 +85,18 @@ object ProxyBasedCompletenessFromParquet {
 
     log.info("create flatted")
     var flatted = data.flatMap { row =>
-      var c = row.getAs[Int]("c")
-      var d = row.getAs[Int]("d")
+      var c = row.getAs[Int]("dataset")
+      var d = row.getAs[Int]("dataProvider")
+      var provider = row.getAs[Int]("provider")
+      var country = row.getAs[Int]("country")
+      var language = row.getAs[Int]("language")
       var cid = s"c$c"
       var did = s"d$c"
-      var cdid = s"cd-$c-$d"
+      var cdId = s"cd-$c-$d"
+      var pdId = s"pd-$p-$d"
+      var providerId = s"p-$provider"
+      var countryId = s"cn-$country"
+      var languageId = s"l-$language"
 
       var seq = new ListBuffer[Tuple3[String, Int, Double]]()
       for (name <- simplenames) {
@@ -93,7 +106,11 @@ object ProxyBasedCompletenessFromParquet {
           seq += Tuple3("all", index, value)
           seq += Tuple3(cid, index, value)
           seq += Tuple3(did, index, value)
-          seq += Tuple3(cdid, index, value)
+          seq += Tuple3(cdId, index, value)
+          seq += Tuple3(pdId, index, value)
+          seq += Tuple3(providerId, index, value)
+          seq += Tuple3(countryId, index, value)
+          seq += Tuple3(languageId, index, value)
         }
       }
       seq

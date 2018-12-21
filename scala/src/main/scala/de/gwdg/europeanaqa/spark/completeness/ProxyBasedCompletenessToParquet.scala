@@ -38,7 +38,7 @@ object ProxyBasedCompletenessToParquet {
       load(inputFile)
 
     log.info("setting names")
-    val ids = Seq("id", "c", "d")
+    val ids = Seq("id", "dataset", "dataProvider", "provider", "country", "language")
 
     val cardinalityFields = Seq(
       "PROVIDER_Proxy_rdf_about", "PROVIDER_Proxy_dc_title", "PROVIDER_Proxy_dcterms_alternative",
