@@ -103,14 +103,14 @@ object ProxyBasedCompletenessFromParquet {
         var value = if (typeMap(name) == IntegerType) row.getAs[Int](name).toDouble else row.getAs[Double](name)
         if (value != -1.0) {
           var index = fieldIndex(name)
-          // seq += Tuple3("all", index, value)
-          // seq += Tuple3(cid, index, value)
+          seq += Tuple3("all", index, value)
+          seq += Tuple3(cid, index, value)
           seq += Tuple3(did, index, value)
-          // seq += Tuple3(cdId, index, value)
-          // seq += Tuple3(pdId, index, value)
-          // seq += Tuple3(providerId, index, value)
-          // seq += Tuple3(countryId, index, value)
-          // seq += Tuple3(languageId, index, value)
+          seq += Tuple3(cdId, index, value)
+          seq += Tuple3(pdId, index, value)
+          seq += Tuple3(providerId, index, value)
+          seq += Tuple3(countryId, index, value)
+          seq += Tuple3(languageId, index, value)
         }
       }
       seq
