@@ -91,7 +91,7 @@ object ProxyBasedCompletenessFromParquet {
       var country = row.getAs[Int]("country")
       var language = row.getAs[Int]("language")
       var cid = s"c$c"
-      var did = s"d$c"
+      var did = s"d$d"
       var cdId = s"cd-$c-$d"
       var pdId = s"pd-$provider-$d"
       var providerId = s"p-$provider"
@@ -103,14 +103,14 @@ object ProxyBasedCompletenessFromParquet {
         var value = if (typeMap(name) == IntegerType) row.getAs[Int](name).toDouble else row.getAs[Double](name)
         if (value != -1.0) {
           var index = fieldIndex(name)
-          seq += Tuple3("all", index, value)
-          seq += Tuple3(cid, index, value)
+          // seq += Tuple3("all", index, value)
+          // seq += Tuple3(cid, index, value)
           seq += Tuple3(did, index, value)
-          seq += Tuple3(cdId, index, value)
-          seq += Tuple3(pdId, index, value)
-          seq += Tuple3(providerId, index, value)
-          seq += Tuple3(countryId, index, value)
-          seq += Tuple3(languageId, index, value)
+          // seq += Tuple3(cdId, index, value)
+          // seq += Tuple3(pdId, index, value)
+          // seq += Tuple3(providerId, index, value)
+          // seq += Tuple3(countryId, index, value)
+          // seq += Tuple3(languageId, index, value)
         }
       }
       seq
