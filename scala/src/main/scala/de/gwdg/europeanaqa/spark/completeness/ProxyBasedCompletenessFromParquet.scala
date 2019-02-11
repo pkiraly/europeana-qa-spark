@@ -101,7 +101,7 @@ object ProxyBasedCompletenessFromParquet {
       var seq = new ListBuffer[Tuple3[String, Int, Double]]()
       for (name <- simplenames) {
         var value = if (typeMap(name) == IntegerType) row.getAs[Int](name).toDouble else row.getAs[Double](name)
-        if (value != -1.0) {
+        if (value != 0) {
           var index = fieldIndex(name)
           seq += Tuple3("all", index, value)
           seq += Tuple3(cid, index, value)
