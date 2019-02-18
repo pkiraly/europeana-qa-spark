@@ -93,7 +93,9 @@ object ProxyBasedCompletenessFromParquet {
       var cid = s"c$c"
       var did = s"d$d"
       var cdId = s"cd-$c-$d"
+      var cpId = s"cp-$c-$provider"
       var pdId = s"pd-$provider-$d"
+      var cdpId = s"cp-$c-$d-$provider"
       var providerId = s"p-$provider"
       var countryId = s"cn-$country"
       var languageId = s"l-$language"
@@ -107,7 +109,9 @@ object ProxyBasedCompletenessFromParquet {
           seq += Tuple3(cid, index, value)
           seq += Tuple3(did, index, value)
           seq += Tuple3(cdId, index, value)
+          seq += Tuple3(cpId, index, value)
           seq += Tuple3(pdId, index, value)
+          seq += Tuple3(cdpId, index, value)
           seq += Tuple3(providerId, index, value)
           seq += Tuple3(countryId, index, value)
           seq += Tuple3(languageId, index, value)
@@ -134,9 +138,10 @@ object ProxyBasedCompletenessFromParquet {
         "value" -> "avg",
         "value" -> "min",
         "value" -> "max",
-        "value" -> "count"
+        "value" -> "count",
+        "value" -> "sum"
       ).
-      toDF(Seq("id", "field", "mean", "min", "max", "count"): _*)
+      toDF(Seq("id", "field", "mean", "min", "max", "count", "sum"): _*)
 
     statistics.write.
       mode(SaveMode.Overwrite).
@@ -149,6 +154,7 @@ object ProxyBasedCompletenessFromParquet {
     log.info("create median")
 
     val histogram = filtered.
+      filter($"value" > 0.0).
       groupBy("id", "field", "value").
       count()
 
@@ -315,12 +321,12 @@ object ProxyBasedCompletenessFromParquet {
     log.info("join all")
     var statisticsAll = statisticsDF.
       join(mediansDF, Seq("id", "field"), "inner").
-      select("id", "field", "mean", "min", "max", "count", "median").
+      select("id", "field", "mean", "min", "max", "count", "sum", "median").
       orderBy("id", "field").
       withColumn("name", getFieldName(col("field"))).
       drop("field").
       withColumnRenamed("name", "field").
-      select("id", "field", "mean", "min", "max", "count", "median")
+      select("id", "field", "mean", "min", "max", "count", "sum", "median")
 
     log.info("save")
     statisticsAll.
@@ -331,4 +337,3 @@ object ProxyBasedCompletenessFromParquet {
       csv(statisticsCsv)
   }
 }
-
