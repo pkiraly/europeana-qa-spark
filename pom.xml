@@ -65,19 +65,19 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.spark</groupId>
-			<artifactId>spark-core_2.11</artifactId>
-			<version>2.2.1</version>
+			<artifactId>spark-core_2.12</artifactId>
+			<version>2.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.spark</groupId>
-			<artifactId>spark-sql_2.11</artifactId>
-			<version>2.2.1</version>
+			<artifactId>spark-sql_2.12</artifactId>
+			<version>2.4.0</version>
 		</dependency>
 		<!-- Mongo-Spark connector -->
 		<dependency>
 			<groupId>org.mongodb.spark</groupId>
-			<artifactId>mongo-spark-connector_2.11</artifactId>
-			<version>2.3.0</version>
+			<artifactId>mongo-spark-connector_2.12</artifactId>
+			<version>2.4.0</version>
 		</dependency>
 		<!-- Cassandra driver -->
 		<dependency>
