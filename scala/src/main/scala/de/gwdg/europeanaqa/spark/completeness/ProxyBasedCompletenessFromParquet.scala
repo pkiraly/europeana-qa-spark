@@ -119,6 +119,7 @@ object ProxyBasedCompletenessFromParquet {
     flatted.write.
       mode(SaveMode.Overwrite).
       save(longformParquet)
+    log.info("preparation ended")
   }
 
   def runStatistics(): Unit = {
