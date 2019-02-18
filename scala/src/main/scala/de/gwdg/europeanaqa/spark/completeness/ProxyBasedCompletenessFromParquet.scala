@@ -101,7 +101,7 @@ object ProxyBasedCompletenessFromParquet {
       var seq = new ListBuffer[Tuple3[String, Int, Double]]()
       for (name <- simplenames) {
         var value = if (typeMap(name) == IntegerType) row.getAs[Int](name).toDouble else row.getAs[Double](name)
-        if (value != 0) {
+        if (value != -1.0) {
           var index = fieldIndex(name)
           seq += Tuple3("all", index, value)
           seq += Tuple3(cid, index, value)
@@ -122,10 +122,12 @@ object ProxyBasedCompletenessFromParquet {
   }
 
   def runStatistics(): Unit = {
+    // fields: id, field, value
     val filtered = spark.read.load(longformParquet)
     log.info("create statistics")
 
     var statistics = filtered.
+      filter($"value" > 0.0).
       groupBy("id", "field").
       agg(
         "value" -> "avg",
@@ -141,6 +143,7 @@ object ProxyBasedCompletenessFromParquet {
   }
 
   def runMedian(): Unit = {
+    // fields: id, field, value
     val filtered = spark.read.load(longformParquet)
     log.info("create median")
 
