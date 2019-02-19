@@ -95,7 +95,7 @@ object ProxyBasedCompletenessFromParquet {
       var cdId = s"cd-$c-$d"
       var cpId = s"cp-$c-$provider"
       var pdId = s"pd-$provider-$d"
-      var cdpId = s"cp-$c-$d-$provider"
+      var cdpId = s"cdp-$c-$d-$provider"
       var providerId = s"p-$provider"
       var countryId = s"cn-$country"
       var languageId = s"l-$language"
