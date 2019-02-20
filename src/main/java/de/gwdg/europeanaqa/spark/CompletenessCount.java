@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.gwdg.europeanaqa.spark.cli.Parameters;
 import org.apache.commons.cli.HelpFormatter;
@@ -56,9 +58,7 @@ public class CompletenessCount {
 		SparkConf conf = new SparkConf().setAppName("CompletenessCount"); //.setMaster("local");
 		JavaSparkContext context = new JavaSparkContext(conf);
 		LongAccumulator accum = context.sc().longAccumulator();
-		int cores = Integer.parseInt(
-			conf.get("spark.master").replace("local[", "").replace("]", "")
-		);
+		int cores = getCores(conf);
 
 		final EdmCalculatorFacade facade = CalculatorFacadeFactory.createCompletenessCalculator(
 			parameters.getSkipEnrichments(), parameters.getFormat()
@@ -92,9 +92,30 @@ public class CompletenessCount {
 		} catch (FileNotFoundException | UnsupportedEncodingException ex) {
 			logger.severe(ex.getLocalizedMessage());
 		}
-		logger.info(String.format("Duration: value: %.f, (count: %d, sum: %d)",
-			(accum.value()/cores)/1000, accum.count(), accum.sum()));
+		logger.info(formatDurationInfo(accum, cores));
 		accum.reset();
+	}
+
+	private static int getCores(SparkConf conf) {
+		return extractCores(conf.get("spark.master"));
+	}
+
+	public static int extractCores(String master) {
+		Matcher matcher = Pattern.compile("^local\\[(\\d+)\\]$").matcher(master);
+		if (matcher.matches()) {
+			Integer.parseInt(matcher.group(1));
+		}
+		return Integer.parseInt(master.replace("local[", "").replace("]", ""));
+	}
+
+	private static String formatDurationInfo(LongAccumulator accum,
+																					 int cores) {
+		return String.format(
+			"Duration: value: %f, (count: %d, sum: %d)",
+			((accum.value()/(cores * 1.0))/1000000000.0),
+			accum.count(),
+			accum.sum()
+		);
 	}
 
 	private static void help() {
