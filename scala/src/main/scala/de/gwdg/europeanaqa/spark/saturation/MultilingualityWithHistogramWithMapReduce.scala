@@ -45,7 +45,7 @@ object MultilingualityWithHistogramWithMapReduce {
       load(inputFile)
 
     log.info("setting names")
-    val ids = Seq("id", "c", "d")
+    val ids = Seq("id", "dataset", "dataProvider", "provider", "country", "language")
 
     val individualFieldNames = Seq(
       "dc_title", "dcterms_alternative", "dc_description", "dc_creator", "dc_publisher",
@@ -91,24 +91,42 @@ object MultilingualityWithHistogramWithMapReduce {
 
     log.info("create flatted")
     var flatted = data.flatMap{row =>
-      var c = row.getAs[Int]("c")
-      var d = row.getAs[Int]("d")
+      var c = row.getAs[Int]("dataset")
+      var d = row.getAs[Int]("dataProvider")
+      var provider = row.getAs[Int]("provider")
+      var country = row.getAs[Int]("country")
+      var language = row.getAs[Int]("language")
+
       var cid = s"c$c"
       var did = s"d$c"
       var cdid = s"cd-$c-$d"
+      var cpId = s"cp-$c-$provider"
+      var pdId = s"pd-$provider-$d"
+      var cdpId = s"cdp-$c-$d-$provider"
+      var providerId = s"p-$provider"
+      var countryId = s"cn-$country"
+      var languageId = s"l-$language"
 
       var seq = new ListBuffer[Tuple3[String, Int, Double]]()
       for (name <- simplenames) {
         var value = if (typeMap(name) == IntegerType) row.getAs[Int](name).toDouble else row.getAs[Double](name)
         var index = fieldIndex(name)
+        seq += Tuple3("all", index, value)
         seq += Tuple3(cid, index, value)
-        // seq += Tuple3(did, index, value)
-        // seq += Tuple3(cdid, index, value)
+        seq += Tuple3(did, index, value)
+        seq += Tuple3(cdId, index, value)
+        seq += Tuple3(cpId, index, value)
+        seq += Tuple3(pdId, index, value)
+        seq += Tuple3(cdpId, index, value)
+        seq += Tuple3(providerId, index, value)
+        seq += Tuple3(countryId, index, value)
+        seq += Tuple3(languageId, index, value)
       }
       seq
     }.toDF(Seq("id", "field", "value"): _*)
 
     log.info("create filtered")
+
     var filtered = flatted.
       filter(x => x.getAs[Double]("value") != -1.0)
 
@@ -132,8 +150,23 @@ object MultilingualityWithHistogramWithMapReduce {
     }
 
     log.info("create median")
-    var mediansRDD = filtered.rdd.groupBy(row => (row(0), row(1))).
-      map(x => Row.fromSeq(Seq(x._1._1, x._1._2, median(x._2.map(x => x(2).asInstanceOf[Double]).toSeq))))
+    var mediansRDD = filtered.
+      rdd.
+      groupBy(row => (row(0), row(1))).
+      map(
+        x => Row.fromSeq(
+          Seq(
+            x._1._1,
+            x._1._2,
+            median(
+              x.
+                _2.
+                map(x => x(2).asInstanceOf[Double]).
+                toSeq
+            )
+          )
+        )
+      )
 
     val mediansFields = StructType(List(
       StructField("med_id", StringType, nullable = false),
