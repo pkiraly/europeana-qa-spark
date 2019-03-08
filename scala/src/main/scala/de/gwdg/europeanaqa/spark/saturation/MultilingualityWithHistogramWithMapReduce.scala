@@ -97,9 +97,9 @@ object MultilingualityWithHistogramWithMapReduce {
       var country = row.getAs[Int]("country")
       var language = row.getAs[Int]("language")
 
-      var cid = s"c$c"
-      var did = s"d$c"
-      var cdid = s"cd-$c-$d"
+      var cId = s"c$c"
+      var dId = s"d$c"
+      var cdId = s"cd-$c-$d"
       var cpId = s"cp-$c-$provider"
       var pdId = s"pd-$provider-$d"
       var cdpId = s"cdp-$c-$d-$provider"
@@ -112,8 +112,8 @@ object MultilingualityWithHistogramWithMapReduce {
         var value = if (typeMap(name) == IntegerType) row.getAs[Int](name).toDouble else row.getAs[Double](name)
         var index = fieldIndex(name)
         seq += Tuple3("all", index, value)
-        seq += Tuple3(cid, index, value)
-        seq += Tuple3(did, index, value)
+        seq += Tuple3(cId, index, value)
+        seq += Tuple3(dId, index, value)
         seq += Tuple3(cdId, index, value)
         seq += Tuple3(cpId, index, value)
         seq += Tuple3(pdId, index, value)

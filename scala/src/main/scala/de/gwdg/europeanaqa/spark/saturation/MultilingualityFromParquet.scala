@@ -85,9 +85,9 @@ object MultilingualityFromParquet {
       var country = row.getAs[Int]("country")
       var language = row.getAs[Int]("language")
 
-      var cid = s"c$c"
-      var did = s"d$c"
-      var cdid = s"cd-$c-$d"
+      var cId = s"c$c"
+      var dId = s"d$c"
+      var cdId = s"cd-$c-$d"
       var cpId = s"cp-$c-$provider"
       var pdId = s"pd-$provider-$d"
       var cdpId = s"cdp-$c-$d-$provider"
@@ -101,8 +101,8 @@ object MultilingualityFromParquet {
         if (value != -1.0) {
           var index = fieldIndex(name)
           seq += Tuple3("all", index, value)
-          seq += Tuple3(cid, index, value)
-          seq += Tuple3(did, index, value)
+          seq += Tuple3(cId, index, value)
+          seq += Tuple3(dId, index, value)
           seq += Tuple3(cdId, index, value)
           seq += Tuple3(cpId, index, value)
           seq += Tuple3(pdId, index, value)
