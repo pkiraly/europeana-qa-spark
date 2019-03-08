@@ -10,13 +10,14 @@
 
 OUTPUT=$1
 SKIP_ENRICHMENTS_FLAG=$2
+EXTFIELD_EXTRACTION_FLAG=$3
 JAR_VERSION=0.6-SNAPSHOT
 HDFS=hdfs://localhost:54310
 HEADER=header-multilingual-saturation.csv
 HEADEROUTPUT=/join/$HEADER
 HEADERCRC=.$HEADER.crc
 
-if [[ ("$#" -ne 1 && "$#" -ne 2) || ("$OUTPUT" == "") ]]; then
+if [[ ("$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3) || ("$OUTPUT" == "") ]]; then
   echo "You should add an output file (such as resultXX-multilingual-saturation.csv)!"
   exit 1
 fi
@@ -28,6 +29,10 @@ fi
 
 if [[ ("$SKIP_ENRICHMENTS_FLAG" != "--skipEnrichments" && "$SKIP_ENRICHMENTS_FLAG" != "-s") ]]; then
   SKIP_ENRICHMENTS_FLAG=""
+fi
+
+if [[ ("$EXTFIELD_EXTRACTION_FLAG" != "--extendedFieldExtraction") ]]; then
+  EXTFIELD_EXTRACTION_FLAG=""
 fi
 
 FORMAT="fullbean"
@@ -45,16 +50,6 @@ if hdfs dfs -test -d $HEADEROUTPUT; then
 fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
-# spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation \
-#  --master local[5] \
-#  $JAR \
-#  $HDFS/europeana/*.json \
-#  $HDFS/result \
-#  $HDFS$HEADEROUTPUT \
-#  data-providers.txt \
-#  datasets.txt \
-#  $SKIP_ENRICHMENTS_FLAG
-
 #  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
 #  --inputFileName $HDFS/europeana/*.json \
 #  --inputFileName $HDFS/europeana/*.json.gz \
@@ -68,7 +63,7 @@ spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
   --format $FORMAT \
-  $SKIP_ENRICHMENTS_FLAG
+  $SKIP_ENRICHMENTS_FLAG $EXTFIELD_EXTRACTION_FLAG
 
 echo Retrieve $OUTPUT
 hdfs dfs -getmerge /result $OUTPUT

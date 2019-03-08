@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Run the record level measure of main features
+# 
+# nohup ./run-all-completeness v2018-08-completeness-ext.csv "-" --extendedFieldExtraction > v2018-08-completeness-ext.log &
 #
 # Input
 #   The json files take place on HDFS /europeana directory
@@ -10,9 +12,10 @@
 
 OUTPUT=$1
 SKIP_FLAG=$2
+EXTFIELD_EXTRACTION_FLAG=$3
 JAR_VERSION=0.6-SNAPSHOT
 
-if [[ ("$#" -ne 1 && "$#" -ne 2) || ("$OUTPUT" == "") ]]; then
+if [[ ("$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3) || ("$OUTPUT" == "") ]]; then
   echo "You should add an output file (such as resultXX.csv)!"
   exit 1
 fi
@@ -26,11 +29,17 @@ if [[ ("$SKIP_FLAG" != "--skipEnrichments") ]]; then
   SKIP_FLAG=""
 fi
 
+if [[ ("$EXTFIELD_EXTRACTION_FLAG" != "--extendedFieldExtraction") ]]; then
+  EXTFIELD_EXTRACTION_FLAG=""
+fi
+
+
+
 echo "Run completeness count"
 
 if hdfs dfs -test -d /result; then
   hdfs dfs -rm -r -f -skipTrash /result
-  wait 5
+  sleep 5
 fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
@@ -57,7 +66,7 @@ spark-submit --class de.gwdg.europeanaqa.spark.CompletenessCount \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
   --format $FORMAT \
-  $SKIP_FLAG
+  $SKIP_FLAG $EXTFIELD_EXTRACTION_FLAG
 
 echo Retrieve $OUTPUT
 hdfs dfs -getmerge /result $OUTPUT
