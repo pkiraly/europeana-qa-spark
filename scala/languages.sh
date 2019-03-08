@@ -15,6 +15,8 @@ if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
   exit 1
 fi
 
+DIR=..
+# DIR=hdfs://localhost:54310/join/
 OUTPUTFILE=languages.csv
 
 hdfs dfs -rm -r /join/$OUTPUTFILE
@@ -23,7 +25,7 @@ spark-submit \
    --class Languages \
    --master local[*] \
    target/scala-2.11/europeana-qa_2.11-1.0.jar \
-   hdfs://localhost:54310/join/ $INPUT
+   $DIR $INPUT
 
 echo Retrieve $OUTPUTFILE
 hdfs dfs -getmerge /join/$OUTPUTFILE $OUTPUTFILE

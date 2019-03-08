@@ -11,11 +11,13 @@
 INPUT=$1
 KEEP_DIRS=$2
 
-if [[ ("$KEEP_DIR" == "keep_dir") ]]; then
+if [[ ("$KEEP_DIRS" == "keep_dirs") ]]; then
   DO_KEEP=1
 else
   DO_KEEP=0
 fi
+
+printf "Do keep: %d\n" $DO_KEEP
 
 #if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
 #  echo "You should add an input file!"

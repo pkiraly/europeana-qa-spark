@@ -17,17 +17,19 @@ fi
 
 OUTPUTFILE=languages-per-collections-groupped.txt
 
-hdfs dfs -rm -r /join/$OUTPUTFILE
+# hdfs dfs -rm -r /join/$OUTPUTFILE
+# DIR=hdfs://localhost:54310/join/
+DIR=..
 
 spark-submit \
    --class LanguagesPerDataProviders \
    --master local[*] \
    target/scala-2.11/europeana-qa_2.11-1.0.jar \
-   hdfs://localhost:54310/join/ $INPUT
+   $DIR $INPUT
 
-echo Retrieve $OUTPUTFILE
-hdfs dfs -getmerge /join/$OUTPUTFILE $OUTPUTFILE
+#echo Retrieve $OUTPUTFILE
+#hdfs dfs -getmerge /join/$OUTPUTFILE $OUTPUTFILE
 
-rm .*.crc
+#rm .*.crc
 
 echo DONE
