@@ -1,6 +1,11 @@
 <?php
 
 $start = microtime(TRUE);
+$version = $argv[1];
+$baseDir = '/projects/pkiraly/europeana-qa-data/' . $version;
+if (!file_exists($baseDir)) {
+  die("Invalid version: $version\n");
+}
 
 $order = [
   'aggregated',
@@ -45,7 +50,7 @@ $codes = [
   '_2' => 'resource'
 ];
 
-$file = '../scala/languages-per-collections-groupped.txt';
+$file = '../output/languages-per-collections-groupped.txt';
 $handle = fopen($file, "r");
 if ($handle) {
   while (($line = fgets($handle)) !== false) {
@@ -70,7 +75,10 @@ function processLine($line) {
 }
 
 function saveJson($collectionId, $json) {
-  $fileName = '../../europeana-qa-r/json3/' . $collectionId . '/' . $collectionId . '.languages.json';
+  global $baseDir;
+
+  $fileName = $baseDir . '/json/' . $collectionId . '/' . $collectionId . '.languages.json';
+  echo $fileName, "\n";
   file_put_contents($fileName, json_encode($json));
 }
 
