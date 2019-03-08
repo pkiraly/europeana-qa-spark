@@ -3,7 +3,7 @@ $dir = '/projects/pkiraly/europeana-qa-data/v2018-08/json/';
 if ($handle = opendir($dir)) {
   $intersections = ['c' => [], 'd' => [], 'p' => []];
   while (false !== ($entry = readdir($handle))) {
-    if (preg_match('/^(cd|pd)-(\d+)-(\d+)$/', $entry, $matches)) {
+    if (preg_match('/^(cd|pd|cp|cdp)-(\d+)-(\d+)(-(\d+))?$/', $entry, $matches)) {
       echo "$entry\n";
       $file = $matches[0];
       $histogramFile = getHistogramFile($file);
@@ -19,25 +19,74 @@ if ($handle = opendir($dir)) {
       if ($matches[1] == 'cd') {
         $c = $matches[2];
         $d = $matches[3];
-        $intersections['c'][$c]['d'][$d] = $entry;
-        $intersections['d'][$d]['c'][$c] = $entry;
+        addEntry($entry, 'c', $c, 'd', $d);
+        addEntry($entry, 'd', $d, 'c', $c);
       } else if ($matches[1] == 'pd') {
         $p = $matches[2];
         $d = $matches[3];
-        $intersections['p'][$p]['d'][$d] = $entry;
-        $intersections['d'][$d]['p'][$p] = $entry;
+        addEntry($entry, 'p', $p, 'd', $d);
+        addEntry($entry, 'd', $d, 'p', $p);
+      } else if ($matches[1] == 'cp') {
+        $c = $matches[2];
+        $p = $matches[3];
+        addEntry($entry, 'c', $c, 'p', $p);
+        addEntry($entry, 'p', $p, 'c', $c);
+      } else if ($matches[1] == 'cdp') {
+        $c = $matches[2];
+        $d = $matches[3];
+        $p = $matches[5];
+        addEntry($entry, 'c', $c, 'd', $d, 'p', $p);
+        addEntry($entry, 'c', $c, 'p', $p, 'd', $d);
+        addEntry($entry, 'd', $d, 'c', $c, 'p', $p);
+        addEntry($entry, 'd', $d, 'p', $p, 'c', $c);
+        addEntry($entry, 'p', $p, 'c', $c, 'd', $d);
+        addEntry($entry, 'p', $p, 'd', $d, 'c', $c);
       }
       // print_r($matches);
     }
   }
   closedir($handle);
-  file_put_contents('intersections.json', json_encode($intersections));
+  // file_put_contents('intersections.json', json_encode($intersections));
+  file_put_contents('proxy-based-intersections.json', json_encode($intersections));
 }
 
 function getHistogramFile($file) {
   global $dir;
 
   return sprintf('%s/%s/%s.proxy-based-completeness-histogram.csv', $dir, $file, $file);
+}
+
+function addEntry($entry, $k1, $v1, $k2, $v2, $k3 = NULL, $v3 = NULL) {
+  global $intersections;
+
+  if (!isset($intersections[$k1])) {
+    $intersections[$k1] = [];
+  }
+
+  if (!isset($intersections[$k1][$v1])) {
+    $intersections[$k1][$v1] = [];
+  }
+
+  if (!isset($intersections[$k1][$v1][$k2])) {
+    $intersections[$k1][$v1][$k2] = [];
+  }
+
+  if (!isset($intersections[$k1][$v1][$k2][$v2])) {
+    $intersections[$k1][$v1][$k2][$v2] = [];
+  }
+
+  if (is_null($k3)) {
+    $intersections[$k1][$v1][$k2][$v2]['entry'] = $entry;
+  } else {
+
+    if (!isset($intersections[$k1][$v1][$k2][$v2][$k3])) {
+      $intersections[$k1][$v1][$k2][$v2][$k3] = [];
+    }
+
+    if (!isset($intersections[$k1][$v1][$k2][$v2][$k3][$v3])) {
+      $intersections[$k1][$v1][$k2][$v2][$k3][$v3]['entry'] = $entry;
+    }
+  }
 }
 
 function readCount($histogramFile) {
