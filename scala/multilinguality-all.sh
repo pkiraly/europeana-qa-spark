@@ -37,6 +37,7 @@ spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "jo
 
 cat multilinguality-csv/part-* > ../output/multilinguality.csv
 cat multilinguality-histogram/part-* > ../output/multilinguality-histogram.csv
+cat multilinguality-histogram-raw/part-* > ../output/multilinguality-histogram-raw.csv
 cat multilinguality-fieldIndex/part-* > ../output/multilinguality-fieldIndex.csv
 
 if [[ ("$DO_KEEP" -eq 0) ]]; then
@@ -45,6 +46,7 @@ if [[ ("$DO_KEEP" -eq 0) ]]; then
   rm -rf multilinguality-statistics.parquet
   rm -rf multilinguality-median.parquet
   rm -rf multilinguality-histogram
+  rm -rf multilinguality-histogram-raw
   rm -rf multilinguality-fieldIndex
   rm -rf multilinguality-csv
 fi
