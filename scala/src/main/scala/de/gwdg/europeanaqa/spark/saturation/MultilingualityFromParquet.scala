@@ -67,7 +67,14 @@ object MultilingualityFromParquet {
     data.printSchema()
 
     log.info("reading the data: done")
-    var simplenames = data.columns.filterNot(x => x == "id" || x == "c" || x == "d")
+    var simplenames = data.columns
+      .filterNot(x => x == "id" ||
+                      x == "dataset" ||
+                      x == "dataProvider" ||
+                      x == "provider" ||
+                      x == "country" ||
+                      x == "language"
+      )
     var typeMap = data.schema.map(x => (x.name, x.dataType)).toMap
     var fieldIndex = simplenames.zipWithIndex.toMap
 
@@ -79,18 +86,18 @@ object MultilingualityFromParquet {
 
     log.info("create flatted")
     var flatted = data.flatMap { row =>
-      var c = row.getAs[Int]("dataset")
-      var d = row.getAs[Int]("dataProvider")
+      var dataset = row.getAs[Int]("dataset")
+      var dataProvider = row.getAs[Int]("dataProvider")
       var provider = row.getAs[Int]("provider")
       var country = row.getAs[Int]("country")
       var language = row.getAs[Int]("language")
 
-      var cId = s"c$c"
-      var dId = s"d$c"
-      var cdId = s"cd-$c-$d"
-      var cpId = s"cp-$c-$provider"
-      var pdId = s"pd-$provider-$d"
-      var cdpId = s"cdp-$c-$d-$provider"
+      var cId = s"c$dataset"
+      var dId = s"d$dataProvider"
+      var cdId = s"cd-$dataset-$dataProvider"
+      var cpId = s"cp-$dataset-$provider"
+      var pdId = s"pd-$provider-$dataProvider"
+      var cdpId = s"cdp-$dataset-$dataProvider-$provider"
       var providerId = s"p-$provider"
       var countryId = s"cn-$country"
       var languageId = s"l-$language"
