@@ -32,7 +32,8 @@ nohup ./run-all-multilingual-saturation v2018-08-multilingual-saturation.csv "" 
 e.g.
 
 ```
-nohup ./multilinguality-all.sh ../v2018-08-multilingual-saturation.parquet --keep-dirs > multilinguality-all.log &
+nohup ./multilinguality-all.sh ../v2018-08-multilingual-saturation.parquet --keep-dirs \
+  > multilinguality-all.log &
 ```
 
 ### step 4. split result, store in final place (~18 mins)
