@@ -7,17 +7,20 @@ For running it on Spark, you should install Hadoop, Scala and finally Spark. The
 # Running
 ## multilinguality
 
-### step 1. convert CSV to Parquet file (~40+ mins)
+### step 1. extract features from the Europeana JSON dump (~7 hours)
+nohup ./run-all-multilingual-saturation v2018-08-multilingual-saturation.csv "" --extendedFieldExtraction > multilingual-saturation.log &
+
+### step 2. convert CSV to Parquet file (~40+ mins)
 ./multilinguality-to-parquet.sh [csv file]
 
-### step 2. analyse multilinguality (~9 hours)
+### step 3. analyse multilinguality (~9 hours)
 ./multilinguality-all.sh [parquet file] keep-dirs
 
 e.g.
 
 nohup ./multilinguality-all.sh ../v2018-08-multilingual-saturation.parquet keep-dirs > multilinguality-all.log &
 
-### step 3. split result, store in final place (~18 mins)
+### step 4. split result, store in final place (~18 mins)
 ```
 cd ../script
 ./split-multilinguality.sh
