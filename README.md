@@ -10,14 +10,14 @@ For running it on Spark, you should install Hadoop, Scala and finally Spark. The
 ### step 1. convert CSV to Parquet file (~40+ mins)
 ./multilinguality-to-parquet.sh [csv file]
 
-### step 2. analyse multilinguality
+### step 2. analyse multilinguality (~9 hours)
 ./multilinguality-all.sh [parquet file] keep-dirs
 
 e.g.
 
 nohup ./multilinguality-all.sh ../v2018-08-multilingual-saturation.parquet keep-dirs > multilinguality-all.log &
 
-### step 3. split result, store in final place
+### step 3. split result, store in final place (~18 mins)
 ```
 cd ../script
 ./split-multilinguality.sh
