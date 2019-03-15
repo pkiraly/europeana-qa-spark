@@ -137,9 +137,10 @@ object MultilingualityFromParquet {
         "value" -> "avg",
         "value" -> "min",
         "value" -> "max",
-        "value" -> "count"
+        "value" -> "count",
+        "value" -> "stddev"
       ).
-      toDF(Seq("id", "field", "mean", "min", "max", "count"): _*)
+      toDF(Seq("id", "field", "mean", "min", "max", "count", "stddev"): _*)
 
     statistics.write.
       mode(SaveMode.Overwrite).
@@ -316,12 +317,12 @@ object MultilingualityFromParquet {
     log.info("join all")
     var statisticsAll = statisticsDF.
       join(mediansDF, Seq("id", "field"), "inner").
-      select("id", "field", "mean", "min", "max", "count", "median").
+      select("id", "field", "mean", "min", "max", "count", "stddev", "median").
       orderBy("id", "field").
       withColumn("name", getFieldName(col("field"))).
       drop("field").
       withColumnRenamed("name", "field").
-      select("id", "field", "mean", "min", "max", "count", "median")
+      select("id", "field", "mean", "min", "max", "count", "stddev", "median")
 
     log.info("save")
     statisticsAll.

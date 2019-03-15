@@ -139,9 +139,10 @@ object ProxyBasedCompletenessFromParquet {
         "value" -> "min",
         "value" -> "max",
         "value" -> "count",
-        "value" -> "sum"
+        "value" -> "sum",
+        "value" -> "stddev"
       ).
-      toDF(Seq("id", "field", "mean", "min", "max", "count", "sum"): _*)
+      toDF(Seq("id", "field", "mean", "min", "max", "count", "sum", "stddev"): _*)
 
     statistics.write.
       mode(SaveMode.Overwrite).
@@ -321,12 +322,12 @@ object ProxyBasedCompletenessFromParquet {
     log.info("join all")
     var statisticsAll = statisticsDF.
       join(mediansDF, Seq("id", "field"), "inner").
-      select("id", "field", "mean", "min", "max", "count", "sum", "median").
+      select("id", "field", "mean", "min", "max", "count", "sum", "stddev", "median").
       orderBy("id", "field").
       withColumn("name", getFieldName(col("field"))).
       drop("field").
       withColumnRenamed("name", "field").
-      select("id", "field", "mean", "min", "max", "count", "sum", "median")
+      select("id", "field", "mean", "min", "max", "count", "sum", "stddev", "median")
 
     log.info("save")
     statisticsAll.
