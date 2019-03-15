@@ -11,7 +11,7 @@
 INPUT=$1
 KEEP_DIRS=$2
 
-if [[ ("$KEEP_DIRS" == "keep_dirs") ]]; then
+if [[ ("$KEEP_DIRS" == "--keep-dirs") ]]; then
   DO_KEEP=1
 else
   DO_KEEP=0
@@ -29,11 +29,11 @@ printf "Do keep: %d\n" $DO_KEEP
 CLASS=de.gwdg.europeanaqa.spark.saturation.MultilingualityFromParquet
 JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
 
-spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "prepare"
-spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "statistics"
-spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "median"
-spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "histogram"
-spark-submit --driver-memory 3g --class $CLASS --master local[6] $JAR $INPUT "join"
+spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "prepare"
+spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "statistics"
+spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "median"
+spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "histogram"
+spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "join"
 
 cat multilinguality-csv/part-* > ../output/multilinguality.csv
 cat multilinguality-histogram/part-* > ../output/multilinguality-histogram.csv

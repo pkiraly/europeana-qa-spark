@@ -4,3 +4,5 @@ nohup*.out
 *.log
 scala/*.log
 output/
+scripts/*.json
+scala/*.csv
