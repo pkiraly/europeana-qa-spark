@@ -5,7 +5,10 @@ import com.mongodb.MongoClient;
 import com.mongodb.spark.MongoSpark;
 import com.mongodb.spark.rdd.api.java.JavaMongoRDD;
 import com.mongodb.util.JSON;
+import de.gwdg.europeanaqa.spark.cli.Parameters;
 import de.gwdg.europeanaqa.spark.cli.util.EuropeanaRecordReaderAPIClient;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.TaskContext;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -22,75 +25,91 @@ import java.util.logging.Logger;
 
 public class MongoToJson implements Serializable {
 
-	static final Logger logger = Logger.getLogger(MongoToJson.class.getCanonicalName());
+  static final Logger logger = Logger.getLogger(MongoToJson.class.getCanonicalName());
 
-	public static void main(final String[] args) throws InterruptedException {
+  public static void main(final String[] args)
+      throws InterruptedException, ParseException {
 
-		SparkSession spark = createSparkSession("record");
+    SparkSession spark = createSparkSession("record");
 
-		// Create a JavaSparkContext using the SparkSession's SparkContext object
-		JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
+    // Create a JavaSparkContext using the SparkSession's SparkContext object
+    JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
 
-		JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
-		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-			MongoClient.getDefaultCodecRegistry()
-		);
-		DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+    JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
+    CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
+      MongoClient.getDefaultCodecRegistry()
+    );
+    DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 
-		// JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
+    // JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
-		final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient("144.76.218.178:8080");
+    Parameters parameters = new Parameters(args);
+    if (StringUtils.isBlank(parameters.getOutputFileName())) {
+      System.err.println("Please provide a full path to the output file");
+      System.exit(0);
+    }
 
-		JavaRDD<String> baseCountsRDD = rdd.map(record -> {
-			TaskContext tc = TaskContext.get();
-			// tc.stageId();
-			// int partitionId = tc.partitionId();
+    if (StringUtils.isBlank(parameters.getRecordAPIUrl())) {
+      System.err.println("Please provide a URL of the record API");
+      System.exit(0);
+    }
 
-			// if (isProcessable(partitionId)) {
-				String jsonFragment = JSON.serialize(record);
-				String id = record.get("about", String.class);
-				try {
-					String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
-					// logger.info(partitionId + ") " + id + ": " + jsonString.length());
-					return jsonString;
-					// return id;
-				} catch (IOException e) {
-					logger.severe(
-						String.format(
-							"Resolving error. Id: %s, fragment in %s: %s. Error message: %s.",
-							id, jsonFragment, e.getLocalizedMessage()));
-				} catch (InvalidJsonException e) {
-					String jsonString = "";
-					logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
-						jsonString, e.getLocalizedMessage()));
-				}
-			// }
-			return "";
-		});
-		String outputFileName = "hdfs://localhost:54310/mongo-result2";
-		baseCountsRDD
-			.filter(record -> !record.equals(""))
-			.saveAsTextFile(outputFileName);
+    // "144.76.218.178:8080"
+    final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient(
+      parameters.getRecordAPIUrl()
+    );
 
-		jsc.close();
-	}
+    JavaRDD<String> baseCountsRDD = rdd.map(record -> {
+      TaskContext tc = TaskContext.get();
+      // tc.stageId();
+      // int partitionId = tc.partitionId();
 
-	private static SparkSession createSparkSession(String collection) {
-		return SparkSession
-			.builder()
-			// .master("local[*]")
-			.appName("MongoSparkConnectorIntro")
-			.config("spark.mongodb.input.uri", "mongodb://127.0.0.1/")
-			.config("spark.mongodb.input.database", "europeana_production_publish_1")
-			.config("spark.mongodb.input.collection", collection)
-			.config("spark.mongodb.input.readPreference.name", "primaryPreferred")
-			.config("spark.mongodb.input.partitioner", "MongoSplitVectorPartitioner")
-			.config("spark.mongodb.input.partitionerOptions.partitionKey", "_id")
-			.config("spark.mongodb.input.partitionerOptions.partitionSizeMB", "64")
-			.getOrCreate();
-	}
+      // if (isProcessable(partitionId)) {
+        String jsonFragment = JSON.serialize(record);
+        String id = record.get("about", String.class);
+        try {
+          String jsonString = client.resolveFragmentWithPost(jsonFragment, id);
+          // logger.info(partitionId + ") " + id + ": " + jsonString.length());
+          return jsonString;
+          // return id;
+        } catch (IOException e) {
+          logger.severe(
+            String.format(
+              "Resolving error. Id: %s, fragment in %s: %s. Error message: %s.",
+              id, jsonFragment, e.getLocalizedMessage()));
+        } catch (InvalidJsonException e) {
+          String jsonString = "";
+          logger.severe(String.format("Invalid JSON in %s: %s. Error message: %s.",
+            jsonString, e.getLocalizedMessage()));
+        }
+      // }
+      return "";
+    });
 
-	private static boolean isProcessable(int partitionId) {
-		return (partitionId == 2 || partitionId == 413 || partitionId > 1238);
-	}
+    // String outputFileName = "hdfs://localhost:54310/mongo-result2";
+    baseCountsRDD
+      .filter(record -> !record.equals(""))
+      .saveAsTextFile(parameters.getOutputFileName());
+
+    jsc.close();
+  }
+
+  private static SparkSession createSparkSession(String collection) {
+    return SparkSession
+      .builder()
+      // .master("local[*]")
+      .appName("MongoSparkConnectorIntro")
+      .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/")
+      .config("spark.mongodb.input.database", "europeana_production_publish_1")
+      .config("spark.mongodb.input.collection", collection)
+      .config("spark.mongodb.input.readPreference.name", "primaryPreferred")
+      .config("spark.mongodb.input.partitioner", "MongoSplitVectorPartitioner")
+      .config("spark.mongodb.input.partitionerOptions.partitionKey", "_id")
+      .config("spark.mongodb.input.partitionerOptions.partitionSizeMB", "64")
+      .getOrCreate();
+  }
+
+  private static boolean isProcessable(int partitionId) {
+    return (partitionId == 2 || partitionId == 413 || partitionId > 1238);
+  }
 }
