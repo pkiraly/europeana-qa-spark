@@ -36,9 +36,8 @@ public class MongoToJson implements Serializable {
     JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
 
     JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
-    CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-      MongoClient.getDefaultCodecRegistry()
-    );
+    CodecRegistry defaultRegistry = MongoClient.getDefaultCodecRegistry();
+    CodecRegistry codecRegistry = CodecRegistries.fromRegistries(defaultRegistry);
     DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
 
     // JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
