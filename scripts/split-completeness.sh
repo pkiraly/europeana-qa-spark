@@ -1,6 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-OUTPUT_DIR=/projects/pkiraly/europeana-qa-data/v2018-08/json
+VERSION=$1
+
+if [[ ("$#" -ne 1) || ("$VERSION" == "") ]]; then
+  echo "You should add an a version (such as 'v2018-08')!"
+  exit 1
+fi
+
+OUTPUT_DIR=/projects/pkiraly/europeana-qa-data/${VERSION}/json
+
+if [ ! -d ${OUTPUT_DIR} ]; then
+  mkdir -p ${OUTPUT_DIR}
+fi
 
 echo completeness
 php split-spark-output.php --fileName ../output/completeness.csv --outputDir $OUTPUT_DIR --suffix completeness
