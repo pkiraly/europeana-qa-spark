@@ -6,3 +6,17 @@ scala/*.log
 output/
 scripts/*.json
 scala/*.csv
+scala/completeness-csv/
+scala/completeness-fieldIndex/
+scala/completeness-histogram-raw/
+scala/completeness-histogram/
+scala/completeness-longform.parquet/
+scala/completeness-median.parquet/
+scala/multilinguality-csv/
+scala/multilinguality-fieldIndex/
+scala/multilinguality-histogram-raw/
+scala/multilinguality-histogram/
+scala/multilinguality-longform.parquet/
+scala/multilinguality-median.parquet/
+scala/multilinguality-statistics.parquet/
+
