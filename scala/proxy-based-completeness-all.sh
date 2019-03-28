@@ -39,6 +39,7 @@ spark-submit --driver-memory $MEMORY --class $CLASS --master local[$CORES] $JAR 
 
 cat completeness-csv/part-* > ../output/completeness.csv
 cat completeness-histogram/part-* > ../output/completeness-histogram.csv
+cat completeness-histogram-raw/part-* > ../output/completeness-histogram-raw.csv
 cat completeness-fieldIndex/part-* > ../output/completeness-fieldIndex.csv
 
 if [[ ("$DO_KEEP" -eq 0) ]]; then
