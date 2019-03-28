@@ -71,7 +71,7 @@ spark-submit --class de.gwdg.europeanaqa.spark.ProxyBasedCompletenessCount \
 echo Retrieve $OUTPUT
 # hdfs dfs -getmerge /result ${OUTPUT_FILE}
 # rm .${OUTPUT_FILE}.crc
-cat ${OUTPUT_DIR}/part* > ${OUTPUT_FILE}
+echo ${OUTPUT_DIR}/part-*  | xargs cat > $OUTPUT_FILE
 
 date +"%T"
 echo "Completeness count is done!"
