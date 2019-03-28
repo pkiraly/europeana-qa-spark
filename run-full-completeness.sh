@@ -21,23 +21,24 @@ echo "parquet: ${PARQUET}"
 
 LOG_FILE=run-all-proxy-based-completeness.log
 echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
-echo "./run-all-proxy-based-completeness ${CSV} '' --extendedFieldExtraction ${VERSION} > ${LOG_FILE}"
 ./run-all-proxy-based-completeness ${CSV} "" --extendedFieldExtraction ${VERSION} > ${LOG_FILE}
 
 echo "Collecting new abbreviation entries (if any)"
-grep AbbreviationManager ${LOG_FILE} | sed -r 's/^.+ new entry: //' | sort | uniq > new-abbreviations-for-${VERSION}.txt
+./extract-new-abbreviations.sh ${VERSION}
 
 cd scala
 
-echo "create parquet file"
-./proxy-based-completeness-to-parquet.sh ../${CSV}
+LOG_FILE=proxy-based-completeness-to-parquet.log
+echo "create parquet file. Check log file: scala/${LOG_FILE}"
+./proxy-based-completeness-to-parquet.sh ../${CSV} > ${LOG_FILE}
 
 LOG_FILE=proxy-based-completeness-all.log
 echo "run completeness analysis. Check log file: scala/${LOG_FILE}"
-./proxy-based-completeness-all.sh ../${PARQUET} keep_dirs > proxy-based-completeness-all.log
+./proxy-based-completeness-all.sh ../${PARQUET} keep_dirs > ${LOG_FILE}
 
 cd ../scripts/
-echo "split results."
+LOG_FILE=split-completeness.log
+echo "split results. Check log file: scripts/${LOG_FILE}"
 ./split-completeness.sh ${VERSION}
 
 duration=$SECONDS
@@ -45,4 +46,5 @@ hours=$(($duration / (60*60)))
 mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
+echo "run-full-completeness DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
