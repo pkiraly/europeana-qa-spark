@@ -2,8 +2,8 @@
 
 $VERSION = $argv[1];
 
-$sourceDir = '~/git/europeana-qa-api/src/main/resources/abbreviations';
-$targetDir = '~/git/europeana-qa-webdata/' . $VERSION;
+$sourceDir = '/home/pkiraly/git/europeana-qa-api/src/main/resources/abbreviations';
+$targetDir = '/home/pkiraly/git/europeana-qa-webdata/' . $VERSION;
 $jsonDir = '/projects/pkiraly/europeana-qa-data/' . $VERSION . '/json';
 
 $types = [
