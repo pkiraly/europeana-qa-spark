@@ -16,8 +16,16 @@ echo "source dir: ${SOURCE_DIR}"
 CSV=${VERSION}-completeness.csv
 echo "csv: ${CSV}"
 
+if [ -e ${CSV} ]; then
+  rm ${CSV}
+fi
+
 PARQUET=${VERSION}-completeness.parquet
 echo "parquet: ${PARQUET}"
+
+if [ -e ${PARQUET} ]; then
+  rm -rf ${PARQUET}
+fi
 
 LOG_FILE=run-all-proxy-based-completeness.log
 echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
