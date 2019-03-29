@@ -16,7 +16,7 @@ echo "source dir: ${SOURCE_DIR}"
 OUTPUT_DIR=/projects/pkiraly/europeana-qa-data/${VERSION}
 echo "output dir: ${OUTPUT_DIR}"
 
-WEB_DATA_DIR=../europeana-qa-webdata/${VERSION}
+WEB_DATA_DIR=~/git/europeana-qa-webdata/${VERSION}
 echo "web data dir: ${WEB_DATA_DIR}"
 
 CSV=${VERSION}-completeness.csv
@@ -67,9 +67,14 @@ php create-intersection.php ${VERSION} > ${LOG_FILE}
 
 if [ ! -d ${WEB_DATA_DIR} ]; then
   mkdir -p ${WEB_DATA_DIR}
-  ln -s ${OUTPUT_DIR} ${WEB_DATA_DIR}/json
+  ln -s ${OUTPUT_DIR}/json ${WEB_DATA_DIR}/json
 fi
 cp proxy-based-intersections.json ${WEB_DATA_DIR}
+
+date +"%T"
+LOG_FILE=clear-abbreviations.log
+echo "Clear abbreviations. Check log file: scripts/${LOG_FILE}"
+php clear-abbreviations.php ${VERSION} > ${LOG_FILE}
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))
