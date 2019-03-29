@@ -16,8 +16,16 @@ echo "source dir: ${SOURCE_DIR}"
 CSV=${VERSION}-multilingual-saturation.csv
 echo "csv: ${CSV}"
 
+if [ -e ${CSV} ]; then
+  rm ${CSV}
+fi
+
 PARQUET=${VERSION}-multilingual-saturation.parquet
 echo "parquet: ${PARQUET}"
+
+if [ -e ${PARQUET} ]; then
+  rm -rf ${PARQUET}
+fi
 
 date +"%T"
 LOG_FILE=run-all-multilingual-saturation.log
