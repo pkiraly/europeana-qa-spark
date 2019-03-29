@@ -30,18 +30,6 @@ public class MongoToJson implements Serializable {
   public static void main(final String[] args)
       throws InterruptedException, ParseException {
 
-    SparkSession spark = createSparkSession("record");
-
-    // Create a JavaSparkContext using the SparkSession's SparkContext object
-    JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
-
-    JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
-    CodecRegistry defaultRegistry = MongoClient.getDefaultCodecRegistry();
-    CodecRegistry codecRegistry = CodecRegistries.fromRegistries(defaultRegistry);
-    DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
-
-    // JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
-
     Parameters parameters = new Parameters(args);
     if (StringUtils.isBlank(parameters.getOutputFileName())) {
       System.err.println("Please provide a full path to the output file");
@@ -52,6 +40,18 @@ public class MongoToJson implements Serializable {
       System.err.println("Please provide a URL of the record API");
       System.exit(0);
     }
+
+    SparkSession spark = createSparkSession(parameters.getMongoHost(), parameters.getMongoDatabase(), "record");
+
+    // Create a JavaSparkContext using the SparkSession's SparkContext object
+    JavaSparkContext jsc = new JavaSparkContext(spark.sparkContext());
+
+    JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
+    CodecRegistry defaultRegistry = MongoClient.getDefaultCodecRegistry();
+    CodecRegistry codecRegistry = CodecRegistries.fromRegistries(defaultRegistry);
+    DocumentCodec codec = new DocumentCodec(codecRegistry, new BsonTypeClassMap());
+
+    // JsonWriterSettings writerSettings = new JsonWriterSettings(JsonMode.STRICT, "", "");
 
     // "144.76.218.178:8080"
     final EuropeanaRecordReaderAPIClient client = new EuropeanaRecordReaderAPIClient(
@@ -93,13 +93,13 @@ public class MongoToJson implements Serializable {
     jsc.close();
   }
 
-  private static SparkSession createSparkSession(String collection) {
+  private static SparkSession createSparkSession(String mongoHost, String database, String collection) {
     return SparkSession
       .builder()
       // .master("local[*]")
       .appName("MongoSparkConnectorIntro")
-      .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/")
-      .config("spark.mongodb.input.database", "europeana_production_publish_1")
+      .config("spark.mongodb.input.uri", String.format("mongodb://%s/", mongoHost)) // 127.0.0.1
+      .config("spark.mongodb.input.database", database) // "europeana_production_publish_1"
       .config("spark.mongodb.input.collection", collection)
       .config("spark.mongodb.input.readPreference.name", "primaryPreferred")
       .config("spark.mongodb.input.partitioner", "MongoSplitVectorPartitioner")

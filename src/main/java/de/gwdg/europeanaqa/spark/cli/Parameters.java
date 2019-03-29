@@ -27,7 +27,6 @@ public class Parameters implements Serializable {
           return analysis;
       return null;
     }
-
   };
 
   private String inputFileName;
@@ -40,6 +39,8 @@ public class Parameters implements Serializable {
   private Analysis analysis;
   private Boolean skipEnrichments = false;
   private Boolean extendedFieldExtraction = false;
+  private String mongoHost;
+  private String mongoDatabase;
 
   protected Options options = new Options();
   protected static CommandLineParser parser = new DefaultParser();
@@ -58,6 +59,8 @@ public class Parameters implements Serializable {
       options.addOption("a", "analysis", true, "analysis (completeness, languages, multilingual-saturation, proxy-based-completeness");
       options.addOption("e", "extendedFieldExtraction", false, "Extended field extraction");
       options.addOption("p", "recordAPIUrl", true, "URL of record API");
+      options.addOption("t", "mongoHost", true, "Mongo host name");
+      options.addOption("b", "mongoDatabase", true, "Mongo database name");
       isOptionSet = true;
     }
   }
@@ -95,6 +98,12 @@ public class Parameters implements Serializable {
 
     skipEnrichments = cmd.hasOption("skipEnrichments");
     extendedFieldExtraction = cmd.hasOption("extendedFieldExtraction");
+
+    if (cmd.hasOption("mongoHost"))
+      mongoHost = cmd.getOptionValue("mongoHost");
+
+    if (cmd.hasOption("mongoDatabase"))
+      mongoDatabase = cmd.getOptionValue("mongoDatabase");
   }
 
   public Options getOptions() {
@@ -141,5 +150,13 @@ public class Parameters implements Serializable {
 
   public String getRecordAPIUrl() {
     return recordAPIUrl;
+  }
+
+  public String getMongoHost() {
+    return mongoHost;
+  }
+
+  public String getMongoDatabase() {
+    return mongoDatabase;
   }
 }
