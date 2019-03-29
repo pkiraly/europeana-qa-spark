@@ -13,6 +13,12 @@ echo "version: ${VERSION}"
 SOURCE_DIR=/projects/pkiraly/data-export/${VERSION}/full
 echo "source dir: ${SOURCE_DIR}"
 
+OUTPUT_DIR=/projects/pkiraly/europeana-qa-data/${VERSION}
+echo "output dir: ${OUTPUT_DIR}"
+
+WEB_DATA_DIR=../europeana-qa-webdata/${VERSION}
+echo "web data dir: ${WEB_DATA_DIR}"
+
 CSV=${VERSION}-completeness.csv
 echo "csv: ${CSV}"
 
@@ -53,6 +59,17 @@ cd ../scripts/
 LOG_FILE=split-completeness.log
 echo "split results. Check log file: scripts/${LOG_FILE}"
 ./split-completeness.sh ${VERSION}
+
+date +"%T"
+LOG_FILE=create-intersection.log
+echo "create intersection. Check log file: scripts/${LOG_FILE}"
+php create-intersection.php ${VERSION} > ${LOG_FILE}
+
+if [ ! -d ${WEB_DATA_DIR} ]; then
+  mkdir -p ${WEB_DATA_DIR}
+  ln -s ${OUTPUT_DIR} ${WEB_DATA_DIR}/json
+fi
+cp proxy-based-intersections.json ${WEB_DATA_DIR}
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))
