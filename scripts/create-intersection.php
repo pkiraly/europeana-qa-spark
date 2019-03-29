@@ -55,7 +55,7 @@ if ($handle = opendir($dir)) {
 function getHistogramFile($file) {
   global $dir;
 
-  return sprintf('%s/%s/%s.proxy-based-completeness-histogram.csv', $dir, $file, $file);
+  return sprintf('%s/%s/%s.completeness-histogram.csv', $dir, $file, $file);
 }
 
 function addEntry($entry, $k1, $v1, $k2, $v2, $k3 = NULL, $v3 = NULL) {
