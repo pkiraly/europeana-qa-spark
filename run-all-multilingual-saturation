@@ -58,6 +58,9 @@ if [[ "$USE_HDFS" -eq 1 ]]; then
   HEADEROUTPUT_DIR=${HDFS}${HEADEROUTPUT}
 else
   HEADEROUTPUT_DIR=join/${HEADER_FILE}
+  if [ -d ${HEADEROUTPUT_DIR} ]; then
+    rm -rf ${HEADEROUTPUT_DIR}
+  fi
 fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
