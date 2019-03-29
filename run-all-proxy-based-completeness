@@ -55,7 +55,7 @@ SOURCE_DIR=file:///projects/pkiraly/data-export/${VERSION}/full/*.json
 OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/completeness
 
 if [ -d ${OUTPUT_DIR} ]; then
-  rm -rf $OUTPUT_DIR
+  rm -rf ${OUTPUT_DIR}
 fi
 
 spark-submit --class de.gwdg.europeanaqa.spark.ProxyBasedCompletenessCount \

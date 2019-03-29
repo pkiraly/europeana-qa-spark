@@ -13,38 +13,44 @@ echo "version: ${VERSION}"
 SOURCE_DIR=/projects/pkiraly/data-export/${VERSION}/full
 echo "source dir: ${SOURCE_DIR}"
 
-CSV=${VERSION}-completeness.csv
+CSV=${VERSION}-multilingual-saturation.csv
 echo "csv: ${CSV}"
 
-PARQUET=${VERSION}-completeness.parquet
+PARQUET=${VERSION}-multilingual-saturation.parquet
 echo "parquet: ${PARQUET}"
 
-LOG_FILE=run-all-proxy-based-completeness.log
+date +"%T"
+LOG_FILE=run-all-multilingual-saturation.log
 echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
-./run-all-proxy-based-completeness ${CSV} "" --extendedFieldExtraction ${VERSION} > ${LOG_FILE}
+./run-all-multilingual-saturation ${CSV} "" --extendedFieldExtraction ${VERSION} > ${LOG_FILE}
+date +"%T"
 
 echo "Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
 cd scala
 
-LOG_FILE=proxy-based-completeness-to-parquet.log
+date +"%T"
+LOG_FILE=multilinguality-to-parquet.log
 echo "create parquet file. Check log file: scala/${LOG_FILE}"
-./proxy-based-completeness-to-parquet.sh ../${CSV} > ${LOG_FILE}
+./multilinguality-to-parquet.sh ../${CSV} > ${LOG_FILE}
 
-LOG_FILE=proxy-based-completeness-all.log
+date +"%T"
+LOG_FILE=multilinguality-all.log
 echo "run completeness analysis. Check log file: scala/${LOG_FILE}"
-./proxy-based-completeness-all.sh ../${PARQUET} keep_dirs > ${LOG_FILE}
+./multilinguality-all.sh ../${PARQUET} --keep_dirs > ${LOG_FILE}
 
+date +"%T"
 cd ../scripts/
-LOG_FILE=split-completeness.log
+LOG_FILE=split-multilinguality.log
 echo "split results. Check log file: scripts/${LOG_FILE}"
-./split-completeness.sh ${VERSION}
+./split-multilinguality.sh ${VERSION} > ${LOG_FILE}
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))
 mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
-echo "run-full-completeness DONE"
+date +"%T"
+echo "run-full-multilingual-saturation DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
