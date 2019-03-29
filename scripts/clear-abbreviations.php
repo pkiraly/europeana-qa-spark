@@ -21,11 +21,17 @@ foreach ($types as $type) {
 
   $inputFile = sprintf('%s/%s', $sourceDir, $type->source);
   $outputFile = sprintf('%s/%s', $targetDir, $type->target);
+
+  if (!file_exists($inputFile)) {
+    printf("File doesn't exist: %s\n", $inputFile);
+    continue;
+  }
+
   $in = fopen($inputFile, "r");
   $ln = 1;
   while (($line = fgets($in)) != false) {
     if (strpos($line, ';') != false) {
-      list($id,$name) = explode(';', $line, 2);
+      list($id, $name) = explode(';', $line, 2);
       $dir = sprintf('%s/%s%s', $jsonDir, $type->prefix, $id);
       if (file_exists($dir) && is_dir($dir))
         file_put_contents($outputFile, $line, FILE_APPEND);
