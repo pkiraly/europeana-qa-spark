@@ -8,22 +8,25 @@
 #   You should specify a file name, such as resultXX-language.csv
 #   This will be the input of top level, and collection level aggregations
 
-OUTPUT=$1
+OUTPUT_FILE=$1
 SKIP_ENRICHMENTS_FLAG=$2
 EXTFIELD_EXTRACTION_FLAG=$3
+VERSION=$4
+
+SECONDS=0
 JAR_VERSION=0.6-SNAPSHOT
 HDFS=hdfs://localhost:54310
-HEADER=header-multilingual-saturation.csv
-HEADEROUTPUT=/join/$HEADER
-HEADERCRC=.$HEADER.crc
+HEADER_FILE=header-multilingual-saturation.csv
 
-if [[ ("$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3) || ("$OUTPUT" == "") ]]; then
+USE_HDFS=0
+
+if [[ ("$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3 && "$#" -ne 4) || ("${OUTPUT_FILE}" == "") ]]; then
   echo "You should add an output file (such as resultXX-multilingual-saturation.csv)!"
   exit 1
 fi
 
-if [ -e $OUTPUT ]; then
-  echo "WARNING! $OUTPUT exists, rename it to prevent overwriting the file!"
+if [ -e ${OUTPUT_FILE} ]; then
+  echo "WARNING! ${OUTPUT_FILE} exists, rename it to prevent overwriting the file!"
   exit 1
 fi
 
@@ -39,14 +42,21 @@ FORMAT="fullbean"
 
 echo "Starting multilingual saturation detection."
 
-if hdfs dfs -test -d /result; then
-  hdfs dfs -rm -r -f -skipTrash /result
-  sleep 5
-fi
+if [[ "$USE_HDFS" -eq 1 ]]; then
+  HEADEROUTPUT=/join/${HEADER_FILE}
+  HEADERCRC=.${HEADER_FILE}.crc
 
-if hdfs dfs -test -d $HEADEROUTPUT; then
-  hdfs dfs -rm -r -f -skipTrash $HEADEROUTPUT
-  sleep 2
+  if hdfs dfs -test -d /result; then
+    hdfs dfs -rm -r -f -skipTrash /result
+    sleep 5
+  fi
+
+  if hdfs dfs -test -d ${HEADEROUTPUT}; then
+    hdfs dfs -rm -r -f -skipTrash ${HEADEROUTPUT}
+    sleep 2
+  fi
+else
+  HEADEROUTPUT=join/${HEADER_FILE}
 fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
@@ -54,30 +64,52 @@ JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 #  --inputFileName $HDFS/europeana/*.json \
 #  --inputFileName $HDFS/europeana/*.json.gz \
 
+SOURCE_DIR=file:///projects/pkiraly/data-export/${VERSION}/full/*.json
+
+OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/multilingual-saturation
+if [ -d ${OUTPUT_DIR} ]; then
+  rm -rf ${OUTPUT_DIR}
+fi
+
 spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation \
   --master local[*] \
   $JAR \
-  --inputFileName $HDFS/europeana/*.json.gz \
-  --outputFileName $HDFS/result \
+  --inputFileName ${SOURCE_DIR} \
+  --outputFileName ${OUTPUT_DIR} \
   --headerOutputFile $HDFS$HEADEROUTPUT \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
   --format $FORMAT \
-  $SKIP_ENRICHMENTS_FLAG $EXTFIELD_EXTRACTION_FLAG
+  ${SKIP_ENRICHMENTS_FLAG} ${EXTFIELD_EXTRACTION_FLAG}
 
-echo Retrieve $OUTPUT
-hdfs dfs -getmerge /result $OUTPUT
-rm .$OUTPUT.crc
+echo Retrieve ${OUTPUT_FILE}
+if [[ "$USE_HDFS" -eq 1 ]]; then
+  hdfs dfs -getmerge /result ${OUTPUT_FILE}
+  rm .${OUTPUT_FILE}.crc
+else
+  echo ${OUTPUT_DIR}/part-*  | xargs cat > ${OUTPUT_FILE}
+fi
 
-echo Retrieve $HEADER
-hdfs dfs -getmerge $HEADEROUTPUT $HEADER
-sleep 2
-rm -f $HEADERCRC
-
-if hdfs dfs -test -d $HEADEROUTPUT; then
-  hdfs dfs -rm -r -f -skipTrash $HEADEROUTPUT
+echo Retrieve ${HEADER_FILE}
+if [[ "$USE_HDFS" -eq 1 ]]; then
+  hdfs dfs -getmerge $HEADEROUTPUT ${HEADER_FILE}
   sleep 2
+  rm -f $HEADERCRC
+  if hdfs dfs -test -d ${HEADEROUTPUT}; then
+    hdfs dfs -rm -r -f -skipTrash ${HEADEROUTPUT}
+    sleep 2
+  fi
+else
+  echo ${HEADEROUTPUT}/part-*  | xargs cat > ${HEADER_FILE}
 fi
 
 date +"%T"
 echo "Multilingual saturation detection is done!"
+
+duration=$SECONDS
+hours=$(($duration / (60*60)))
+mins=$(($duration % (60*60) / 60))
+secs=$(($duration % 60))
+
+printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
+
