@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#
+# Run the record level measure of main features
+# 
+# nohup ./run-all-completeness v2018-08-completeness-ext.csv "-" --extendedFieldExtraction > v2018-08-completeness-ext.log &
+#
+# Input
+#   The json files take place on HDFS /europeana directory
+# Output
+#   You should specify a file name, such as resultXX.csv
+#   This will be the input of top level, and collection level aggregations
+
+OUTPUT_FILE=$1
+SKIP_FLAG=$2
+EXTFIELD_EXTRACTION_FLAG=$3
+VERSION=$4
+
+SECONDS=0
+JAR_VERSION=0.6-SNAPSHOT
+
+if [[ ("$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3 && "$#" -ne 4) || ("${OUTPUT_FILE}" == "") ]]; then
+  echo "You should add an output file (such as resultXX.csv)!"
+  exit 1
+fi
+
+if [ -e $OUTPUT_FILE ]; then
+  echo "WARNING! ${OUTPUT_FILE} exists, rename it to prevent overwriting the file!"
+  exit 1
+fi
+
+if [[ ("$SKIP_FLAG" != "--skipEnrichments") ]]; then
+  SKIP_FLAG=""
+fi
+
+if [[ ("$EXTFIELD_EXTRACTION_FLAG" != "--extendedFieldExtraction") ]]; then
+  EXTFIELD_EXTRACTION_FLAG=""
+fi
+
+echo "Run completeness count"
+
+# if hdfs dfs -test -d /result; then
+#   hdfs dfs -rm -r -f -skipTrash /result
+#   sleep 5
+# fi
+
+JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+
+FORMAT="fullbean"
+
+#  --inputFileName hdfs://localhost:54310/europeana/*.json \
+#  --inputFileName hdfs://localhost:54310/europeana/*.json.gz \
+#  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
+#  --inputFileName /projects/pkiraly/data-export/2018-08-23/\*.json.gz \
+SOURCE_DIR=file:///projects/pkiraly/data-export/${VERSION}/full/*.json
+OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/completeness
+
+if [ -d ${OUTPUT_DIR} ]; then
+  rm -rf $OUTPUT_DIR
+fi
+
+spark-submit --class de.gwdg.europeanaqa.spark.ProxyBasedCompletenessCount \
+  --master local[5] \
+  $JAR \
+  --inputFileName $SOURCE_DIR \
+  --outputFileName $OUTPUT_DIR \
+  --dataProvidersFile data-providers.txt \
+  --datasetsFile datasets.txt \
+  --format $FORMAT \
+  $SKIP_FLAG $EXTFIELD_EXTRACTION_FLAG
+
+echo Retrieve $OUTPUT
+# hdfs dfs -getmerge /result ${OUTPUT_FILE}
+# rm .${OUTPUT_FILE}.crc
+echo ${OUTPUT_DIR}/part-*  | xargs cat > $OUTPUT_FILE
+
+date +"%T"
+echo "Completeness count is done!"
+
+duration=$SECONDS
+hours=$(($duration / (60*60)))
+mins=$(($duration % (60*60) / 60))
+secs=$(($duration % 60))
+
+printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
+

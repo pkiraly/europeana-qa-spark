@@ -25,7 +25,7 @@ nohup ./run-all-proxy-based-completeness v2018-08-completeness.csv "" --extended
 ./proxy-based-completeness-to-parquet.sh [csv file]
 ```
 
-### step 3. analyse multilinguality (~9 hours)
+### step 3. analyse completeness (~9 hours)
 ```
 ./proxy-based-completeness-all [parquet file] --keep-dirs
 ```
@@ -37,10 +37,16 @@ nohup ./proxy-based-completeness-all.sh v2018-08-completeness2.parquet keep_dirs
   > proxy-based-completeness-all.log &
 ```
 
+It will produce three files:
+
+* [project]/output/completeness.csv
+* [project]/output/completeness-histogram.csv
+* [project]/output/completeness-histogram-raw.csv
+
 ### step 4. split result, store in final place (~18 mins)
 ```
-cd ../script
-./split-completeness.sh
+cd ../scripts
+./split-completeness.sh $VERSION
 ```
 
 ## multilinguality
