@@ -13,7 +13,6 @@ $fileName = $options['fileName'];
 if (!file_exists($fileName))
   die("The input file ($fileName) is not existing.\n");
 
-// '/projects/pkiraly/2018-03-23/split/multilinguality';
 $outputDir = $options['outputDir'];
 if (!file_exists($outputDir))
   die("The output dir ($outputDir) is not existing.\n");
@@ -21,7 +20,6 @@ if (!file_exists($outputDir))
 $start = microtime(TRUE);
 $in = fopen($fileName, "r");
 $out = [];
-// $intersections = ['c' => [], 'd' => []];
 $ln = 1;
 $prevId = '';
 $lines = [];
@@ -42,6 +40,7 @@ while (($line = fgets($in)) != false) {
 }
 fclose($in);
 saveContent($id, $lines);
+echo "\n";
 
 $duration = microtime(TRUE) - $start;
 echo 'DONE in ', gmdate("H:i:s", (int)$duration), "\n";
