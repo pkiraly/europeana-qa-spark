@@ -78,7 +78,7 @@ else
 fi
 
 spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
-  --master local[*] \
+  --master local[6] \
   $JAR \
   --inputFileName ${SOURCE_FILES} \
   --outputFileName ${OUTPUT_DIR} \
