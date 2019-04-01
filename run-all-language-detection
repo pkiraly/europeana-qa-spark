@@ -52,8 +52,6 @@ echo "FROM_GZ = ${FROM_GZ}"
 
 echo "Starting language detection."
 
-exit 0
-
 JAR_VERSION=0.6-SNAPSHOT
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 FORMAT="fullbean"
