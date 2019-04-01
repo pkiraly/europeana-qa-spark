@@ -1,6 +1,4 @@
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
+package de.gwdg.europeanaqa.spark.languages
 
 object LanguagesPerDataProviders {
   def main(args: Array[String]) {
@@ -8,11 +6,11 @@ object LanguagesPerDataProviders {
     val conf = new SparkConf().setAppName("LanguagesPerDataProviders")
     val sc = new SparkContext(conf)
 
-    val dir = args(0);
-    val sourceFile = dir + "/" + args(1);
+    val inputFile = args(0);
+    val outputFile = args(0)
 
     // val sourceFile = "hdfs://localhost:54310/join/result12-language.csv"
-    val language = sc.textFile(sourceFile).filter(_.nonEmpty)
+    val language = sc.textFile(inputFile).filter(_.nonEmpty)
 
     val language2 = language.
       map(line => line.
@@ -256,6 +254,6 @@ object LanguagesPerDataProviders {
       map(x => (x._1.head, (x._1.last, x._2))). // -> (title, (en, 8))
       groupByKey()                             // -> (title, ((en, 8), (de, 5), ...))
 
-    language7.saveAsTextFile(dir + "/languages-per-collections-groupped.txt")
+    language7.saveAsTextFile(outputFile)
   }
 }

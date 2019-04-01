@@ -1,6 +1,4 @@
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
+package de.gwdg.europeanaqa.spark.languages
 
 object Languages {
   def main(args: Array[String]) {
@@ -8,11 +6,11 @@ object Languages {
     val conf = new SparkConf().setAppName("Languages")
     val sc = new SparkContext(conf)
 
-    val dir = args(0);
-    val sourceFile = dir + "/" + args(1);
+    val inputFile = args(0);
+    val outputFile = args(1);
 
     // val sourceFile = "hdfs://localhost:54310/join/result12-language.csv"
-    val language = sc.textFile(sourceFile).filter(_.nonEmpty)
+    val language = sc.textFile(inputFile).filter(_.nonEmpty)
 
     val language2 = language.
       map(line => line.
@@ -144,7 +142,6 @@ object Languages {
 
     language5.
       map(x => x._1.replace(".", ",") + "," + x._2). // -> "title,en,8"
-      saveAsTextFile(dir + "/languages.csv")
-
+      saveAsTextFile(outputFile)
   }
 }

@@ -8,28 +8,57 @@
 # Output
 #   languages-per-collections-groupped.txt
 
-INPUT=$1
+INPUT=
+OUTPUT_FILE=languages-per-collections-groupped.txt
+USE_HDFS=0
 
-if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
+TEMP=`getopt -o i:o:h --long input-file:,output-file:,use-hdfs -n 'test.sh' -- "$@"`
+eval set -- "$TEMP"
+while true ; do
+    case "$1" in
+        -i|--input-file)
+            case "$2" in
+                "") shift 2 ;;
+                *) INPUT_FILE=$2 ; shift 2 ;;
+            esac ;;
+        -o|--output-file)
+            case "$2" in
+                "") shift 2 ;;
+                *) OUTPUT_FILE=$2 ; shift 2 ;;
+            esac ;;
+        -h|--use-hdfs) USE_HDFS=1 ; shift ;;
+        --) shift ; break ;;
+        *) echo "Internal error!" ; exit 1 ;;
+    esac
+done
+
+if [[ "${INPUT_FILE}" == "") ]]; then
   echo "You should add an input file!"
   exit 1
 fi
 
-OUTPUTFILE=languages-per-collections-groupped.txt
+OUTPUT_DIR=${OUTPUT_FILE}-sparkdir
+if [[ ${USE_HDFS} -eq 1 ]]; then
+  hdfs dfs -rm -r /join/${OUTPUT_DIR}
+fi
 
-# hdfs dfs -rm -r /join/$OUTPUTFILE
-# DIR=hdfs://localhost:54310/join/
-DIR=..
+CLASS=de.gwdg.europeanaqa.spark.languages.LanguagesPerDataProviders
+JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
+MEMORY=3g
+CORES=6
 
-spark-submit \
-   --class LanguagesPerDataProviders \
-   --master local[*] \
-   target/scala-2.11/europeana-qa_2.11-1.0.jar \
-   $DIR $INPUT
+spark-submit --driver-memory $MEMORY --executor-memory $MEMORY \
+  --master local[$CORES] \
+  --class $CLASS \
+  $JAR \
+  $INPUT_FILE $OUTPUT_DIR
 
-#echo Retrieve $OUTPUTFILE
-#hdfs dfs -getmerge /join/$OUTPUTFILE $OUTPUTFILE
-
-#rm .*.crc
+echo Retrieve $OUTPUT_FILE
+if [[ ${USE_HDFS} -eq 1 ]]; then
+  hdfs dfs -getmerge /join/$OUTPUT_DIR $OUTPUT_FILE
+  rm .${OUTPUT_FILE}.crc
+else
+  echo ${OUTPUT_DIR}/part-* | xargs cat > ${OUTPUT_FILE}
+fi
 
 echo DONE

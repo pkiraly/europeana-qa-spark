@@ -91,7 +91,7 @@ if [[ "$USE_HDFS" -eq 1 ]]; then
   hdfs dfs -getmerge /result ${OUTPUT_FILE}
   rm .${OUTPUT_FILE}.crc
 else
-  echo ${OUTPUT_DIR}/part-*  | xargs cat > ${OUTPUT_FILE}
+  echo ${OUTPUT_DIR}/part-* | xargs cat > ${OUTPUT_FILE}
 fi
 
 echo Retrieve ${HEADER_FILE}
@@ -104,7 +104,7 @@ if [[ "$USE_HDFS" -eq 1 ]]; then
     sleep 2
   fi
 else
-  echo ${HEADEROUTPUT_DIR}/part-*  | xargs cat > ${HEADER_FILE}
+  echo ${HEADEROUTPUT_DIR}/part-* | xargs cat > ${HEADER_FILE}
 fi
 
 date +"%T"
