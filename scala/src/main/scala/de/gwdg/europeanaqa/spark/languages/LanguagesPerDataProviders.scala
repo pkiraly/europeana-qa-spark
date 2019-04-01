@@ -10,7 +10,7 @@ object LanguagesPerDataProviders {
     val sc = new SparkContext(conf)
 
     val inputFile = args(0);
-    val outputFile = args(0)
+    val outputFile = args(1)
 
     // val sourceFile = "hdfs://localhost:54310/join/result12-language.csv"
     val language = sc.textFile(inputFile).filter(_.nonEmpty)
