@@ -1,5 +1,8 @@
 package de.gwdg.europeanaqa.spark.languages
 
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+
 object LanguagesPerDataProviders {
   def main(args: Array[String]) {
 
