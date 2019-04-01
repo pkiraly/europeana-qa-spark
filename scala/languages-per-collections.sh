@@ -42,6 +42,10 @@ if [[ ${USE_HDFS} -eq 1 ]]; then
   hdfs dfs -rm -r /join/${OUTPUT_DIR}
 fi
 
+echo "INPUT_FILE: $INPUT_FILE"
+echo "OUTPUT_FILE: $OUTPUT_FILE"
+echo "OUTPUT_DIR: $OUTPUT_DIR"
+
 CLASS=de.gwdg.europeanaqa.spark.languages.LanguagesPerDataProviders
 JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
 MEMORY=3g
