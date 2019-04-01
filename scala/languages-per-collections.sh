@@ -32,7 +32,7 @@ while true ; do
     esac
 done
 
-if [[ "${INPUT_FILE}" == "") ]]; then
+if [[ "${INPUT_FILE}" == "" ]]; then
   echo "You should add an input file!"
   exit 1
 fi
@@ -61,4 +61,10 @@ else
   echo ${OUTPUT_DIR}/part-* | xargs cat > ${OUTPUT_FILE}
 fi
 
+duration=$SECONDS
+hours=$(($duration / (60*60)))
+mins=$(($duration % (60*60) / 60))
+secs=$(($duration % 60))
+
+printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
 echo DONE
