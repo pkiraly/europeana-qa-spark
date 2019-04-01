@@ -8,52 +8,100 @@
 #   You should specify a file name, such as resultXX-language.csv
 #   This will be the input of top level, and collection level aggregations
 
-OUTPUT=$1
-JAR_VERSION=0.6-SNAPSHOT
+USE_HDFS=0
+FROM_GZ=0
 
-if [[ ("$#" -ne 1) || ("$OUTPUT" == "") ]]; then
-  echo "You should add an output file (such as resultXX-language.csv)!"
+# read the options
+TEMP=`getopt -o v:o:hg --long version:,output-file:,use-hdfs,from-gz -n 'test.sh' -- "$@"`
+eval set -- "$TEMP"
+
+# extract options and their arguments into variables.
+while true ; do
+    case "$1" in
+        -v|--version)
+            case "$2" in
+                "") shift 2 ;;
+                *) VERSION=$2 ; shift 2 ;;
+            esac ;;
+        -o|--output-file)
+            case "$2" in
+                "") shift 2 ;;
+                *) OUTPUT_FILE=$2 ; shift 2 ;;
+            esac ;;
+        -h|--use-hdfs) USE_HDFS=1 ; shift ;;
+        -g|--from-gz) FROM_GZ=1 ; shift ;;
+        --) shift ; break ;;
+        *) echo "Internal error!" ; exit 1 ;;
+    esac
+done
+
+if [[ "${OUTPUT_FILE}" == "" ]]; then
+  echo "You should add an output file (such as v2019-03-language.csv)!"
   exit 1
 fi
 
-if [ -e $OUTPUT ]; then
-  echo "WARNING! $OUTPUT exists, rename it to prevent overwriting the file!"
+if [ -e ${OUTPUT_FILE} ]; then
+  echo "WARNING! ${OUTPUT_FILE} exists, rename it to prevent overwriting the file!"
   exit 1
 fi
+
+echo "VERSION = ${VERSION}"
+echo "OUTPUT_FILE = ${OUTPUT_FILE}"
+echo "USE_HDFS = ${USE_HDFS}"
+echo "FROM_GZ = ${FROM_GZ}"
 
 echo "Starting language detection."
 
-if hdfs dfs -test -d /result; then
-  hdfs dfs -rm -r -f -skipTrash /result
-  wait 5
+exit 0
+
+JAR_VERSION=0.6-SNAPSHOT
+JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+FORMAT="fullbean"
+
+if [ ${FROM_GZ} -eq 1 ]; then
+  MASK=*.json.gz
+else
+  MASK=*.json
 fi
 
-JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
-# spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
-#   --master local[*] \
-#   $JAR \
-#   hdfs://localhost:54310/europeana/*.json \
-#   hdfs://localhost:54310/result \
-#   data-providers.txt \
-#  datasets.txt
-
-# --inputFileName hdfs://localhost:54310/europeana/*.json \
-#  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
-#  --inputFileName hdfs://localhost:54310/europeana/*.json.gz \
-
-FORMAT="fullbean"
+if [ ${USE_HDFS} -eq 1 ]; then
+  if hdfs dfs -test -d /result; then
+    hdfs dfs -rm -r -f -skipTrash /result
+    wait 5
+  fi
+  SOURCE_FILES=hdfs://localhost:54310/europeana/${MASK}
+  OUTPUT_DIR=hdfs://localhost:54310/result
+else
+  SOURCE_FILES=file:///projects/pkiraly/data-export/${VERSION}/full/${MASK}
+  OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/language
+  if [ -d ${OUTPUT_DIR} ]; then
+    rm -rf ${OUTPUT_DIR}
+  fi
+fi
 
 spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
   --master local[*] \
   $JAR \
-  --inputFileName hdfs://localhost:54310/europeana/*.json.gz \
-  --outputFileName hdfs://localhost:54310/result \
+  --inputFileName ${SOURCE_FILES} \
+  --outputFileName ${OUTPUT_DIR} \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
   --format $FORMAT \
 
-echo Retrieve $OUTPUT
-hdfs dfs -getmerge /result $OUTPUT
-rm .$OUTPUT.crc
+echo Retrieve ${OUTPUT_FILE}
+if [[ "$USE_HDFS" -eq 1 ]]; then
+  hdfs dfs -getmerge /result ${OUTPUT_FILE}
+  rm .${OUTPUT_FILE}.crc
+else
+  echo ${OUTPUT_DIR}/part-* | xargs cat > ${OUTPUT_FILE}
+fi
 
+date +"%T"
 echo "Language detection is done!"
+
+duration=$SECONDS
+hours=$(($duration / (60*60)))
+mins=$(($duration % (60*60) / 60))
+secs=$(($duration % 60))
+
+printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
