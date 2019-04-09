@@ -8,6 +8,10 @@ $opts = make_options([
 ]);
 $options = getopt($opts[0], $opts[1]);
 
+printf("File name: %s\n", $options['fileName']);
+printf("output dir: %s\n", $options['outputDir']);
+printf("suffix: %s\n", $options['suffix']);
+
 $start = microtime(TRUE);
 $fileName = $options['fileName'];
 if (!file_exists($fileName))
