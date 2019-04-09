@@ -49,18 +49,17 @@ if [ -e ${CSV} ]; then
   rm ${CSV}
 fi
 
-exit
-
 # (~ 4:56)
 date +"%T"
 LOG_FILE=run-all-language-detection.log
 echo "Running language detection. Check log file: ${LOG_FILE}"
-./run-all-language-detection --output-file ${CSV} --version ${VERSION} > ${LOG_FILE}
+./run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction > ${LOG_FILE}
 
 # Upload result file to HDFS (~ 0:16)
 # cd ~/git/europeana-qa-spark
 # hdfs dfs -put resultXX-language.csv /join
 
+exit
 
 cd scala
 
@@ -83,7 +82,6 @@ cp ../output/languages.json $WEB_DATA_DIR
 
 # Convert collection level language results to JSON files
 
-# cd ~/git/europeana-qa-spark/scripts
 php lang-group-to-json.php $VERSION
 
 date +"%T"
