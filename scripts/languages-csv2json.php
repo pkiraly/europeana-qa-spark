@@ -1,6 +1,6 @@
 <?php
 
-$file = '../scala/languages.csv';
+$file = '../output/languages.csv';
 
 $header = ['field', 'language', 'sum'];
 
@@ -76,4 +76,4 @@ foreach ($order as $field) {
   }
 }
 
-file_put_contents('languages.json', json_encode($ordered));
+file_put_contents('../output/languages.json', json_encode($ordered));
