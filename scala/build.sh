@@ -5,3 +5,6 @@
 #
 
 sbt clean compile package
+
+exit 0
+
