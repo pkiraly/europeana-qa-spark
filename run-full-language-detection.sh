@@ -84,7 +84,7 @@ cp ../output/languages.json $WEB_DATA_DIR
 # Convert collection level language results to JSON files
 
 # cd ~/git/europeana-qa-spark/scripts
-php lang-group-to-json.php 
+php lang-group-to-json.php $VERSION
 
 date +"%T"
 echo "Languages count is done!"
