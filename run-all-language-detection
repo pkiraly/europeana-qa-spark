@@ -76,9 +76,13 @@ else
   SOURCE_FILES=file:///projects/pkiraly/data-export/${VERSION}/full/${MASK}
   OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/language
   if [ -d ${OUTPUT_DIR} ]; then
+    echo "Removing ${OUTPUT_DIR}"
     rm -rf ${OUTPUT_DIR}
   fi
 fi
+
+echo "SOURCE_FILES = ${SOURCE_FILES}"
+echo "OUTPUT_DIR = ${OUTPUT_DIR}"
 
 spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
   --master local[6] \
