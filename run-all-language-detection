@@ -10,9 +10,10 @@
 
 USE_HDFS=0
 FROM_GZ=0
+EXTENDED_FIELD_EXTRACTION=
 
 # read the options
-TEMP=`getopt -o v:o:hg --long version:,output-file:,use-hdfs,from-gz -n 'test.sh' -- "$@"`
+TEMP=`getopt -o v:o:hge --long version:,output-file:,use-hdfs,from-gz,extendedFieldExtraction -n 'test.sh' -- "$@"`
 eval set -- "$TEMP"
 
 # extract options and their arguments into variables.
@@ -30,6 +31,7 @@ while true ; do
             esac ;;
         -h|--use-hdfs) USE_HDFS=1 ; shift ;;
         -g|--from-gz) FROM_GZ=1 ; shift ;;
+        -e|--extendedFieldExtraction) EXTENDED_FIELD_EXTRACTION=extendedFieldExtraction ; shift ;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
@@ -49,6 +51,7 @@ echo "VERSION = ${VERSION}"
 echo "OUTPUT_FILE = ${OUTPUT_FILE}"
 echo "USE_HDFS = ${USE_HDFS}"
 echo "FROM_GZ = ${FROM_GZ}"
+echo "EXTENDED_FIELD_EXTRACTION = ${EXTENDED_FIELD_EXTRACTION}"
 
 echo "Starting language detection."
 
@@ -85,6 +88,7 @@ spark-submit --class de.gwdg.europeanaqa.spark.LanguageCount \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
   --format $FORMAT \
+  $EXTENDED_FIELD_EXTRACTION
 
 echo Retrieve ${OUTPUT_FILE}
 if [[ "$USE_HDFS" -eq 1 ]]; then
