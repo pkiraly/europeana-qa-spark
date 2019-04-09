@@ -31,7 +31,7 @@ while true ; do
             esac ;;
         -h|--use-hdfs) USE_HDFS=1 ; shift ;;
         -g|--from-gz) FROM_GZ=1 ; shift ;;
-        -e|--extendedFieldExtraction) EXTENDED_FIELD_EXTRACTION=extendedFieldExtraction ; shift ;;
+        -e|--extendedFieldExtraction) EXTENDED_FIELD_EXTRACTION=--extendedFieldExtraction ; shift ;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
