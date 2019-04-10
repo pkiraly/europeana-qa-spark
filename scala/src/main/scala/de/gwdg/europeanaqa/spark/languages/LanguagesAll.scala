@@ -2,17 +2,17 @@ package de.gwdg.europeanaqa.spark.languages
 
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.{SaveMode, SparkSession}
 import org.apache.spark.sql.functions.{col, udf}
 
 import scala.collection.mutable.ListBuffer
 
 object LanguagesAll {
+  val log = org.apache.log4j.LogManager.getLogger("LanguagesAll")
+  val spark = SparkSession.builder.appName("LanguagesAll").getOrCreate()
+  import spark.implicits._
+
   def main(args: Array[String]) {
-
-    val conf = new SparkConf().setAppName("Languages")
-    val sc = new SparkContext(conf)
-
     val inputFile = args(0);
     val outputFile = args(1);
 
