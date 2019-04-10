@@ -16,9 +16,6 @@ object LanguagesAll {
     val inputFile = args(0);
     val outputFile = args(1);
 
-    // val inputFile = "file:///home/kiru/temp/spark/v2019-03-language-sample.csv"
-    // val outputFile = "file:///home/kiru/temp/spark/v2019-03-language-summary.csv"
-
     val fromParquet = false
     val headerOption = if (fromParquet) "true" else "false"
     val formatOption = if (fromParquet) "parquet" else "csv"
@@ -104,8 +101,7 @@ object LanguagesAll {
       var languageId = s"l-$language"
 
       var ids = Seq("all", cid, did, cdId, cpId, pdId, cdpId, providerId, countryId, languageId)
-
-      var seq = new ListBuffer[Tuple4[String, Int, String, Int]]()
+      var seq = new ListBuffer[Tuple5[String, Int, String, Int, Int]]()
 
       for (name <- selectedNames) {
         var value = row.getAs[String](name)
@@ -119,19 +115,19 @@ object LanguagesAll {
           if (count != -1.0) {
             var index = fieldIndex(name)
             for (id <- ids) {
-              seq += Tuple4(id, index, language, count)
-              seq += Tuple4(id, wholeRecordIndex, language, count)
+              seq += Tuple5(id, index, language, count, 1)
+              seq += Tuple5(id, wholeRecordIndex, language, count, 1)
             }
           }
         }
       }
       seq
-    }.toDF(Seq("id", "field", "language", "count"): _*)
+    }.toDF(Seq("id", "field", "language", "occurrence", "record"): _*)
 
     var summary = flatted.
       groupBy("id", "field", "language").
-      sum("count").
-      toDF(Seq("id", "field", "language", "count"): _*)
+      sum("occurrence", "record").
+      toDF(Seq("id", "field", "language", "occurrence", "record"): _*)
 
     var fieldMap = fieldIndex.map(x => (x._2, x._1)).
       toMap ++ Seq((1000, "all")).map(x => (x._1, x._2)).toMap
@@ -143,8 +139,7 @@ object LanguagesAll {
       withColumn("name", getFieldName(col("field"))).
       drop("field").
       withColumnRenamed("name", "field").
-      withColumnRenamed("sum(count)", "count").
-      select("id", "field", "language", "count")
+      select("id", "field", "language", "occurrence", "record")
 
     log.info("save")
     result.
