@@ -69,7 +69,7 @@ if ($handle) {
     } else {
       if ($collection->id != $record->id) {
         // $json = orderJson(restructureJson($origJson[1]));
-        saveJson($collection->id, $collection);
+        saveJson($collection->id, $collection->fields);
         $collection = createCollection($record->id);
       }
     }
@@ -86,7 +86,7 @@ if ($handle) {
   echo "ERROR: can not open file $file\n";
 }
 
-saveJson($collection->id, $collection);
+saveJson($collection->id, $collection->fields);
 printf("Process took: %f ms\n", (microtime(TRUE) - $start));
 
 function createCollection($id) {
