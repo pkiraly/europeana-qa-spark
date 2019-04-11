@@ -87,7 +87,7 @@ if ($handle) {
 }
 
 saveJson($collection->id, $collection->fields);
-printf("Process took: %f ms\n", (microtime(TRUE) - $start));
+printf("Process took: %s\n", formatDuration(microtime(TRUE) - $start));
 
 function createCollection($id) {
   $collection = (object)[
@@ -117,4 +117,13 @@ function saveJson($collectionId, $json) {
   $fileName = $baseDir . '/json/' . $collectionId . '/' . $collectionId . '.languages-all.json';
   echo $fileName, "\n";
   file_put_contents($fileName, json_encode($json));
+}
+
+function formatDuration($microtime) {
+  $totalsec = floor($microtime);
+  $ms = $microtime - $totalsec;
+  $sec = $totalsec % 60;
+  $min = floor($totalsec / 60);
+  $hour = floor($totalsec / (60*60));
+  return sprintf("%02d:%02d:%02d.%d", $hour, $min, $sec, $ms);
 }
