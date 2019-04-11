@@ -101,7 +101,7 @@ function processLine($line) {
   global $csvFields, $codes;
 
   $values = str_getcsv($line);
-  $record = (object)array_combine($keys, $values);
+  $record = (object)array_combine($csvFields, $values);
   if ($record->field == 'all') {
     $record->field = 'aggregated';
   }
