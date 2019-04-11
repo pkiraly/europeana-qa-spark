@@ -56,7 +56,7 @@ $codes = [
   '_2' => 'resource'
 ];
 
-$csvFields = ["if", "field", "language", "occurences", "records"];
+$csvFields = ["id", "field", "language", "occurences", "records"];
 
 $file = '../output/languages-all.csv';
 $handle = fopen($file, "r");
