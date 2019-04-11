@@ -9,7 +9,7 @@
 $start = microtime(TRUE);
 $version = $argv[1];
 $baseDir = '/projects/pkiraly/europeana-qa-data/' . $version;
-if (!file_exists($baseDir)) {
+if ($version == "" || !file_exists($baseDir)) {
   die("Invalid version: $version\n");
 }
 
@@ -91,8 +91,8 @@ printf("Process took: %f ms\n", (microtime(TRUE) - $start));
 
 function createCollection($id) {
   $collection = (object)[
-    'id' => $id;
-    'fields' => (object)[];
+    'id' => $id,
+    'fields' => (object)[]
   ];
   return $collection;
 }
