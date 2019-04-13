@@ -22,7 +22,9 @@ object LanguagesAll {
 
     val inputFile = args(0);
     val outputFile = args(1);
-    val phase = args(1)
+    val phase = args(2)
+    log.info(s"inputFile: $inputFile")
+    log.info(s"outputFile: $outputFile")
     log.info(s"runing phase: $phase")
 
     if (phase.equals("prepare")) {
