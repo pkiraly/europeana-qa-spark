@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import org.apache.spark.sql.functions.{col, udf}
+import java.text.SimpleDateFormat
 
 import scala.collection.mutable.ListBuffer
 
@@ -12,10 +13,13 @@ object LanguagesAll {
   val spark = SparkSession.builder.appName("LanguagesAll").getOrCreate()
   import spark.implicits._
 
+  val sdf = new SimpleDateFormat("HH:mm:ss.SSS")
   val fieldIndexCsv = "limbo/languages/fieldIndex.csv"
   val longformParquet = "limbo/languages/longform.parquet"
 
   def main(args: Array[String]) {
+    val start = System.currentTimeMillis()
+
     val inputFile = args(0);
     val outputFile = args(1);
     val phase = args(1)
@@ -26,7 +30,8 @@ object LanguagesAll {
     } else if (phase.equals("statistics")) {
       this.runStatistics()
     }
-    log.info(s"ALL took ${System.currentTimeMillis() - startFields}")
+    val duration = sdf.format(System.currentTimeMillis() - start - (60*60*1000))
+    log.info(s"$phase took $duration")
   }
 
   def runPrepare(inputFile: String): Unit = {
