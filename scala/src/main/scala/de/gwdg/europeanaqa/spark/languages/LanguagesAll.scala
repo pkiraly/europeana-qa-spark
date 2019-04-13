@@ -12,9 +12,25 @@ object LanguagesAll {
   val spark = SparkSession.builder.appName("LanguagesAll").getOrCreate()
   import spark.implicits._
 
+  val fieldIndexCsv = "languages-fieldIndex"
+  val longformParquet = "completeness-longform.parquet"
+
   def main(args: Array[String]) {
     val inputFile = args(0);
     val outputFile = args(1);
+    val phase = args(1)
+    log.info(s"runing phase: $phase")
+
+    if (phase.equals("prepare")) {
+      this.runPrepare(inputFile)
+    } else if (phase.equals("statistics")) {
+      this.runStatistics()
+    }
+    log.info(s"ALL took ${System.currentTimeMillis() - startFields}")
+  }
+
+  def runPrepare(inputFile: String): Unit = {
+    log.info("reading the data")
 
     val fromParquet = false
     val headerOption = if (fromParquet) "true" else "false"
@@ -82,7 +98,13 @@ object LanguagesAll {
     var fieldIndex = selectedNames.zipWithIndex.toMap
     var wholeRecordIndex = 1000
 
-    var flatted = data.flatMap { row =>
+    simplenames.zipWithIndex.toSeq.toDF("field", "index").
+      write.
+      option("header", "false").
+      mode(SaveMode.Overwrite).
+      csv(fieldIndexCsv)
+
+    var longForm = data.flatMap { row =>
       var dataset = row.getAs[Int]("dataset")
       var dataProvider = row.getAs[Int]("dataProvider")
       var provider = row.getAs[Int]("provider")
@@ -124,12 +146,28 @@ object LanguagesAll {
       seq
     }.toDF(Seq("id", "field", "language", "occurrence", "record"): _*)
 
-    var summary = flatted.
+    longForm.write.
+      mode(SaveMode.Overwrite).
+      save(longformParquet)
+    log.info("preparation ended")
+  }
+
+  def runStatistics(): Unit = {
+
+    log.info("create statistics")
+    val longForm = spark.read.load(longformParquet)
+    val fieldIndexDF = spark.read.
+      option("inferSchema", "true").
+      format("csv").
+      load(fieldIndexCsv)
+
+    var summary = longForm.
       groupBy("id", "field", "language").
       sum("occurrence", "record").
       toDF(Seq("id", "field", "language", "occurrence", "record"): _*)
 
-    var fieldMap = fieldIndex.map(x => (x._2, x._1)).
+    var fieldMap = fieldIndexDF.collect.
+      map(x => (x._2, x._1)).
       toMap ++ Seq((1000, "all")).map(x => (x._1, x._2)).toMap
 
     val getFieldName = udf((index:Int) => fieldMap(index))

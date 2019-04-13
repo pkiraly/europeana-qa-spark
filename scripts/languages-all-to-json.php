@@ -121,9 +121,9 @@ function saveJson($collectionId, $json) {
 
 function formatDuration($microtime) {
   $totalsec = floor($microtime);
-  $ms = $microtime - $totalsec;
+  $ms = substr(((string) $microtime - $totalsec), 2);
   $sec = $totalsec % 60;
   $min = floor($totalsec / 60);
   $hour = floor($totalsec / (60*60));
-  return sprintf("%02d:%02d:%02d.%d", $hour, $min, $sec, $ms);
+  return sprintf("%02d:%02d:%02d.%s", $hour, $min, $sec, $ms);
 }
