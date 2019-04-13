@@ -28,7 +28,7 @@ object LanguagesAll {
     if (phase.equals("prepare")) {
       this.runPrepare(inputFile)
     } else if (phase.equals("statistics")) {
-      this.runStatistics()
+      this.runStatistics(outputFile)
     }
     val duration = sdf.format(System.currentTimeMillis() - start - (60*60*1000))
     log.info(s"$phase took $duration")
@@ -103,7 +103,7 @@ object LanguagesAll {
     var fieldIndex = selectedNames.zipWithIndex.toMap
     var wholeRecordIndex = 1000
 
-    simplenames.zipWithIndex.toSeq.toDF("field", "index").
+    selectedNames.zipWithIndex.toSeq.toDF("field", "index").
       write.
       option("header", "false").
       mode(SaveMode.Overwrite).
@@ -157,7 +157,7 @@ object LanguagesAll {
     log.info("preparation ended")
   }
 
-  def runStatistics(): Unit = {
+  def runStatistics(outputFile: String): Unit = {
 
     log.info("create statistics")
     val longForm = spark.read.load(longformParquet)
@@ -172,7 +172,7 @@ object LanguagesAll {
       toDF(Seq("id", "field", "language", "occurrence", "record"): _*)
 
     var fieldMap = fieldIndexDF.collect.
-      map(x => (x._2, x._1)).
+      map(x => (x(1), x(0))).
       toMap ++ Seq((1000, "all")).map(x => (x._1, x._2)).toMap
 
     val getFieldName = udf((index:Int) => fieldMap(index))
