@@ -47,11 +47,10 @@ JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
 MEMORY=3g
 CORES=6
 
-spark-submit --driver-memory $MEMORY --executor-memory $MEMORY \
-  --master local[$CORES] \
-  --class $CLASS \
-  $JAR \
-  $INPUT_FILE $OUTPUT_DIR
+SPARK_CORE_PARAMS="--driver-memory $MEMORY --executor-memory $MEMORY --master local[$CORES] --class $CLASS"
+
+spark-submit $SPARK_CORE_PARAMS $JAR $INPUT_FILE $OUTPUT_DIR "prepare"
+spark-submit $SPARK_CORE_PARAMS $JAR $INPUT_FILE $OUTPUT_DIR "statistics"
 
 echo Retrieve $OUTPUT_FILE
 if [[ ${USE_HDFS} -eq 1 ]]; then

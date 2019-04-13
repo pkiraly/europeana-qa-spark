@@ -12,8 +12,8 @@ object LanguagesAll {
   val spark = SparkSession.builder.appName("LanguagesAll").getOrCreate()
   import spark.implicits._
 
-  val fieldIndexCsv = "languages-fieldIndex"
-  val longformParquet = "completeness-longform.parquet"
+  val fieldIndexCsv = "limbo/languages/fieldIndex.csv"
+  val longformParquet = "limbo/languages/longform.parquet"
 
   def main(args: Array[String]) {
     val inputFile = args(0);
