@@ -27,16 +27,20 @@ object LanguagesAll {
     log.info(s"outputFile: $outputFile")
     log.info(s"runing phase: $phase")
 
+    this.runPrepare(inputFile, outputFile)
+
+    /*
     if (phase.equals("prepare")) {
-      this.runPrepare(inputFile)
+      this.runPrepare(inputFile, outputFile)
     } else if (phase.equals("statistics")) {
       this.runStatistics(outputFile)
     }
+    */
     val duration = sdf.format(System.currentTimeMillis() - start - (60*60*1000))
     log.info(s"$phase took $duration")
   }
 
-  def runPrepare(inputFile: String): Unit = {
+  def runPrepare(inputFile: String, outputFile: String): Unit = {
     log.info("reading the data")
 
     val fromParquet = false
