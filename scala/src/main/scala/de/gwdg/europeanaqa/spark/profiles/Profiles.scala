@@ -1,3 +1,5 @@
+package de.gwdg.europeanaqa.spark.profiles
+
 import java.nio.file.{Paths, Files}
 import java.nio.charset.StandardCharsets
 import scala.collection.mutable.ListBuffer
