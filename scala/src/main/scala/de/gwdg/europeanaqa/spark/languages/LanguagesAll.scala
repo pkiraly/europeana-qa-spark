@@ -153,6 +153,7 @@ object LanguagesAll {
       seq
     }.toDF(Seq("id", "field", "language", "occurrence", "record"): _*)
 
+    /*
     longForm.write.
       mode(SaveMode.Overwrite).
       save(longformParquet)
@@ -163,6 +164,8 @@ object LanguagesAll {
 
     log.info("create statistics")
     val longForm = spark.read.load(longformParquet)
+    */
+
     val fieldIndexDF = spark.read.
       option("inferSchema", "true").
       format("csv").
