@@ -174,7 +174,7 @@ object LanguagesAll {
       toDF(Seq("id", "field", "language", "occurrence", "record"): _*)
 
     var fieldMap = fieldIndexDF.collect.
-      map(x => (x(1), x(0))).
+      map(x => (x.getAs[Int](1), x.getAs[String](0))).
       toMap ++ Seq((1000, "all")).map(x => (x._1, x._2)).toMap
 
     val getFieldName = udf((index:Int) => fieldMap(index))
