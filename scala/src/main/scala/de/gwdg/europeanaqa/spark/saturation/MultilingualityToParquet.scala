@@ -53,13 +53,11 @@ object MultilingualityToParquet {
       "dcterms_temporal", "dcterms_spatial", "dc_subject", "dc_date", "dcterms_created",
       "dcterms_issued", "dcterms_extent", "dcterms_medium", "dcterms_provenance",
       "dcterms_hasPart", "dcterms_isPartOf", "dc_format", "dc_source", "dc_rights",
-      "dc_relation", "edm_year", "edm_userTag", "dcterms_conformsTo", "dcterms_hasFormat",
-      "dcterms_hasVersion", "dcterms_isFormatOf", "dcterms_isReferencedBy",
-      "dcterms_isReplacedBy", "dcterms_isRequiredBy", "dcterms_isVersionOf",
-      "dcterms_references", "dcterms_replaces", "dcterms_requires", "dcterms_tableOfContents",
-      "edm_currentLocation", "edm_hasMet", "edm_hasType", "edm_incorporates",
-      "edm_isDerivativeOf", "edm_isRelatedTo", "edm_isRepresentationOf", "edm_isSimilarTo",
-      "edm_isSuccessorOf", "edm_realizes", "edm_wasPresentAt"
+      "dc_relation", "dcterms_conformsTo", "dcterms_hasFormat", "dcterms_hasVersion",
+      "dcterms_isFormatOf", "dcterms_isReferencedBy", "dcterms_isReplacedBy",
+      "dcterms_isRequiredBy", "dcterms_isVersionOf", "dcterms_references",
+      "dcterms_replaces", "dcterms_requires", "dcterms_tableOfContents",
+      "edm_currentLocation", "edm_hasType", "edm_isRelatedTo"
     )
 
     val individualFields = individualFieldNames.
