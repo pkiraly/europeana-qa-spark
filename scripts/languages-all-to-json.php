@@ -123,7 +123,7 @@ function formatDuration($microtime) {
   $totalsec = floor($microtime);
   $ms = substr(((string) $microtime - $totalsec), 2);
   $sec = $totalsec % 60;
-  $min = floor($totalsec / 60);
+  $min = ($totalsec / 60) %60;
   $hour = floor($totalsec / (60*60));
   return sprintf("%02d:%02d:%02d.%s", $hour, $min, $sec, $ms);
 }

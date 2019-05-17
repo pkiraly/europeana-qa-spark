@@ -23,7 +23,8 @@ object Profiles {
 
     Logger.getLogger("org").setLevel(Level.ERROR)
 
-    var parquetFile = "hdfs://localhost:54310/join/completeness2.parquet"
+    // var parquetFile = "hdfs://localhost:54310/join/completeness2.parquet"
+    var parquetFile = args(0)
     val df = spark.read.load(parquetFile)
     val nrOfRecords = df.count()
     var simplenames = df.columns
