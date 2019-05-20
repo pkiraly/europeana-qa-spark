@@ -50,7 +50,7 @@ CORES=6
 SPARK_CORE_PARAMS="--driver-memory $MEMORY --executor-memory $MEMORY --master local[$CORES] --class $CLASS"
 
 spark-submit $SPARK_CORE_PARAMS $JAR $INPUT_FILE $OUTPUT_DIR "prepare"
-spark-submit $SPARK_CORE_PARAMS $JAR $INPUT_FILE $OUTPUT_DIR "statistics"
+# spark-submit $SPARK_CORE_PARAMS $JAR $INPUT_FILE $OUTPUT_DIR "statistics"
 
 echo Retrieve $OUTPUT_FILE
 if [[ ${USE_HDFS} -eq 1 ]]; then
