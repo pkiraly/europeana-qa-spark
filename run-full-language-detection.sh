@@ -74,6 +74,7 @@ LOG_FILE=languages-per-collections.log
 echo "Running Collection level language measurement. Check log file: ${LOG_FILE}"
 ./languages-per-collections.sh --input-file ../${CSV} --output-file ../output/languages-per-collections-groupped.txt > ${LOG_FILE} &
 
+
 # Convert top level language results to JSON file
 
 cd ../scripts
@@ -83,6 +84,17 @@ cp ../output/languages.json $WEB_DATA_DIR
 # Convert collection level language results to JSON files
 
 php lang-group-to-json.php $VERSION
+
+
+# Convert
+cd ../scala
+
+date +"%T"
+LOG_FILE=languages.log
+./languages-all.sh --input-file ../${CSV} --output-file ../output/languages-all.csv > ${LOG_FILE} &
+
+cd ../scripts
+php languages-all-to-json.php $VERSION
 
 date +"%T"
 echo "Languages count is done!"
