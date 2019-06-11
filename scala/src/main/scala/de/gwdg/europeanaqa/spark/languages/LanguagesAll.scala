@@ -84,11 +84,7 @@ object LanguagesAll {
       "timespan_edm_begin", "timespan_edm_end", "timespan_dcterms_isPartOf",
       "timespan_dcterms_hasPart", "timespan_edm_isNextInSequence",
       "timespan_skos_prefLabel", "timespan_skos_altLabel", "timespan_skos_note",
-      "concept_skos_broader", "concept_skos_narrower", "concept_skos_related",
-      "concept_skos_broadMatch", "concept_skos_narrowMatch", "concept_skos_relatedMatch",
-      "concept_skos_exactMatch", "concept_skos_closeMatch", "concept_skos_notation",
-      "concept_skos_inScheme", "concept_skos_prefLabel", "concept_skos_altLabel",
-      "concept_skos_note"
+      "concept_skos_prefLabel", "concept_skos_altLabel", "concept_skos_note"
     )
 
     val names = ids ++ languageFields
