@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Directory configuration
+#
+# usage:
+# 1. cp base-dirs.sh.template base-dirs.sh
+# 2. edit base-dirs.sh
+
+BASE_SOURCE_DIR=<FILL IT!>
+BASE_OUTPUT_DIR=<FILL IT!>
+BASE_WEB_DATA_DIR=<FILL IT!>
+

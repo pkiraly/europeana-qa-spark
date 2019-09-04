@@ -1,17 +1,21 @@
 <?php
 
-$VERSION = $argv[1];
+// $VERSION = $argv[1];
+$WEB_DATA_DIR = $argv[1];
+$OUTPUT_DIR = $argv[2];
 
-$sourceDir = '/home/pkiraly/git/europeana-qa-api/src/main/resources/abbreviations';
-$targetDir = '/home/pkiraly/git/europeana-qa-webdata/' . $VERSION;
-$jsonDir = '/projects/pkiraly/europeana-qa-data/' . $VERSION . '/json';
+$sourceDir = '../../europeana-qa-api/src/main/resources/abbreviations';
+$targetDir = $WEB_DATA_DIR; // '/home/pkiraly/git/europeana-qa-webdata/' . $VERSION;
+// $jsonDir = '/projects/pkiraly/europeana-qa-data/' . $VERSION . '/json';
+$jsonDir = $OUTPUT_DIR . '/json';
+
 
 $types = [
-  (object)['source' => 'datasets-v3.txt',       'target' => 'datasets.txt',       'prefix' => 'c'],
-  (object)['source' => 'data-providers-v3.txt', 'target' => 'data-providers.txt', 'prefix' => 'd'],
-  (object)['source' => 'providers-v1.csv',      'target' => 'providers.csv',      'prefix' => 'p-'],
+  (object)['source' => 'datasets-v4.csv',       'target' => 'datasets.txt',       'prefix' => 'c'],
+  (object)['source' => 'data-providers-v4.csv', 'target' => 'data-providers.txt', 'prefix' => 'd'],
+  (object)['source' => 'providers-v2.csv',      'target' => 'providers.csv',      'prefix' => 'p-'],
   (object)['source' => 'countries-v2.csv',      'target' => 'countries.csv',      'prefix' => 'cn-'],
-  (object)['source' => 'languages-v1.csv',      'target' => 'languages.csv',      'prefix' => 'l-'],
+  (object)['source' => 'languages-v2.csv',      'target' => 'languages.csv',      'prefix' => 'l-'],
 ];
 
 $start = microtime(TRUE);
