@@ -57,7 +57,7 @@ if ($handle) {
     } else {
       if ($collection->id != $record->id) {
         // $json = orderJson(restructureJson($origJson[1]));
-        saveJson($collection->id, $collection->fields);
+        saveJson($collection->id, orderJson($collection->fields));
         $collection = createCollection($record->id);
       }
     }
@@ -74,7 +74,7 @@ if ($handle) {
   echo "ERROR: can not open file $file\n";
 }
 
-saveJson($collection->id, $collection->fields);
+saveJson($collection->id, orderJson($collection->fields));
 printf("Process took: %s\n", formatDuration(microtime(TRUE) - $start));
 
 function createCollection($id) {
@@ -114,4 +114,17 @@ function formatDuration($microtime) {
   $min = ($totalsec / 60) %60;
   $hour = floor($totalsec / (60*60));
   return sprintf("%02d:%02d:%02d.%s", $hour, $min, $sec, $ms);
+}
+
+function orderJson($json) {
+  global $order;
+
+  $ordered = [];
+  foreach ($order as $field) {
+    if (isset($json[$field])) {
+      arsort($json[$field]);
+      $ordered[$field] = $json[$field];
+    }
+  }
+  return $ordered;
 }
