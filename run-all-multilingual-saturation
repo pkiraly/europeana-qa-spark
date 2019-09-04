@@ -41,6 +41,7 @@ fi
 FORMAT="fullbean"
 
 echo "Starting multilingual saturation detection."
+source base-dirs.sh
 
 if [[ "$USE_HDFS" -eq 1 ]]; then
   HEADEROUTPUT=/join/${HEADER_FILE}
@@ -64,13 +65,11 @@ else
 fi
 
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
-#  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
 #  --inputFileName $HDFS/europeana/*.json \
-#  --inputFileName $HDFS/europeana/*.json.gz \
 
-SOURCE_DIR=file:///projects/pkiraly/data-export/${VERSION}/full/*.json
+SOURCE_DIR=file://${BASE_SOURCE_DIR}/${VERSION}/full/*.json
+OUTPUT_DIR=${BASE_OUTPUT_DIR}/${VERSION}/multilingual-saturation
 
-OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/multilingual-saturation
 if [ -d ${OUTPUT_DIR} ]; then
   rm -rf ${OUTPUT_DIR}
 fi

@@ -38,6 +38,8 @@ fi
 
 echo "Run completeness count"
 
+source base-dirs.sh
+
 # if hdfs dfs -test -d /result; then
 #   hdfs dfs -rm -r -f -skipTrash /result
 #   sleep 5
@@ -48,11 +50,8 @@ JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 FORMAT="fullbean"
 
 #  --inputFileName hdfs://localhost:54310/europeana/*.json \
-#  --inputFileName hdfs://localhost:54310/europeana/*.json.gz \
-#  --inputFileName /projects/pkiraly/2018-03-23/full/\*.json \
-#  --inputFileName /projects/pkiraly/data-export/2018-08-23/\*.json.gz \
-SOURCE_DIR=file:///projects/pkiraly/data-export/${VERSION}/full/*.json
-OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/completeness
+SOURCE_DIR=file://${BASE_SOURCE_DIR}/${VERSION}/full/*.json
+OUTPUT_DIR=${BASE_SOURCE_DIR}/${VERSION}/completeness
 
 if [ -d ${OUTPUT_DIR} ]; then
   rm -rf ${OUTPUT_DIR}

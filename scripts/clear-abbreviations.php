@@ -1,14 +1,11 @@
 <?php
 
-// $VERSION = $argv[1];
 $WEB_DATA_DIR = $argv[1];
 $OUTPUT_DIR = $argv[2];
 
 $sourceDir = '../../europeana-qa-api/src/main/resources/abbreviations';
-$targetDir = $WEB_DATA_DIR; // '/home/pkiraly/git/europeana-qa-webdata/' . $VERSION;
-// $jsonDir = '/projects/pkiraly/europeana-qa-data/' . $VERSION . '/json';
+$targetDir = $WEB_DATA_DIR;
 $jsonDir = $OUTPUT_DIR . '/json';
-
 
 $types = [
   (object)['source' => 'datasets-v4.csv',       'target' => 'datasets.txt',       'prefix' => 'c'],

@@ -54,6 +54,7 @@ echo "FROM_GZ = ${FROM_GZ}"
 echo "EXTENDED_FIELD_EXTRACTION = ${EXTENDED_FIELD_EXTRACTION}"
 
 echo "Starting language detection."
+source base-dirs.sh
 
 JAR_VERSION=0.6-SNAPSHOT
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
@@ -73,8 +74,8 @@ if [ ${USE_HDFS} -eq 1 ]; then
   SOURCE_FILES=hdfs://localhost:54310/europeana/${MASK}
   OUTPUT_DIR=hdfs://localhost:54310/result
 else
-  SOURCE_FILES=file:///projects/pkiraly/data-export/${VERSION}/full/${MASK}
-  OUTPUT_DIR=/projects/pkiraly/data-export/${VERSION}/language
+  SOURCE_FILES=file://${BASE_SOURCE_DIR}/${VERSION}/full/${MASK}
+  OUTPUT_DIR=${BASE_OUTPUT_DIR}/${VERSION}/language
   if [ -d ${OUTPUT_DIR} ]; then
     echo "Removing ${OUTPUT_DIR}"
     rm -rf ${OUTPUT_DIR}

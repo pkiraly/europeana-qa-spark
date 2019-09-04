@@ -10,8 +10,12 @@ if [[ ("$#" -ne 1) || ("$VERSION" == "") ]]; then
 fi
 echo "version: ${VERSION}"
 
-SOURCE_DIR=/projects/pkiraly/data-export/${VERSION}/full
+source base-dirs.sh
+SOURCE_DIR=$BASE_SOURCE_DIR/${VERSION}/full
 echo "source dir: ${SOURCE_DIR}"
+
+OUTPUT_DIR=$BASE_OUTPUT_DIR/${VERSION}
+echo "output dir: ${OUTPUT_DIR}"
 
 CSV=${VERSION}-multilingual-saturation.csv
 echo "csv: ${CSV}"
@@ -52,7 +56,7 @@ date +"%T"
 cd ../scripts/
 LOG_FILE=split-multilinguality.log
 echo "split results. Check log file: scripts/${LOG_FILE}"
-./split-multilinguality.sh ${VERSION} > ${LOG_FILE}
+./split-multilinguality.sh ${OUTPUT_DIR} > ${LOG_FILE}
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-VERSION=$1
+DIR=$1
 
-if [[ ("$#" -ne 1) || ("$VERSION" == "") ]]; then
-  echo "You should add an a version (such as 'v2018-08')!"
+if [[ ("$#" -ne 1) || ("$DIR" == "") ]]; then
+  echo "You should add a full path!"
   exit 1
 fi
 
-OUTPUT_DIR=/projects/pkiraly/europeana-qa-data/${VERSION}/json
+OUTPUT_DIR=$DIR/json
 
 if [ ! -d ${OUTPUT_DIR} ]; then
   mkdir -p ${OUTPUT_DIR}

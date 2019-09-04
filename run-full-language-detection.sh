@@ -30,17 +30,19 @@ if [[ "$VERSION" == "" ]]; then
 fi
 echo "version: ${VERSION}"
 
-SOURCE_DIR=/projects/pkiraly/data-export/${VERSION}/full
+source base-dirs.sh
+
+SOURCE_DIR=$BASE_SOURCE_DIR/${VERSION}/full
 if [ ! -d ${SOURCE_DIR} ]; then
   echo "The source directory is not existing: ${SOURCE_DIR}"
   exit 1
 fi
 echo "source dir: ${SOURCE_DIR}"
 
-OUTPUT_DIR=/projects/pkiraly/europeana-qa-data/${VERSION}
+OUTPUT_DIR=$BASE_OUTPUT_DIR/${VERSION}
 echo "output dir: ${OUTPUT_DIR}"
 
-WEB_DATA_DIR=~/git/europeana-qa-webdata/${VERSION}
+WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
 echo "web data dir: ${WEB_DATA_DIR}"
 
 CSV=${VERSION}-language.csv

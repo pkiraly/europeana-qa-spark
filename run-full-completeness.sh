@@ -66,7 +66,7 @@ echo "split results. Check log file: scripts/${LOG_FILE}"
 date +"%T"
 LOG_FILE=create-intersection.log
 echo "create intersection. Check log file: scripts/${LOG_FILE}"
-php create-intersection.php ${VERSION} > ${LOG_FILE}
+php create-intersection.php ${OUTPUT_DIR} > ${LOG_FILE}
 
 if [ ! -d ${WEB_DATA_DIR} ]; then
   mkdir -p ${WEB_DATA_DIR}

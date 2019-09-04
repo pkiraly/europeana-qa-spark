@@ -1,7 +1,8 @@
 <?php
-$VERSION = $argv[1];
 
-$dir = '/projects/pkiraly/europeana-qa-data/' . $VERSION . '/json';
+$OUTPUT_DIR = $argv[1];
+
+$dir = $OUTPUT_DIR . '/json';
 if ($handle = opendir($dir)) {
   $intersections = ['c' => [], 'd' => [], 'p' => []];
   while (false !== ($entry = readdir($handle))) {
