@@ -34,8 +34,6 @@ if [ -e ${PARQUET} ]; then
   rm -rf ${PARQUET}
 fi
 
-exit
-
 date +"%T"
 LOG_FILE=run-all-proxy-based-completeness.log
 echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
