@@ -4,6 +4,7 @@ SECONDS=0
 
 VERSION=$1
 LOG_FILE=$2
+
 if [[ ("$#" -ne 2) || ("$VERSION" == "" || ("$LOG_FILE" == "")) ]]; then
   echo "You should add an a version (such as 'v2018-08') and a log file!"
   exit 1

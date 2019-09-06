@@ -16,6 +16,7 @@ import scala.collection.mutable.ListBuffer
 import scala.util.control.Breaks.{break, breakable}
 
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 import org.apache.log4j.{Level, Logger}
 
@@ -34,6 +35,7 @@ object ProxyBasedCompletenessFromParquet {
   val histogramCsv = "completeness-histogram"
   val histogramRawCsv = "completeness-histogram-raw"
   val statisticsCsv = "completeness-csv"
+  val dir = null
 
   def main(args: Array[String]): Unit = {
 
@@ -43,6 +45,9 @@ object ProxyBasedCompletenessFromParquet {
     val inputFile = args(0)
     val phase = args(1)
     log.info(s"runing phase: $phase")
+
+    dir = new File(inputFile).getAbsoluteFile.getParentFile
+    log.info(s"dir: $dir")
 
     if (phase.equals("prepare")) {
       this.runPrepare(inputFile)
