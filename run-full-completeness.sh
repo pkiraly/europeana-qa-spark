@@ -49,7 +49,7 @@ fi
 date +"%T"
 LOG_FILE=logs/run-all-proxy-based-completeness.log
 echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
-echo "./run-all-proxy-based-completeness ${CSV} \"\" --extendedFieldExtraction ${VERSION} > ${LOG_FILE}"
+echo "./run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
 ./run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
 date +"%T"
