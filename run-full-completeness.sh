@@ -20,26 +20,30 @@ echo "output dir: ${OUTPUT_DIR}"
 WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
 echo "web data dir: ${WEB_DATA_DIR}"
 
-CSV=${VERSION}-completeness.csv
+CSV=limbo/${VERSION}-completeness.csv
 echo "csv: ${CSV}"
 
 if [ -e ${CSV} ]; then
   rm ${CSV}
 fi
 
-PARQUET=${VERSION}-completeness.parquet
+PARQUET=limbo/${VERSION}-completeness.parquet
 echo "parquet: ${PARQUET}"
 
 if [ -e ${PARQUET} ]; then
   rm -rf ${PARQUET}
 fi
 
-if [[ -d output ]]; then
+if [[ ! -d output ]]; then
   mkdir output
 fi
 
-if [[ -d logs ]]; then
+if [[ ! -d logs ]]; then
   mkdir logs
+fi
+
+if [[ ! -d limbo ]]; then
+  mkdir limbo
 fi
 
 date +"%T"
