@@ -26,9 +26,7 @@ source ../base-dirs.sh
 #  exit 1
 #fi
 
-echo "input: $INPUT"
 INPUT_PATH=$(readlink -e $INPUT)
-echo "INPUT_PATH: $INPUT_PATH"
 INPUT_DIR=$(dirname $INPUT_PATH)
 echo "INPUT_DIR: $INPUT_DIR"
 
@@ -42,17 +40,28 @@ CONF="spark.local.dir=$SPARK_TEMP_DIR"
 COMMON_PARAMS="--driver-memory $MEMORY --class $CLASS --master local[$CORES] --conf $CONF $JAR $INPUT"
 echo $COMMON_PARAMS
 
-echo "prepare, ../logs/completeness-analysis-prepare.log"
+time=$(date +"%T")
+echo "$time> prepare, ../logs/completeness-analysis-prepare.log"
 spark-submit $COMMON_PARAMS "prepare" &> ../logs/completeness-analysis-prepare.log
-echo "statistics, ../logs/completeness-analysis-statistics.log"
+
+time=$(date +"%T")
+echo "$time> statistics, ../logs/completeness-analysis-statistics.log"
 spark-submit $COMMON_PARAMS "statistics" &> ../logs/completeness-analysis-statistics.log
-echo "median, ../logs/completeness-analysis-median.log"
+
+time=$(date +"%T")
+echo "$time> median, ../logs/completeness-analysis-median.log"
 spark-submit $COMMON_PARAMS "median" &> ../logs/completeness-analysis-median.log
-echo "histogram, ../logs/completeness-analysis-histogram.log"
+
+time=$(date +"%T")
+echo "$time> histogram, ../logs/completeness-analysis-histogram.log"
 spark-submit $COMMON_PARAMS "histogram" &> ../logs/completeness-analysis-histogram.log
-echo "join, ../logs/completeness-analysis-join.log"
+
+time=$(date +"%T")
+echo "$time> join, ../logs/completeness-analysis-join.log"
 spark-submit $COMMON_PARAMS "join" &> ../logs/completeness-analysis-join.log
 
+time=$(date +"%T")
+echo "$time> save files"
 cat $INPUT_DIR/completeness-csv/part-* > ../output/completeness.csv
 cat $INPUT_DIR/completeness-histogram/part-* > ../output/completeness-histogram.csv
 cat $INPUT_DIR/completeness-histogram-raw/part-* > ../output/completeness-histogram-raw.csv
