@@ -26,6 +26,7 @@ source ../base-dirs.sh
 #  exit 1
 #fi
 
+echo "input: $INPUT"
 INPUT_DIR=$(dirname $(readlink -e $INPUT))
 echo $INPUT_DIR
 
