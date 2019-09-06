@@ -54,14 +54,14 @@ echo $LOG_DIR
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/run-all-proxy-based-completeness.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
-echo "scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
+echo "$time> scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
 scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
 time=$(date +"%T")
 echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
-cd scala
+# cd scala
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-to-parquet.log
@@ -73,8 +73,9 @@ LOG_FILE=${LOG_DIR}/proxy-based-completeness-all.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/proxy-based-completeness-all.sh ../${PARQUET} keep_dirs &> ${LOG_FILE}
 
-time=$(date +"%T")
 cd ../scripts/
+
+time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/split-completeness.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
 ./split-completeness.sh ${OUTPUT_DIR} &> ${LOG_FILE}
