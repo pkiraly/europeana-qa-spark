@@ -46,7 +46,9 @@ if [[ ! -d limbo ]]; then
   mkdir limbo
 fi
 
-$LOG_DIR=$(readlink -e logs)
+LOG_DIR=$(readlink -e logs)
+echo $LOG_DIR
+exit;
 
 time=$(date +"%T")
 LOG_FILE=$LOG_DIR/run-all-proxy-based-completeness.log
