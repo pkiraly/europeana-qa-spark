@@ -41,23 +41,23 @@ COMMON_PARAMS="--driver-memory $MEMORY --class $CLASS --master local[$CORES] --c
 echo $COMMON_PARAMS
 
 time=$(date +"%T")
-echo "$time> prepare, ../logs/completeness-analysis-prepare.log"
+echo "$time> prepare phase (../logs/completeness-analysis-prepare.log)"
 spark-submit $COMMON_PARAMS "prepare" &> ../logs/completeness-analysis-prepare.log
 
 time=$(date +"%T")
-echo "$time> statistics, ../logs/completeness-analysis-statistics.log"
+echo "$time> statistics phase (../logs/completeness-analysis-statistics.log)"
 spark-submit $COMMON_PARAMS "statistics" &> ../logs/completeness-analysis-statistics.log
 
 time=$(date +"%T")
-echo "$time> median, ../logs/completeness-analysis-median.log"
+echo "$time> median phase (../logs/completeness-analysis-median.log)"
 spark-submit $COMMON_PARAMS "median" &> ../logs/completeness-analysis-median.log
 
 time=$(date +"%T")
-echo "$time> histogram, ../logs/completeness-analysis-histogram.log"
+echo "$time> histogram phase (../logs/completeness-analysis-histogram.log)"
 spark-submit $COMMON_PARAMS "histogram" &> ../logs/completeness-analysis-histogram.log
 
 time=$(date +"%T")
-echo "$time> join, ../logs/completeness-analysis-join.log"
+echo "$time> join phase (../logs/completeness-analysis-join.log)"
 spark-submit $COMMON_PARAMS "join" &> ../logs/completeness-analysis-join.log
 
 time=$(date +"%T")
