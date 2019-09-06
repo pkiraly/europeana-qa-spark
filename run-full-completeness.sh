@@ -59,7 +59,7 @@ date +"%T"
 cd ../scripts/
 LOG_FILE=split-completeness.log
 echo "split results. Check log file: scripts/${LOG_FILE}"
-./split-completeness.sh ${VERSION}
+./split-completeness.sh ${OUTPUT_DIR}
 
 date +"%T"
 LOG_FILE=create-intersection.log
