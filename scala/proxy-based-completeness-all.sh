@@ -27,8 +27,10 @@ source ../base-dirs.sh
 #fi
 
 echo "input: $INPUT"
-INPUT_DIR=$(dirname $(readlink -e $INPUT))
-echo $INPUT_DIR
+INPUT_PATH=$(readlink -e $INPUT)
+echo "INPUT_PATH: $INPUT_PATH"
+INPUT_DIR=$(dirname $INPUT_PATH)
+echo "INPUT_DIR: $INPUT_DIR"
 
 exit;
 
