@@ -34,10 +34,15 @@ if [ -e ${PARQUET} ]; then
   rm -rf ${PARQUET}
 fi
 
+if [[ -d output ]]; then
+  mkdir output
+fi
+
 date +"%T"
 LOG_FILE=run-all-proxy-based-completeness.log
 echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
-./run-all-proxy-based-completeness ${CSV} "" --extendedFieldExtraction ${VERSION} > ${LOG_FILE}
+echo "./run-all-proxy-based-completeness ${CSV} \"\" --extendedFieldExtraction ${VERSION} > ${LOG_FILE}"
+./run-all-proxy-based-completeness ${CSV} "" --extendedFieldExtraction ${VERSION} &> ${LOG_FILE}
 
 date +"%T"
 echo "Collecting new abbreviation entries (if any)"
@@ -48,12 +53,12 @@ cd scala
 date +"%T"
 LOG_FILE=proxy-based-completeness-to-parquet.log
 echo "create parquet file. Check log file: scala/${LOG_FILE}"
-./proxy-based-completeness-to-parquet.sh ../${CSV} > ${LOG_FILE}
+./proxy-based-completeness-to-parquet.sh ../${CSV} &> ${LOG_FILE}
 
 date +"%T"
 LOG_FILE=proxy-based-completeness-all.log
 echo "run completeness analysis. Check log file: scala/${LOG_FILE}"
-./proxy-based-completeness-all.sh ../${PARQUET} keep_dirs > ${LOG_FILE}
+./proxy-based-completeness-all.sh ../${PARQUET} keep_dirs &> ${LOG_FILE}
 
 date +"%T"
 cd ../scripts/
@@ -64,7 +69,7 @@ echo "split results. Check log file: scripts/${LOG_FILE}"
 date +"%T"
 LOG_FILE=create-intersection.log
 echo "create intersection. Check log file: scripts/${LOG_FILE}"
-php create-intersection.php ${OUTPUT_DIR} > ${LOG_FILE}
+php create-intersection.php ${OUTPUT_DIR} &> ${LOG_FILE}
 
 if [ ! -d ${WEB_DATA_DIR} ]; then
   mkdir -p ${WEB_DATA_DIR}
@@ -75,7 +80,7 @@ cp proxy-based-intersections.json ${WEB_DATA_DIR}
 date +"%T"
 LOG_FILE=clear-abbreviations.log
 echo "Clear abbreviations. Check log file: scripts/${LOG_FILE}"
-php clear-abbreviations.php ${WEB_DATA_DIR} ${OUTPUT_DIR} > ${LOG_FILE}
+php clear-abbreviations.php ${WEB_DATA_DIR} ${OUTPUT_DIR} &> ${LOG_FILE}
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))

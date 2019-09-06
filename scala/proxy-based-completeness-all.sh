@@ -19,6 +19,7 @@ else
 fi
 
 echo "do keep? " $DO_KEEP
+source ../base-dirs.sh
 
 #if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
 #  echo "You should add an input file!"
@@ -30,12 +31,16 @@ CLASS=de.gwdg.europeanaqa.spark.completeness.ProxyBasedCompletenessFromParquet
 JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
 MEMORY=3g
 CORES=6
+CONF="spark.local.dir=$SPARK_TEMP_DIR"
 
-spark-submit --driver-memory $MEMORY --class $CLASS --master local[$CORES] $JAR $INPUT "prepare"
-spark-submit --driver-memory $MEMORY --class $CLASS --master local[$CORES] $JAR $INPUT "statistics"
-spark-submit --driver-memory $MEMORY --class $CLASS --master local[$CORES] $JAR $INPUT "median"
-spark-submit --driver-memory $MEMORY --class $CLASS --master local[$CORES] $JAR $INPUT "histogram"
-spark-submit --driver-memory $MEMORY --class $CLASS --master local[$CORES] $JAR $INPUT "join"
+COMMON_PARAMS="--driver-memory $MEMORY --class $CLASS --master local[$CORES] --conf $CONF $JAR $INPUT"
+echo $COMMON_PARAMS
+
+spark-submit $COMMON_PARAMS "prepare"
+spark-submit $COMMON_PARAMS "statistics"
+spark-submit $COMMON_PARAMS "median"
+spark-submit $COMMON_PARAMS "histogram"
+spark-submit $COMMON_PARAMS "join"
 
 cat completeness-csv/part-* > ../output/completeness.csv
 cat completeness-histogram/part-* > ../output/completeness-histogram.csv

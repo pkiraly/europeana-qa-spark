@@ -58,7 +58,7 @@ if [ -d ${OUTPUT_DIR} ]; then
 fi
 
 spark-submit --class de.gwdg.europeanaqa.spark.ProxyBasedCompletenessCount \
-  --master local[5] \
+  --master local[8] \
   $JAR \
   --inputFileName $SOURCE_DIR \
   --outputFileName $OUTPUT_DIR \
