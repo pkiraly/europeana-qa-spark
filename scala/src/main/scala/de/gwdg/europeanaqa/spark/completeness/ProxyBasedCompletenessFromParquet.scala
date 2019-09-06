@@ -35,7 +35,7 @@ object ProxyBasedCompletenessFromParquet {
   val histogramCsv = "completeness-histogram"
   val histogramRawCsv = "completeness-histogram-raw"
   val statisticsCsv = "completeness-csv"
-  var dir = Null
+  var dir :File;
 
   def main(args: Array[String]): Unit = {
 
