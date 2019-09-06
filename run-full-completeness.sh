@@ -46,37 +46,37 @@ if [[ ! -d limbo ]]; then
   mkdir limbo
 fi
 
-date +"%T"
+time=$(date +"%T")
 LOG_FILE=logs/run-all-proxy-based-completeness.log
-echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
+echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
 echo "./run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
 ./run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
-date +"%T"
-echo "Collecting new abbreviation entries (if any)"
+time=$(date +"%T")
+echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
 cd scala
 
-date +"%T"
+time=$(date +"%T")
 LOG_FILE=proxy-based-completeness-to-parquet.log
-echo "create parquet file. Check log file: scala/${LOG_FILE}"
+echo "$time> create parquet file. Check log file: scala/${LOG_FILE}"
 ./proxy-based-completeness-to-parquet.sh ../${CSV} &> ${LOG_FILE}
 
-date +"%T"
+time=$(date +"%T")
 LOG_FILE=proxy-based-completeness-all.log
-echo "run completeness analysis. Check log file: scala/${LOG_FILE}"
+echo "$time> run completeness analysis. Check log file: scala/${LOG_FILE}"
 ./proxy-based-completeness-all.sh ../${PARQUET} keep_dirs &> ${LOG_FILE}
 
-date +"%T"
+time=$(date +"%T")
 cd ../scripts/
 LOG_FILE=split-completeness.log
-echo "split results. Check log file: scripts/${LOG_FILE}"
+echo "$time> split results. Check log file: scripts/${LOG_FILE}"
 ./split-completeness.sh ${OUTPUT_DIR}
 
-date +"%T"
+time=$(date +"%T")
 LOG_FILE=create-intersection.log
-echo "create intersection. Check log file: scripts/${LOG_FILE}"
+echo "$time> create intersection. Check log file: scripts/${LOG_FILE}"
 php create-intersection.php ${OUTPUT_DIR} &> ${LOG_FILE}
 
 if [ ! -d ${WEB_DATA_DIR} ]; then
@@ -85,9 +85,9 @@ if [ ! -d ${WEB_DATA_DIR} ]; then
 fi
 cp proxy-based-intersections.json ${WEB_DATA_DIR}
 
-date +"%T"
+time=$(date +"%T")
 LOG_FILE=clear-abbreviations.log
-echo "Clear abbreviations. Check log file: scripts/${LOG_FILE}"
+echo "$time> Clear abbreviations. Check log file: scripts/${LOG_FILE}"
 php clear-abbreviations.php ${WEB_DATA_DIR} ${OUTPUT_DIR} &> ${LOG_FILE}
 
 duration=$SECONDS
@@ -96,5 +96,5 @@ mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
 date +"%T"
-echo "run-full-completeness DONE"
+echo "$time> run-full-completeness DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
