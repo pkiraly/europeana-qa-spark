@@ -8,8 +8,8 @@ $targetDir = $WEB_DATA_DIR;
 $jsonDir = $OUTPUT_DIR . '/json';
 
 $types = [
-  (object)['source' => 'datasets-v4.csv',       'target' => 'datasets.txt',       'prefix' => 'c'],
-  (object)['source' => 'data-providers-v4.csv', 'target' => 'data-providers.txt', 'prefix' => 'd'],
+  (object)['source' => 'datasets-v4.csv',       'target' => 'datasets.csv',       'prefix' => 'c'],
+  (object)['source' => 'data-providers-v4.csv', 'target' => 'data-providers.csv', 'prefix' => 'd'],
   (object)['source' => 'providers-v2.csv',      'target' => 'providers.csv',      'prefix' => 'p-'],
   (object)['source' => 'countries-v2.csv',      'target' => 'countries.csv',      'prefix' => 'cn-'],
   (object)['source' => 'languages-v2.csv',      'target' => 'languages.csv',      'prefix' => 'l-'],

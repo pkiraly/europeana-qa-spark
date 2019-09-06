@@ -98,6 +98,7 @@ function readCount($histogramFile) {
   $lines = file($histogramFile);
   $count = 0;
   foreach ($lines as $line) {
+    $line = trim($line);
     if (preg_match('/,PROVIDER_Proxy_rdf_about,/', $line)) {
       $parts = explode(',', $line);
       $bins = explode(';', $parts[2]);
