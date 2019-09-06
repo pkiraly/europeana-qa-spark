@@ -17,7 +17,16 @@ INPUT=$1
 
 SECONDS=0
 OUTPUT=$(echo "$INPUT" | sed 's,.csv,.parquet,')
-echo $OUTPUT
+
+echo "completeness to parquet"
+echo "input: $INPUT"
+echo "output: $OUTPUT"
+
+if [[ "$BASE_DIR" != "" ]]; then
+  SCALA_DIR=$BASE_DIR/scala
+else
+  SCALA_DIR=../../scala
+fi
 
 # hdfs dfs -rm -r /join/$OUTPUTFILE
 
@@ -25,7 +34,7 @@ spark-submit \
    --executor-memory 3g --driver-memory 3g \
    --class de.gwdg.europeanaqa.spark.completeness.ProxyBasedCompletenessToParquet \
    --master local[6] \
-   target/scala-2.11/europeana-qa_2.11-1.0.jar \
+   $SCALA_DIR/target/scala-2.11/europeana-qa_2.11-1.0.jar \
    $INPUT $OUTPUT ""
 
 #echo Retrieve $OUTPUTFILE

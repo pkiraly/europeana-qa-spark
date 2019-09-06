@@ -10,6 +10,9 @@ if [[ ("$#" -ne 1) || ("$VERSION" == "") ]]; then
 fi
 echo "version: ${VERSION}"
 
+export BASE_DIR=$(readlink -e .)
+echo "base dir: $BASE_DIR"
+
 source base-dirs.sh
 SOURCE_DIR=$BASE_SOURCE_DIR/${VERSION}/full
 echo "source dir: ${SOURCE_DIR}"
@@ -66,14 +69,14 @@ echo "$time> Collecting new abbreviation entries (if any)"
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-to-parquet.log
 echo "$time> create parquet file. Check log file: ${LOG_FILE}"
-scripts/analysis/proxy-based-completeness-to-parquet.sh ../${CSV} &> ${LOG_FILE}
+scripts/analysis/proxy-based-completeness-to-parquet.sh ${CSV} &> ${LOG_FILE}
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-all.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
-scripts/analysis/proxy-based-completeness-all.sh ../${PARQUET} keep_dirs &> ${LOG_FILE}
+scripts/analysis/proxy-based-completeness-all.sh ${PARQUET} keep_dirs &> ${LOG_FILE}
 
-cd ../scripts/
+cd scripts/
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/split-completeness.log

@@ -19,7 +19,11 @@ else
 fi
 
 echo "do keep? " $DO_KEEP
-source ../base-dirs.sh
+
+if [[ "$BASE_DIR" = "" ]]; then
+  BASE_DIR=$(readlink -e $(dirname $0)/../..)
+fi
+source $BASE_DIR/base-dirs.sh
 
 #if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
 #  echo "You should add an input file!"
@@ -30,9 +34,13 @@ INPUT_PATH=$(readlink -e $INPUT)
 INPUT_DIR=$(dirname $INPUT_PATH)
 echo "INPUT_DIR: $INPUT_DIR"
 
+SCALA_DIR=$BASE_DIR/scala
+LOG_DIR=$BASE_DIR/logs
+OUTPUT_DIR=$BASE_DIR/output
+
 #  --executor-memory 6g \
 CLASS=de.gwdg.europeanaqa.spark.completeness.ProxyBasedCompletenessFromParquet
-JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
+JAR=$SCALA_DIR/target/scala-2.11/europeana-qa_2.11-1.0.jar
 MEMORY=3g
 CORES=6
 CONF="spark.local.dir=$SPARK_TEMP_DIR"
@@ -42,30 +50,30 @@ echo $COMMON_PARAMS
 
 time=$(date +"%T")
 echo "$time> prepare phase (../logs/completeness-analysis-prepare.log)"
-spark-submit $COMMON_PARAMS "prepare" &> ../logs/completeness-analysis-prepare.log
+spark-submit $COMMON_PARAMS "prepare" &> $LOG_DIR/completeness-analysis-prepare.log
 
 time=$(date +"%T")
 echo "$time> statistics phase (../logs/completeness-analysis-statistics.log)"
-spark-submit $COMMON_PARAMS "statistics" &> ../logs/completeness-analysis-statistics.log
+spark-submit $COMMON_PARAMS "statistics" &> $LOG_DIR/completeness-analysis-statistics.log
 
 time=$(date +"%T")
 echo "$time> median phase (../logs/completeness-analysis-median.log)"
-spark-submit $COMMON_PARAMS "median" &> ../logs/completeness-analysis-median.log
+spark-submit $COMMON_PARAMS "median" &> $LOG_DIR/completeness-analysis-median.log
 
 time=$(date +"%T")
 echo "$time> histogram phase (../logs/completeness-analysis-histogram.log)"
-spark-submit $COMMON_PARAMS "histogram" &> ../logs/completeness-analysis-histogram.log
+spark-submit $COMMON_PARAMS "histogram" &> $LOG_DIR/completeness-analysis-histogram.log
 
 time=$(date +"%T")
 echo "$time> join phase (../logs/completeness-analysis-join.log)"
-spark-submit $COMMON_PARAMS "join" &> ../logs/completeness-analysis-join.log
+spark-submit $COMMON_PARAMS "join" &> $LOG_DIR/completeness-analysis-join.log
 
 time=$(date +"%T")
 echo "$time> save files"
-cat $INPUT_DIR/completeness-csv/part-* > ../output/completeness.csv
-cat $INPUT_DIR/completeness-histogram/part-* > ../output/completeness-histogram.csv
-cat $INPUT_DIR/completeness-histogram-raw/part-* > ../output/completeness-histogram-raw.csv
-cat $INPUT_DIR/completeness-fieldIndex/part-* > ../output/completeness-fieldIndex.csv
+cat $INPUT_DIR/completeness-csv/part-* > $OUTPUT_DIR/completeness.csv
+cat $INPUT_DIR/completeness-histogram/part-* > $OUTPUT_DIR/completeness-histogram.csv
+cat $INPUT_DIR/completeness-histogram-raw/part-* > $OUTPUT_DIR/completeness-histogram-raw.csv
+cat $INPUT_DIR/completeness-fieldIndex/part-* > $OUTPUT_DIR/completeness-fieldIndex.csv
 
 if [[ ("$DO_KEEP" -eq 0) ]]; then
   # delete dirs
