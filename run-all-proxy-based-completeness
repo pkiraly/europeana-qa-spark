@@ -31,7 +31,7 @@ while true ; do
                 "") shift 2 ;;
                 *) OUTPUT_FILE=$2 ; shift 2 ;;
             esac ;;
-        -s|--skip-flag) SKIP_FLAG=1 ; shift ;;
+        -s|--skip-flag) SKIP_FLAG=--skipEnrichments ; shift ;;
         -e|--extended-field-extraction) EXTENDED_FIELD_EXTRACTION=--extendedFieldExtraction ; shift ;;
         -v|--version)
             case "$2" in
@@ -43,7 +43,7 @@ while true ; do
     esac
 done
 
-if [[ ("$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3 && "$#" -ne 4) || ("${OUTPUT_FILE}" == "") ]]; then
+if [[ "${OUTPUT_FILE}" == "" ]]; then
   echo "You should add an output file (such as resultXX.csv)!"
   exit 1
 fi
@@ -51,14 +51,6 @@ fi
 if [ -e $OUTPUT_FILE ]; then
   echo "WARNING! ${OUTPUT_FILE} exists, rename it to prevent overwriting the file!"
   exit 1
-fi
-
-if [[ ("$SKIP_FLAG" != "--skipEnrichments") ]]; then
-  SKIP_FLAG=""
-fi
-
-if [[ ("$EXTFIELD_EXTRACTION_FLAG" != "--extendedFieldExtraction") ]]; then
-  EXTFIELD_EXTRACTION_FLAG=""
 fi
 
 echo "Run completeness count"
@@ -90,7 +82,7 @@ spark-submit --class de.gwdg.europeanaqa.spark.ProxyBasedCompletenessCount \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
   --format $FORMAT \
-  $SKIP_FLAG $EXTFIELD_EXTRACTION_FLAG
+  $SKIP_FLAG $EXTENDED_FIELD_EXTRACTION
 
 echo Retrieve $OUTPUT
 # hdfs dfs -getmerge /result ${OUTPUT_FILE}
