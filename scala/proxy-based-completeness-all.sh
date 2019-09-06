@@ -42,10 +42,15 @@ CONF="spark.local.dir=$SPARK_TEMP_DIR"
 COMMON_PARAMS="--driver-memory $MEMORY --class $CLASS --master local[$CORES] --conf $CONF $JAR $INPUT"
 echo $COMMON_PARAMS
 
+echo "prepare, ../logs/completeness-analysis-prepare.log"
 spark-submit $COMMON_PARAMS "prepare" &> ../logs/completeness-analysis-prepare.log
+echo "statistics, ../logs/completeness-analysis-statistics.log"
 spark-submit $COMMON_PARAMS "statistics" &> ../logs/completeness-analysis-statistics.log
+echo "median, ../logs/completeness-analysis-median.log"
 spark-submit $COMMON_PARAMS "median" &> ../logs/completeness-analysis-median.log
+echo "histogram, ../logs/completeness-analysis-histogram.log"
 spark-submit $COMMON_PARAMS "histogram" &> ../logs/completeness-analysis-histogram.log
+echo "join, ../logs/completeness-analysis-join.log"
 spark-submit $COMMON_PARAMS "join" &> ../logs/completeness-analysis-join.log
 
 cat $INPUT_DIR/completeness-csv/part-* > ../output/completeness.csv
