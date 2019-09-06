@@ -32,8 +32,6 @@ echo "INPUT_PATH: $INPUT_PATH"
 INPUT_DIR=$(dirname $INPUT_PATH)
 echo "INPUT_DIR: $INPUT_DIR"
 
-exit;
-
 #  --executor-memory 6g \
 CLASS=de.gwdg.europeanaqa.spark.completeness.ProxyBasedCompletenessFromParquet
 JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
@@ -50,10 +48,10 @@ spark-submit $COMMON_PARAMS "median" &> ../logs/completeness-analysis-median.log
 spark-submit $COMMON_PARAMS "histogram" &> ../logs/completeness-analysis-histogram.log
 spark-submit $COMMON_PARAMS "join" &> ../logs/completeness-analysis-join.log
 
-cat completeness-csv/part-* > ../output/completeness.csv
-cat completeness-histogram/part-* > ../output/completeness-histogram.csv
-cat completeness-histogram-raw/part-* > ../output/completeness-histogram-raw.csv
-cat completeness-fieldIndex/part-* > ../output/completeness-fieldIndex.csv
+cat $INPUT_DIR/completeness-csv/part-* > ../output/completeness.csv
+cat $INPUT_DIR/completeness-histogram/part-* > ../output/completeness-histogram.csv
+cat $INPUT_DIR/completeness-histogram-raw/part-* > ../output/completeness-histogram-raw.csv
+cat $INPUT_DIR/completeness-fieldIndex/part-* > ../output/completeness-fieldIndex.csv
 
 if [[ ("$DO_KEEP" -eq 0) ]]; then
   # delete dirs
