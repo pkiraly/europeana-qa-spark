@@ -20,14 +20,20 @@ echo "output dir: ${OUTPUT_DIR}"
 WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
 echo "web data dir: ${WEB_DATA_DIR}"
 
-CSV=limbo/${VERSION}-completeness.csv
+if [[ ! -d limbo ]]; then
+  mkdir limbo
+fi
+
+LIMBO=$(readlink -e limbo)
+
+CSV=$LIMBO/${VERSION}-completeness.csv
 echo "csv: ${CSV}"
 
 if [ -e ${CSV} ]; then
   rm ${CSV}
 fi
 
-PARQUET=limbo/${VERSION}-completeness.parquet
+PARQUET=$LIMBO/${VERSION}-completeness.parquet
 echo "parquet: ${PARQUET}"
 
 if [ -e ${PARQUET} ]; then
@@ -42,18 +48,14 @@ if [[ ! -d logs ]]; then
   mkdir logs
 fi
 
-if [[ ! -d limbo ]]; then
-  mkdir limbo
-fi
-
 LOG_DIR=$(readlink -e logs)
 echo $LOG_DIR
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/run-all-proxy-based-completeness.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
-echo "./run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
-./run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
+echo "scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
+scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
 time=$(date +"%T")
 echo "$time> Collecting new abbreviation entries (if any)"
@@ -64,12 +66,12 @@ cd scala
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-to-parquet.log
 echo "$time> create parquet file. Check log file: ${LOG_FILE}"
-./proxy-based-completeness-to-parquet.sh ../${CSV} &> ${LOG_FILE}
+scripts/analysis/proxy-based-completeness-to-parquet.sh ../${CSV} &> ${LOG_FILE}
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-all.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
-./proxy-based-completeness-all.sh ../${PARQUET} keep_dirs &> ${LOG_FILE}
+scripts/analysis/proxy-based-completeness-all.sh ../${PARQUET} keep_dirs &> ${LOG_FILE}
 
 time=$(date +"%T")
 cd ../scripts/
