@@ -26,6 +26,11 @@ source ../base-dirs.sh
 #  exit 1
 #fi
 
+INPUT_DIR=$(dirname $(readlink -e $INPUT))
+echo $INPUT_DIR
+
+exit;
+
 #  --executor-memory 6g \
 CLASS=de.gwdg.europeanaqa.spark.completeness.ProxyBasedCompletenessFromParquet
 JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
@@ -36,11 +41,11 @@ CONF="spark.local.dir=$SPARK_TEMP_DIR"
 COMMON_PARAMS="--driver-memory $MEMORY --class $CLASS --master local[$CORES] --conf $CONF $JAR $INPUT"
 echo $COMMON_PARAMS
 
-spark-submit $COMMON_PARAMS "prepare"
-spark-submit $COMMON_PARAMS "statistics"
-spark-submit $COMMON_PARAMS "median"
-spark-submit $COMMON_PARAMS "histogram"
-spark-submit $COMMON_PARAMS "join"
+spark-submit $COMMON_PARAMS "prepare" &> ../logs/completeness-analysis-prepare.log
+spark-submit $COMMON_PARAMS "statistics" &> ../logs/completeness-analysis-statistics.log
+spark-submit $COMMON_PARAMS "median" &> ../logs/completeness-analysis-median.log
+spark-submit $COMMON_PARAMS "histogram" &> ../logs/completeness-analysis-histogram.log
+spark-submit $COMMON_PARAMS "join" &> ../logs/completeness-analysis-join.log
 
 cat completeness-csv/part-* > ../output/completeness.csv
 cat completeness-histogram/part-* > ../output/completeness-histogram.csv

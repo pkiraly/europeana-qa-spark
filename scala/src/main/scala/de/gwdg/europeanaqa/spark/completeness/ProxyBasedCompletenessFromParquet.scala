@@ -68,6 +68,7 @@ object ProxyBasedCompletenessFromParquet {
 
   def runPrepare(inputFile: String): Unit = {
     log.info("reading the data")
+    log.info("dir: $dir")
     val data = spark.read.load(inputFile)
     data.printSchema()
 
@@ -86,7 +87,7 @@ object ProxyBasedCompletenessFromParquet {
       write.
       option("header", "false").
       mode(SaveMode.Overwrite).
-      csv(fieldIndexCsv)
+      csv(this.getPath(fieldIndexCsv))
 
     log.info("create flatted")
     var flatted = data.flatMap { row =>
@@ -127,13 +128,13 @@ object ProxyBasedCompletenessFromParquet {
 
     flatted.write.
       mode(SaveMode.Overwrite).
-      save(longformParquet)
+      save(this.getPath(longformParquet))
     log.info("preparation ended")
   }
 
   def runStatistics(): Unit = {
     // fields: id, field, value
-    val filtered = spark.read.load(longformParquet)
+    val filtered = spark.read.load(this.getPath(longformParquet))
     log.info("create statistics")
 
     var statistics = filtered.
@@ -151,12 +152,12 @@ object ProxyBasedCompletenessFromParquet {
 
     statistics.write.
       mode(SaveMode.Overwrite).
-      save(statisticsParquet)
+      save(this.getPath(statisticsParquet))
   }
 
   def runMedian(): Unit = {
     // fields: id, field, value
-    val filtered = spark.read.load(longformParquet)
+    val filtered = spark.read.load(this.getPath(longformParquet))
     log.info("create median")
 
     val histogram = filtered.
@@ -216,13 +217,13 @@ object ProxyBasedCompletenessFromParquet {
     var mediansDF = spark.createDataFrame(mediansRDD, mediansFields)
     mediansDF.write.
       mode(SaveMode.Overwrite).
-      save(medianParquet)
+      save(this.getPath(medianParquet))
   }
 
   def runHistogram(): Unit = {
     log.info("create histogram")
 
-    val filtered = spark.read.load(longformParquet)
+    val filtered = spark.read.load(this.getPath(longformParquet))
 
     val histogram = filtered.
       groupBy("id", "field", "value").
@@ -236,7 +237,7 @@ object ProxyBasedCompletenessFromParquet {
     val fieldIndexDF = spark.read.
       option("inferSchema", "true").
       format("csv").
-      load(fieldIndexCsv)
+      load(this.getPath(fieldIndexCsv))
 
     var fieldMap = fieldIndexDF.collect.
       map(row => (row.getInt(1), row.getString(0))).
@@ -279,7 +280,7 @@ object ProxyBasedCompletenessFromParquet {
       repartition(1).
       write.
       mode(SaveMode.Overwrite).
-      csv(histogramRawCsv)
+      csv(this.getPath(histogramRawCsv))
 
     var histogramRDD = rawHistogramRDD.map{x =>
       Row.fromSeq(
@@ -306,17 +307,17 @@ object ProxyBasedCompletenessFromParquet {
       repartition(1).
       write.
       mode(SaveMode.Overwrite).
-      csv(histogramCsv)
+      csv(this.getPath(histogramCsv))
   }
 
   def runJoin(): Unit = {
-    val statisticsDF = spark.read.load(statisticsParquet)
-    val mediansDF = spark.read.load(medianParquet)
+    val statisticsDF = spark.read.load(this.getPath(statisticsParquet))
+    val mediansDF = spark.read.load(this.getPath(medianParquet))
 
     val fieldIndexDF = spark.read.
       option("inferSchema", "true").
       format("csv").
-      load(fieldIndexCsv)
+      load(this.getPath(fieldIndexCsv))
 
     var fieldMap = fieldIndexDF.collect.
       map(row => (row.getInt(1), row.getString(0))).
@@ -340,6 +341,10 @@ object ProxyBasedCompletenessFromParquet {
       write.
       option("header", "false").
       mode(SaveMode.Overwrite).
-      csv(statisticsCsv)
+      csv(this.getPath(statisticsCsv))
+  }
+
+  def getPath(file: String): String = {
+    return new File(dir, file).getPath
   }
 }
