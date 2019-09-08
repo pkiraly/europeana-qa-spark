@@ -10,6 +10,9 @@ if [[ ("$#" -ne 1) || ("$VERSION" == "") ]]; then
 fi
 echo "version: ${VERSION}"
 
+export BASE_DIR=$(readlink -e .)
+echo "base dir: $BASE_DIR"
+
 source base-dirs.sh
 SOURCE_DIR=$BASE_SOURCE_DIR/${VERSION}/full
 echo "source dir: ${SOURCE_DIR}"
@@ -48,14 +51,14 @@ LOG_DIR=$(readlink -e logs)
 echo $LOG_DIR
 
 if [ -e ${CSV} ]; then
-  rm ${CSV}
+#  rm ${CSV}
 fi
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/run-all-multilingual-saturation.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
 echo "scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}"
-scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
+#scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
 time=$(date +"%T")
 echo "$time> Collecting new abbreviation entries (if any)"
