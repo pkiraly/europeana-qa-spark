@@ -50,9 +50,9 @@ fi
 LOG_DIR=$(readlink -e logs)
 echo $LOG_DIR
 
-if [ -e ${CSV} ]; then
+#if [ -e ${CSV} ]; then
 #  rm ${CSV}
-fi
+#fi
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/run-all-multilingual-saturation.log
