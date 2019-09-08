@@ -32,16 +32,8 @@ LIMBO=$(readlink -e limbo)
 CSV=$LIMBO/${VERSION}-completeness.csv
 echo "csv: ${CSV}"
 
-if [ -e ${CSV} ]; then
-  rm ${CSV}
-fi
-
 PARQUET=$LIMBO/${VERSION}-completeness.parquet
 echo "parquet: ${PARQUET}"
-
-if [ -e ${PARQUET} ]; then
-  rm -rf ${PARQUET}
-fi
 
 if [[ ! -d output ]]; then
   mkdir output
@@ -54,8 +46,12 @@ fi
 LOG_DIR=$(readlink -e logs)
 echo $LOG_DIR
 
+if [ -e ${CSV} ]; then
+  rm ${CSV}
+fi
+
 time=$(date +"%T")
-LOG_FILE=${LOG_DIR}/run-all-proxy-based-completeness.log
+LOG_FILE=${LOG_DIR}/proxy-based-completeness-record-processing.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
 echo "$time> scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
 scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
@@ -64,7 +60,9 @@ time=$(date +"%T")
 echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
-# cd scala
+if [ -e ${PARQUET} ]; then
+  rm -rf ${PARQUET}
+fi
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-to-parquet.log
@@ -72,14 +70,14 @@ echo "$time> create parquet file. Check log file: ${LOG_FILE}"
 scripts/analysis/proxy-based-completeness-to-parquet.sh ${CSV} &> ${LOG_FILE}
 
 time=$(date +"%T")
-LOG_FILE=${LOG_DIR}/proxy-based-completeness-all.log
+LOG_FILE=${LOG_DIR}/proxy-based-completeness-analysis.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/proxy-based-completeness-all.sh ${PARQUET} keep_dirs &> ${LOG_FILE}
 
 cd scripts/
 
 time=$(date +"%T")
-LOG_FILE=${LOG_DIR}/split-completeness.log
+LOG_FILE=${LOG_DIR}/proxy-based-completeness-split.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
 ./split-completeness.sh ${OUTPUT_DIR} &> ${LOG_FILE}
 

@@ -35,10 +35,6 @@ echo "csv: ${CSV}"
 PARQUET=$LIMBO/${VERSION}-multilingual-saturation.parquet
 echo "parquet: ${PARQUET}"
 
-if [ -e ${PARQUET} ]; then
-  rm -rf ${PARQUET}
-fi
-
 if [[ ! -d output ]]; then
   mkdir output
 fi
@@ -50,19 +46,23 @@ fi
 LOG_DIR=$(readlink -e logs)
 echo $LOG_DIR
 
-#if [ -e ${CSV} ]; then
-#  rm ${CSV}
-#fi
+if [ -e ${CSV} ]; then
+  rm ${CSV}
+fi
 
 time=$(date +"%T")
-LOG_FILE=${LOG_DIR}/run-all-multilingual-saturation.log
+LOG_FILE=${LOG_DIR}/multilinguality-record-processing.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
 echo "scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}"
-#scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
+scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
 time=$(date +"%T")
 echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
+
+if [ -e ${PARQUET} ]; then
+  rm -rf ${PARQUET}
+fi
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-to-parquet.log
@@ -70,15 +70,13 @@ echo "$time> create parquet file. Check log file: ${LOG_FILE}"
 scripts/analysis/multilinguality-to-parquet.sh ${CSV} &> ${LOG_FILE}
 
 time=$(date +"%T")
-LOG_FILE=${LOG_DIR}/multilinguality-all.log
+LOG_FILE=${LOG_DIR}/multilinguality-analysis.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/multilinguality-all.sh ${PARQUET} --keep_dirs > ${LOG_FILE}
 
-exit;
-
 cd scripts/
 time=$(date +"%T")
-LOG_FILE=${LOG_DIR}/split-multilinguality.log
+LOG_FILE=${LOG_DIR}/multilinguality-split.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
 ./split-multilinguality.sh ${OUTPUT_DIR} > ${LOG_FILE}
 
@@ -90,35 +88,3 @@ secs=$(($duration % 60))
 date +"%T"
 echo "run-full-multilingual-saturation DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
