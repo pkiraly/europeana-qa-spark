@@ -15,7 +15,7 @@ HEADER_FILE=header-multilingual-saturation.csv
 
 OUTPUT_FILE=
 SKIP_ENRICHMENTS_FLAG=
-EXTFIELD_EXTRACTION_FLAG=
+EXTENDED_FIELD_EXTRACTION=
 VERSION=
 
 
@@ -101,7 +101,7 @@ spark-submit --class de.gwdg.europeanaqa.spark.MultilingualSaturation \
   --dataProvidersFile data-providers.txt \
   --datasetsFile datasets.txt \
   --format $FORMAT \
-  ${SKIP_ENRICHMENTS_FLAG} ${EXTFIELD_EXTRACTION_FLAG}
+  ${SKIP_ENRICHMENTS_FLAG} ${EXTENDED_FIELD_EXTRACTION}
 
 echo Retrieve ${OUTPUT_FILE}
 if [[ "$USE_HDFS" -eq 1 ]]; then
