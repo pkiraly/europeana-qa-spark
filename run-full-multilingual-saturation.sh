@@ -66,8 +66,8 @@ echo "$time> Collecting new abbreviation entries (if any)"
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-to-parquet.log
-echo "$time> create parquet file. Check log file: scala/${LOG_FILE}"
-scripts/analysis/multilinguality-to-parquet.sh ../${CSV} > ${LOG_FILE}
+echo "$time> create parquet file. Check log file: ${LOG_FILE}"
+scripts/analysis/multilinguality-to-parquet.sh ${CSV} &> ${LOG_FILE}
 
 exit;
 
