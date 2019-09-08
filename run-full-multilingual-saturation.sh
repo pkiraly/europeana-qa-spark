@@ -17,45 +17,64 @@ echo "source dir: ${SOURCE_DIR}"
 OUTPUT_DIR=$BASE_OUTPUT_DIR/${VERSION}
 echo "output dir: ${OUTPUT_DIR}"
 
-CSV=${VERSION}-multilingual-saturation.csv
+WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
+echo "web data dir: ${WEB_DATA_DIR}"
+
+if [[ ! -d limbo ]]; then
+  mkdir limbo
+fi
+
+LIMBO=$(readlink -e limbo)
+
+CSV=$LIMBO/${VERSION}-multilingual-saturation.csv
 echo "csv: ${CSV}"
 
 if [ -e ${CSV} ]; then
   rm ${CSV}
 fi
 
-PARQUET=${VERSION}-multilingual-saturation.parquet
+PARQUET=$LIMBO/${VERSION}-multilingual-saturation.parquet
 echo "parquet: ${PARQUET}"
 
 if [ -e ${PARQUET} ]; then
   rm -rf ${PARQUET}
 fi
 
-date +"%T"
-LOG_FILE=run-all-multilingual-saturation.log
-echo "Running proxy based completeness. Check log file: ${LOG_FILE}"
-./run-all-multilingual-saturation ${CSV} "" --extendedFieldExtraction ${VERSION} > ${LOG_FILE}
+if [[ ! -d output ]]; then
+  mkdir output
+fi
+
+if [[ ! -d logs ]]; then
+  mkdir logs
+fi
+
+LOG_DIR=$(readlink -e logs)
+echo $LOG_DIR
+
+time=$(date +"%T")
+LOG_FILE=${LOG_DIR}/run-all-multilingual-saturation.log
+echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
+./run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 date +"%T"
 
-echo "Collecting new abbreviation entries (if any)"
+time=$(date +"%T")
+echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
-cd scala
+time=$(date +"%T")
+LOG_FILE=${LOG_DIR}/multilinguality-to-parquet.log
+echo "$time> create parquet file. Check log file: scala/${LOG_FILE}"
+scripts/analysis/multilinguality-to-parquet.sh ../${CSV} > ${LOG_FILE}
 
-date +"%T"
-LOG_FILE=multilinguality-to-parquet.log
-echo "create parquet file. Check log file: scala/${LOG_FILE}"
-./multilinguality-to-parquet.sh ../${CSV} > ${LOG_FILE}
+time=$(date +"%T")
+LOG_FILE=${LOG_DIR}/multilinguality-all.log
+echo "$time> run completeness analysis. Check log file: scala/${LOG_FILE}"
+scripts/analysis/multilinguality-all.sh ../${PARQUET} --keep_dirs > ${LOG_FILE}
 
-date +"%T"
-LOG_FILE=multilinguality-all.log
-echo "run completeness analysis. Check log file: scala/${LOG_FILE}"
-./multilinguality-all.sh ../${PARQUET} --keep_dirs > ${LOG_FILE}
-
-date +"%T"
-cd ../scripts/
-LOG_FILE=split-multilinguality.log
-echo "split results. Check log file: scripts/${LOG_FILE}"
+cd scripts/
+time=$(date +"%T")
+LOG_FILE=${LOG_DIR}/split-multilinguality.log
+echo "$time> split results. Check log file: scripts/${LOG_FILE}"
 ./split-multilinguality.sh ${OUTPUT_DIR} > ${LOG_FILE}
 
 duration=$SECONDS
@@ -66,3 +85,35 @@ secs=$(($duration % 60))
 date +"%T"
 echo "run-full-multilingual-saturation DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
