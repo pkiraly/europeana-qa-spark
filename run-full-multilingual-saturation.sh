@@ -72,7 +72,7 @@ echo "$time> create parquet file. Check log file: ${LOG_FILE}"
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-all.log
-echo "$time> run completeness analysis. Check log file: scala/${LOG_FILE}"
+echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/multilinguality-all.sh ${PARQUET} --keep_dirs > ${LOG_FILE}
 
 exit;
@@ -80,7 +80,7 @@ exit;
 cd scripts/
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/split-multilinguality.log
-echo "$time> split results. Check log file: scripts/${LOG_FILE}"
+echo "$time> split results. Check log file: ${LOG_FILE}"
 ./split-multilinguality.sh ${OUTPUT_DIR} > ${LOG_FILE}
 
 duration=$SECONDS
