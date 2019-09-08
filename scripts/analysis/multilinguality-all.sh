@@ -10,6 +10,7 @@
 
 INPUT=$1
 KEEP_DIRS=$2
+SECONDS=0
 
 if [[ ("$KEEP_DIRS" == "--keep-dirs") ]]; then
   DO_KEEP=1
@@ -19,26 +20,65 @@ fi
 
 printf "Do keep: %d\n" $DO_KEEP
 
+if [[ "$BASE_DIR" = "" ]]; then
+  BASE_DIR=$(readlink -e $(dirname $0)/../..)
+fi
+source $BASE_DIR/base-dirs.sh
+
 #if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
 #  echo "You should add an input file!"
 #  exit 1
 #fi
 
-# --class de.gwdg.europeanaqa.spark.saturation.MultilingualityWithHistogramWithMapReduce \
+INPUT_PATH=$(readlink -e $INPUT)
+INPUT_DIR=$(dirname $INPUT_PATH)
+echo "INPUT_DIR: $INPUT_DIR"
+
+SCALA_DIR=$BASE_DIR/scala
+LOG_DIR=$BASE_DIR/logs
+OUTPUT_DIR=$BASE_DIR/output
+
 #  --executor-memory 6g \
 CLASS=de.gwdg.europeanaqa.spark.saturation.MultilingualityFromParquet
-JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
+JAR=$SCALA_DIR/target/scala-2.11/europeana-qa_2.11-1.0.jar
+MEMORY=3g
+CORES=6
+CONF="spark.local.dir=$SPARK_TEMP_DIR"
 
-spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "prepare"
-spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "statistics"
-spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "median"
-spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "histogram"
-spark-submit --driver-memory 6g --class $CLASS --master local[6] $JAR $INPUT "join"
+COMMON_PARAMS="--driver-memory $MEMORY --class $CLASS --master local[$CORES] --conf $CONF $JAR $INPUT"
+echo $COMMON_PARAMS
 
-cat multilinguality-csv/part-* > ../output/multilinguality.csv
-cat multilinguality-histogram/part-* > ../output/multilinguality-histogram.csv
-cat multilinguality-histogram-raw/part-* > ../output/multilinguality-histogram-raw.csv
-cat multilinguality-fieldIndex/part-* > ../output/multilinguality-fieldIndex.csv
+phase=prepare
+time=$(date +"%T")
+echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+
+phase=statistics
+time=$(date +"%T")
+echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+
+phase=median
+time=$(date +"%T")
+echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+
+phase=histogram
+time=$(date +"%T")
+echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+
+phase=join
+time=$(date +"%T")
+echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+
+time=$(date +"%T")
+echo "$time> saving CSV files"
+cat multilinguality-csv/part-* > $OUTPUT_DIR/multilinguality.csv
+cat multilinguality-histogram/part-* > $OUTPUT_DIR/multilinguality-histogram.csv
+cat multilinguality-histogram-raw/part-* > $OUTPUT_DIR/multilinguality-histogram-raw.csv
+cat multilinguality-fieldIndex/part-* > $OUTPUT_DIR/multilinguality-fieldIndex.csv
 
 if [[ ("$DO_KEEP" -eq 0) ]]; then
   # delete dirs

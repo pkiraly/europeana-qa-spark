@@ -50,15 +50,15 @@ fi
 LOG_DIR=$(readlink -e logs)
 echo $LOG_DIR
 
-if [ -e ${CSV} ]; then
-  rm ${CSV}
-fi
+#if [ -e ${CSV} ]; then
+#  rm ${CSV}
+#fi
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/run-all-multilingual-saturation.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
 echo "scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}"
-scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
+#scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
 time=$(date +"%T")
 echo "$time> Collecting new abbreviation entries (if any)"
@@ -67,14 +67,15 @@ echo "$time> Collecting new abbreviation entries (if any)"
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-to-parquet.log
 echo "$time> create parquet file. Check log file: ${LOG_FILE}"
-scripts/analysis/multilinguality-to-parquet.sh ${CSV} &> ${LOG_FILE}
+#scripts/analysis/multilinguality-to-parquet.sh ${CSV} &> ${LOG_FILE}
 
-exit;
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-all.log
 echo "$time> run completeness analysis. Check log file: scala/${LOG_FILE}"
-scripts/analysis/multilinguality-all.sh ../${PARQUET} --keep_dirs > ${LOG_FILE}
+scripts/analysis/multilinguality-all.sh ${PARQUET} --keep_dirs > ${LOG_FILE}
+
+exit;
 
 cd scripts/
 time=$(date +"%T")
