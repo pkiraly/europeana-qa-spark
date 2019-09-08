@@ -13,6 +13,13 @@ INPUT=$1
 OUTPUT=$(echo $INPUT | sed 's/.csv/.parquet/')
 echo $OUTPUT
 
+echo "BASE_DIR: $BASE_DIR"
+if [[ "$BASE_DIR" != "" ]]; then
+  SCALA_DIR=$BASE_DIR/scala
+else
+  SCALA_DIR=../../scala
+fi
+
 # SPARK_DIR=../spark/spark-2.3.1-bin-hadoop2.7/bin
 # $SPARK_DIR/spark-submit \
 
@@ -20,7 +27,7 @@ spark-submit \
   --driver-memory 6g --executor-memory 6g \
   --class de.gwdg.europeanaqa.spark.saturation.MultilingualityToParquet \
   --master local[6] \
-  target/scala-2.11/europeana-qa_2.11-1.0.jar \
+  $SCALA_DIR/target/scala-2.11/europeana-qa_2.11-1.0.jar \
   $INPUT \
   $OUTPUT
 

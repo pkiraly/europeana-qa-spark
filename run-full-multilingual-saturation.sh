@@ -69,6 +69,8 @@ LOG_FILE=${LOG_DIR}/multilinguality-to-parquet.log
 echo "$time> create parquet file. Check log file: scala/${LOG_FILE}"
 scripts/analysis/multilinguality-to-parquet.sh ../${CSV} > ${LOG_FILE}
 
+exit;
+
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-all.log
 echo "$time> run completeness analysis. Check log file: scala/${LOG_FILE}"
