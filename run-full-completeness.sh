@@ -79,7 +79,7 @@ cd scripts/
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-split.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
-./split-completeness.sh ${OUTPUT_DIR} &> ${LOG_FILE}
+./split-completeness.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
 
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/create-intersection.log

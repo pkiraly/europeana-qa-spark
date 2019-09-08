@@ -72,13 +72,13 @@ scripts/analysis/multilinguality-to-parquet.sh ${CSV} &> ${LOG_FILE}
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-analysis.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
-scripts/analysis/multilinguality-all.sh ${PARQUET} --keep_dirs > ${LOG_FILE}
+scripts/analysis/multilinguality-all.sh ${PARQUET} --keep_dirs &> ${LOG_FILE}
 
 cd scripts/
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/multilinguality-split.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
-./split-multilinguality.sh ${OUTPUT_DIR} > ${LOG_FILE}
+./split-multilinguality.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))
