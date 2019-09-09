@@ -42,7 +42,7 @@ if [[ "$BASE_DIR" != "" ]]; then
 else
   current=$(dirname $0)
   echo "current: $current"
-  SCALA_DIR=$current/../../scala
+  SCALA_DIR=$(readlink -e $current/../../scala)
 fi
 echo "SCALA_DIR: $SCALA_DIR"
 
