@@ -37,6 +37,10 @@ if [[ "${INPUT_FILE}" == "" ]]; then
   exit 1
 fi
 
+if [[ "$SPARK_TEMP_DIR" = "" ]]; then
+  source ../../base-dirs.sh
+fi
+
 if [[ "$BASE_DIR" != "" ]]; then
   SCALA_DIR=$BASE_DIR/scala
 else

@@ -37,6 +37,19 @@ if [[ "${INPUT_FILE}" == "" ]]; then
   exit 1
 fi
 
+if [[ "$SPARK_TEMP_DIR" = "" ]]; then
+  source ../../base-dirs.sh
+fi
+
+if [[ "$BASE_DIR" != "" ]]; then
+  SCALA_DIR=$BASE_DIR/scala
+else
+  current=$(dirname $0)
+  echo "current: $current"
+  SCALA_DIR=$(readlink -e $current/../../scala)
+fi
+echo "SCALA_DIR: $SCALA_DIR"
+
 OUTPUT_DIR=${OUTPUT_FILE}-sparkdir
 if [[ ${USE_HDFS} -eq 1 ]]; then
   hdfs dfs -rm -r /join/${OUTPUT_DIR}
@@ -46,8 +59,9 @@ CLASS=de.gwdg.europeanaqa.spark.languages.LanguagesAll
 JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
 MEMORY=3g
 CORES=6
+CONF="spark.local.dir=$SPARK_TEMP_DIR"
 
-SPARK_CORE_PARAMS="--driver-memory $MEMORY --executor-memory $MEMORY --master local[$CORES] --class $CLASS"
+SPARK_CORE_PARAMS="--driver-memory $MEMORY --executor-memory $MEMORY --master local[$CORES] --class $CLASS --conf $CONF"
 
 spark-submit $SPARK_CORE_PARAMS $JAR $INPUT_FILE $OUTPUT_DIR "prepare"
 # spark-submit $SPARK_CORE_PARAMS $JAR $INPUT_FILE $OUTPUT_DIR "statistics"
