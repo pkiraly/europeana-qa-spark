@@ -45,7 +45,9 @@ echo "output dir: ${OUTPUT_DIR}"
 WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
 echo "web data dir: ${WEB_DATA_DIR}"
 
-CSV=${VERSION}-language.csv
+LIMBO=$(readlink -e limbo)
+
+CSV=$LIMBO/${VERSION}-language.csv
 echo "csv: ${CSV}"
 if [ -e ${CSV} ]; then
   rm ${CSV}
@@ -55,7 +57,7 @@ fi
 date +"%T"
 LOG_FILE=run-all-language-detection.log
 echo "Running language detection. Check log file: ${LOG_FILE}"
-./run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction > ${LOG_FILE}
+scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction > ${LOG_FILE}
 
 # Upload result file to HDFS (~ 0:16)
 # cd ~/git/europeana-qa-spark
