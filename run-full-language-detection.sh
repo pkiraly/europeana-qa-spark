@@ -32,6 +32,9 @@ echo "version: ${VERSION}"
 
 source base-dirs.sh
 
+export BASE_DIR=$(readlink -e .)
+echo "base dir: $BASE_DIR"
+
 SOURCE_DIR=$BASE_SOURCE_DIR/${VERSION}/full
 if [ ! -d ${SOURCE_DIR} ]; then
   echo "The source directory is not existing: ${SOURCE_DIR}"
@@ -79,39 +82,39 @@ echo "Running language detection. Check log file: ${LOG_FILE}"
 # cd scala
 
 # (~ 0:26)
-date +"%T"
-LOG_FILE=languages.log
-echo "Running top level language measurement. Check log file: ${LOG_FILE}"
-echo "scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}"
-scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}
+#date +"%T"
+#LOG_FILE=languages.log
+#echo "Running top level language measurement. Check log file: ${LOG_FILE}"
+#echo "scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}"
+#scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}
 
-exit
+#exit
 
 # (~ 0:46)
-LOG_FILE=languages-per-collections.log
-echo "Running Collection level language measurement. Check log file: ${LOG_FILE}"
-scripts/analysis/languages-per-collections.sh --input-file ${CSV} --output-file ../output/languages-per-collections-groupped.txt > ${LOG_FILE} &
+#LOG_FILE=languages-per-collections.log
+#echo "Running Collection level language measurement. Check log file: ${LOG_FILE}"
+#scripts/analysis/languages-per-collections.sh --input-file ${CSV} --output-file ../output/languages-per-collections-groupped.txt > ${LOG_FILE} &
 
 
 # Convert top level language results to JSON file
 
-cd ../scripts
-php languages-csv2json.php
-cp ../output/languages.json $WEB_DATA_DIR
+#cd ../scripts
+#php languages-csv2json.php
+#cp ../output/languages.json $WEB_DATA_DIR
 
 # Convert collection level language results to JSON files
 
-php lang-group-to-json.php $VERSION
+#php lang-group-to-json.php $VERSION
 
 
 # Convert
-cd ../scala
+#cd ../scala
 
 date +"%T"
 LOG_FILE=languages.log
-./languages-all.sh --input-file ../${CSV} --output-file ../output/languages-all.csv > ${LOG_FILE} &
+scripts/analysis/languages-all.sh --input-file ${CSV} --output-file $BASE_DIR/output/languages-all.csv &> ${LOG_FILE}
 
-cd ../scripts
+cd scripts
 php languages-all-to-json.php $VERSION
 
 date +"%T"
