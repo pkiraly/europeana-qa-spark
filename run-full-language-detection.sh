@@ -83,8 +83,7 @@ date +"%T"
 LOG_FILE=languages.log
 echo "Running top level language measurement. Check log file: ${LOG_FILE}"
 echo "scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}"
-
-#scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}
+scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}
 
 exit
 
