@@ -45,7 +45,18 @@ echo "output dir: ${OUTPUT_DIR}"
 WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
 echo "web data dir: ${WEB_DATA_DIR}"
 
-LIMBO=$(readlink -e limbo)
+export LIMBO=$(readlink -e limbo)
+
+if [[ ! -d output ]]; then
+  mkdir output
+fi
+
+if [[ ! -d logs ]]; then
+  mkdir logs
+fi
+
+LOG_DIR=$(readlink -e logs)
+echo $LOG_DIR
 
 CSV=$LIMBO/${VERSION}-language.csv
 echo "csv: ${CSV}"
@@ -55,28 +66,32 @@ fi
 
 # (~ 4:56)
 date +"%T"
-LOG_FILE=run-all-language-detection.log
+LOG_FILE=${LOG_DIR}/run-all-language-detection.log
 echo "Running language detection. Check log file: ${LOG_FILE}"
-scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction > ${LOG_FILE}
+# scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction &> ${LOG_FILE}
 
 # Upload result file to HDFS (~ 0:16)
 # cd ~/git/europeana-qa-spark
 # hdfs dfs -put resultXX-language.csv /join
 
-exit
+# exit
 
-cd scala
+# cd scala
 
 # (~ 0:26)
 date +"%T"
 LOG_FILE=languages.log
 echo "Running top level language measurement. Check log file: ${LOG_FILE}"
-./languages.sh --input-file ../${CSV} --output-file ../output/languages.csv > ${LOG_FILE}
+echo "scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}"
+
+#scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}
+
+exit
 
 # (~ 0:46)
 LOG_FILE=languages-per-collections.log
 echo "Running Collection level language measurement. Check log file: ${LOG_FILE}"
-./languages-per-collections.sh --input-file ../${CSV} --output-file ../output/languages-per-collections-groupped.txt > ${LOG_FILE} &
+scripts/analysis/languages-per-collections.sh --input-file ${CSV} --output-file ../output/languages-per-collections-groupped.txt > ${LOG_FILE} &
 
 
 # Convert top level language results to JSON file

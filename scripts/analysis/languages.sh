@@ -37,19 +37,27 @@ if [[ "${INPUT_FILE}" == "" ]]; then
   exit 1
 fi
 
-OUTPUT_DIR=${OUTPUT_FILE}-sparkdir
+if [[ "$BASE_DIR" != "" ]]; then
+  SCALA_DIR=$BASE_DIR/scala
+else
+  SCALA_DIR=../../scala
+fi
+
+OUTPUT_DIR=${LIMBO}/${OUTPUT_FILE}-sparkdir
 if [[ ${USE_HDFS} -eq 1 ]]; then
   hdfs dfs -rm -r /join/${OUTPUT_DIR}
 fi
 
 CLASS=de.gwdg.europeanaqa.spark.languages.Languages
-JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
+JAR=$SCALA_DIR/target/scala-2.11/europeana-qa_2.11-1.0.jar
 MEMORY=3g
 CORES=6
+CONF="spark.local.dir=$SPARK_TEMP_DIR"
 
 spark-submit --driver-memory $MEMORY --executor-memory $MEMORY \
   --master local[$CORES] \
   --class $CLASS \
+  --conf $CONF \
   $JAR \
   $INPUT_FILE $OUTPUT_DIR
 
