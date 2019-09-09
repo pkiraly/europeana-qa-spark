@@ -40,8 +40,11 @@ fi
 if [[ "$BASE_DIR" != "" ]]; then
   SCALA_DIR=$BASE_DIR/scala
 else
-  SCALA_DIR=../../scala
+  current=$(dirname $0)
+  echo "current: $current"
+  SCALA_DIR=$current/../../scala
 fi
+echo "SCALA_DIR: $SCALA_DIR"
 
 OUTPUT_DIR=${LIMBO}/${OUTPUT_FILE}-sparkdir
 if [[ ${USE_HDFS} -eq 1 ]]; then
