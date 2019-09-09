@@ -56,7 +56,7 @@ if [[ ${USE_HDFS} -eq 1 ]]; then
 fi
 
 CLASS=de.gwdg.europeanaqa.spark.languages.LanguagesAll
-JAR=target/scala-2.11/europeana-qa_2.11-1.0.jar
+JAR=$SCALA_DIR/target/scala-2.11/europeana-qa_2.11-1.0.jar
 MEMORY=3g
 CORES=6
 CONF="spark.local.dir=$SPARK_TEMP_DIR"
