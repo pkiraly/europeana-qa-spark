@@ -50,31 +50,31 @@ echo $COMMON_PARAMS
 
 phase=prepare
 time=$(date +"%T")
-echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
-spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+echo "$time> 1/6 $phase phase ($LOG_DIR/multilinguality-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/multilinguality-analysis-$phase.log
 
 phase=statistics
 time=$(date +"%T")
-echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
-spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+echo "$time> 2/6 $phase phase ($LOG_DIR/multilinguality-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/multilinguality-analysis-$phase.log
 
 phase=median
 time=$(date +"%T")
-echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
-spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+echo "$time> 3/6 $phase phase ($LOG_DIR/multilinguality-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/multilinguality-analysis-$phase.log
 
 phase=histogram
 time=$(date +"%T")
-echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
-spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+echo "$time> 4/6 $phase phase ($LOG_DIR/multilinguality-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/multilinguality-analysis-$phase.log
 
 phase=join
 time=$(date +"%T")
-echo "$time> $phase phase ($LOG_DIR/completeness-analysis-$phase.log)"
-spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/completeness-analysis-$phase.log
+echo "$time> 5/6 $phase phase ($LOG_DIR/multilinguality-analysis-$phase.log)"
+spark-submit $COMMON_PARAMS "$phase" &> $LOG_DIR/multilinguality-analysis-$phase.log
 
 time=$(date +"%T")
-echo "$time> saving CSV files"
+echo "$time> 6/6 saving CSV files"
 cat multilinguality-csv/part-* > $OUTPUT_DIR/multilinguality.csv
 cat multilinguality-histogram/part-* > $OUTPUT_DIR/multilinguality-histogram.csv
 cat multilinguality-histogram-raw/part-* > $OUTPUT_DIR/multilinguality-histogram-raw.csv
