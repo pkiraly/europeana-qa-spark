@@ -6,13 +6,11 @@ SECONDS=0
 
 # set an initial value for the flag
 VERSION=
+VERBOSE_MODE=0
 
 # read the options
 TEMP=`getopt -o v:b --long version:,verbose -n 'test.sh' -- "$@"`
 eval set -- "$TEMP"
-
-VERBOSE_MODE=0
-# extract options and their arguments into variables.
 while true ; do
     case "$1" in
         -v|--version)
@@ -65,9 +63,10 @@ echo $LOG_DIR
 
 CSV=$LIMBO/${VERSION}-language.csv
 echo "csv: ${CSV}"
-#if [ -e ${CSV} ]; then
-#  rm ${CSV}
-#fi
+
+if [ -e ${CSV} ]; then
+  rm ${CSV}
+fi
 
 # (~ 4:56)
 LOG_FILE=${LOG_DIR}/run-all-language-detection.log
@@ -75,7 +74,7 @@ printf "%s> Running language detection. Check log file: %s\n" $(date +"%T") ${LO
 if [[ $VERBOSE_MODE -eq 1 ]]; then
   echo "scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction &> ${LOG_FILE}"
 fi
-#scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction &> ${LOG_FILE}
+scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction &> ${LOG_FILE}
 
 LOG_FILE=${LOG_DIR}/languages-analysis.log
 printf "%s> Running language analysis. Check log file: %s\n" $(date +"%T") ${LOG_FILE}

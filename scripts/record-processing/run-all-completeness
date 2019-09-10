@@ -33,8 +33,6 @@ if [[ ("$EXTFIELD_EXTRACTION_FLAG" != "--extendedFieldExtraction") ]]; then
   EXTFIELD_EXTRACTION_FLAG=""
 fi
 
-
-
 echo "Run completeness count"
 
 if hdfs dfs -test -d /result; then
