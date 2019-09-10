@@ -1,10 +1,14 @@
 <?php
 
 $start = microtime(TRUE);
-$version = $argv[1];
-$baseDir = '/projects/pkiraly/europeana-qa-data/' . $version;
-if ($version == "" || !file_exists($baseDir)) {
-  die("Invalid version: $version\n");
+$baseDir = $argv[1];
+
+if (!file_exists($baseDir)) {
+  die("Non existing directory: $baseDir\n");
+}
+
+if (!file_exists($baseDir . '/json')) {
+  die("Directory should have a json subdirectory: $baseDir does not have it.\n");
 }
 
 $order = [

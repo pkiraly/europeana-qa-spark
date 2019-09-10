@@ -115,7 +115,7 @@ LOG_FILE=languages.log
 scripts/analysis/languages-all.sh --input-file ${CSV} --output-file $BASE_DIR/output/languages-all.csv &> ${LOG_FILE}
 
 cd scripts
-php languages-all-to-json.php $VERSION
+php languages-all-to-json.php $WEB_DATA_DIR
 
 date +"%T"
 echo "Languages count is done!"
