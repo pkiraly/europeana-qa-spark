@@ -126,9 +126,9 @@ function orderJson($json) {
 
   $ordered = [];
   foreach ($order as $field) {
-    if (isset($json[$field])) {
-      arsort($json[$field]);
-      $ordered[$field] = $json[$field];
+    if (isset($json->{$field})) {
+      arsort($json->{$field});
+      $ordered[$field] = $json->{$field};
     }
   }
   return $ordered;
