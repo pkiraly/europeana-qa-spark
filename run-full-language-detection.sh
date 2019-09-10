@@ -8,9 +8,10 @@ SECONDS=0
 VERSION=
 
 # read the options
-TEMP=`getopt -o v: --long version: -n 'test.sh' -- "$@"`
+TEMP=`getopt -o v:b --long version:,verbose -n 'test.sh' -- "$@"`
 eval set -- "$TEMP"
 
+VERBOSE_MODE=0
 # extract options and their arguments into variables.
 while true ; do
     case "$1" in
@@ -19,6 +20,7 @@ while true ; do
                 "") shift 2 ;;
                 *) VERSION=$2 ; shift 2 ;;
             esac ;;
+        -b|--verbose) VERBOSE_MODE=1 ; shift ;;
         --) shift ; break ;;
         *) echo "Internal error!" ; exit 1 ;;
     esac
@@ -68,59 +70,29 @@ echo "csv: ${CSV}"
 #fi
 
 # (~ 4:56)
-date +"%T"
 LOG_FILE=${LOG_DIR}/run-all-language-detection.log
-echo "Running language detection. Check log file: ${LOG_FILE}"
+printf "%s> Running language detection. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+if [[ $VERBOSE_MODE -eq 1 ]]; then
+  echo "scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction &> ${LOG_FILE}"
+fi
 #scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extendedFieldExtraction &> ${LOG_FILE}
 
-# Upload result file to HDFS (~ 0:16)
-# cd ~/git/europeana-qa-spark
-# hdfs dfs -put resultXX-language.csv /join
-
-#exit
-
-# cd scala
-
-# (~ 0:26)
-#date +"%T"
-#LOG_FILE=languages.log
-#echo "Running top level language measurement. Check log file: ${LOG_FILE}"
-#echo "scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}"
-#scripts/analysis/languages.sh --input-file ${CSV} --output-file ../output/languages.csv &> ${LOG_FILE}
-
-#exit
-
-# (~ 0:46)
-#LOG_FILE=languages-per-collections.log
-#echo "Running Collection level language measurement. Check log file: ${LOG_FILE}"
-#scripts/analysis/languages-per-collections.sh --input-file ${CSV} --output-file ../output/languages-per-collections-groupped.txt > ${LOG_FILE} &
-
-
-# Convert top level language results to JSON file
-
-#cd ../scripts
-#php languages-csv2json.php
-#cp ../output/languages.json $WEB_DATA_DIR
-
-# Convert collection level language results to JSON files
-
-#php lang-group-to-json.php $VERSION
-
-
-# Convert
-#cd ../scala
-
 LOG_FILE=${LOG_DIR}/languages-analysis.log
-printf "$%s> Running language analysis. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+printf "%s> Running language analysis. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+if [[ $VERBOSE_MODE -eq 1 ]]; then
+  echo "scripts/analysis/languages-analysis.sh --input-file ${CSV} --output-file $BASE_DIR/output/languages-all.csv &> ${LOG_FILE}"
+fi
 scripts/analysis/languages-analysis.sh --input-file ${CSV} --output-file $BASE_DIR/output/languages-all.csv &> ${LOG_FILE}
 
 # cd scripts
 LOG_FILE=${LOG_DIR}/languages-to-json-and-split.log
-printf "$%s> Running language to json and split. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+printf "%s> Running language to json and split. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+if [[ $VERBOSE_MODE -eq 1 ]]; then
+  echo "php scripts/languages-all-to-json.php $BASE_DIR/output/languages-all.csv $WEB_DATA_DIR &> ${LOG_FILE}"
+fi
 php scripts/languages-all-to-json.php $BASE_DIR/output/languages-all.csv $WEB_DATA_DIR &> ${LOG_FILE}
 
-date +"%T"
-echo "Languages count is done!"
+printf "%s> Languages count is done!\n" $(date +"%T")
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))
