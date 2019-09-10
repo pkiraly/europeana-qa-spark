@@ -1,14 +1,15 @@
 <?php
 
 $start = microtime(TRUE);
-$baseDir = $argv[1];
+$inputFile = $argv[1];
+$baseOutputDir = $argv[2];
 
-if (!file_exists($baseDir)) {
-  die("Non existing directory: $baseDir\n");
+if (!file_exists($baseOutputDir)) {
+  die("Non existing directory: $baseOutputDir\n");
 }
 
-if (!file_exists($baseDir . '/json')) {
-  die("Directory should have a json subdirectory: $baseDir does not have it.\n");
+if (!file_exists($baseOutputDir . '/json')) {
+  die("Directory should have a json subdirectory: $baseOutputDir does not have it.\n");
 }
 
 $order = [
@@ -50,8 +51,8 @@ $codes = [
 
 $csvFields = ["id", "field", "language", "occurences", "records"];
 
-$file = '../output/languages-all.csv';
-$handle = fopen($file, "r");
+// $file = '../output/languages-all.csv';
+$handle = fopen($inputFile, "r");
 if ($handle) {
   $collection = null;
   while (($line = fgets($handle)) !== false) {
@@ -75,7 +76,7 @@ if ($handle) {
   }
   fclose($handle);
 } else {
-  echo "ERROR: can not open file $file\n";
+  echo "ERROR: can not open file $inputFile\n";
 }
 
 saveJson($collection->id, orderJson($collection->fields));
@@ -104,9 +105,9 @@ function processLine($line) {
 }
 
 function saveJson($collectionId, $json) {
-  global $baseDir;
+  global $baseOutputDir;
 
-  $fileName = $baseDir . '/json/' . $collectionId . '/' . $collectionId . '.languages-all.json';
+  $fileName = $baseOutputDir . '/json/' . $collectionId . '/' . $collectionId . '.languages-all.json';
   echo $fileName, "\n";
   file_put_contents($fileName, json_encode($json));
 }

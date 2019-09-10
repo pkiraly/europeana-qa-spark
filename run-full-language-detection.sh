@@ -110,12 +110,14 @@ echo "Running language detection. Check log file: ${LOG_FILE}"
 # Convert
 #cd ../scala
 
-date +"%T"
-LOG_FILE=languages.log
-scripts/analysis/languages-all.sh --input-file ${CSV} --output-file $BASE_DIR/output/languages-all.csv &> ${LOG_FILE}
+LOG_FILE=${LOG_DIR}/languages-analysis.log
+printf "$%s> Running language analysis. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+scripts/analysis/languages-analysis.sh --input-file ${CSV} --output-file $BASE_DIR/output/languages-all.csv &> ${LOG_FILE}
 
-cd scripts
-php languages-all-to-json.php $WEB_DATA_DIR
+# cd scripts
+LOG_FILE=${LOG_DIR}/languages-to-json-and-split.log
+printf "$%s> Running language to json and split. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+php scripts/languages-all-to-json.php $BASE_DIR/output/languages-all.csv $WEB_DATA_DIR &> ${LOG_FILE}
 
 date +"%T"
 echo "Languages count is done!"
