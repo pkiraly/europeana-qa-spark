@@ -35,7 +35,7 @@ source base-dirs.sh
 export BASE_DIR=$(readlink -e .)
 echo "base dir: $BASE_DIR"
 
-INPUT_DIR=$BASE_INPUT_DIR/${VERSION}/full
+INPUT_DIR=$BASE_SOURCE_DIR/${VERSION}/full
 if [ ! -d ${INPUT_DIR} ]; then
   echo "The input directory is not existing: ${INPUT_DIR}"
   exit 1
