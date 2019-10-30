@@ -5,7 +5,7 @@ $OUTPUT_DIR = $argv[2];
 
 $sourceDir = '../../europeana-qa-api/src/main/resources/abbreviations';
 $targetDir = $WEB_DATA_DIR;
-$jsonDir = $OUTPUT_DIR . '/json';
+$jsonDir = $WEB_DATA_DIR . '/json';
 
 $types = [
   (object)['source' => 'datasets-v4.csv',       'target' => 'datasets.csv',       'prefix' => 'c'],
@@ -26,6 +26,10 @@ foreach ($types as $type) {
   if (!file_exists($inputFile)) {
     printf("File doesn't exist: %s\n", $inputFile);
     continue;
+  }
+
+  if (file_exists($outputFile)) {
+    unlink($outputFile);
   }
 
   $in = fopen($inputFile, "r");
