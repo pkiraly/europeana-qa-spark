@@ -18,10 +18,10 @@ $types = [
 $start = microtime(TRUE);
 
 foreach ($types as $type) {
-  printf("creating %s\n", $type->target);
 
   $inputFile = sprintf('%s/%s', $sourceDir, $type->source);
   $outputFile = sprintf('%s/%s', $targetDir, $type->target);
+  printf("creating %s (%s)\n", $type->target, $outputFile);
 
   if (!file_exists($inputFile)) {
     printf("File doesn't exist: %s\n", $inputFile);
@@ -29,16 +29,19 @@ foreach ($types as $type) {
   }
 
   $in = fopen($inputFile, "r");
-  $ln = 1;
+  $entries = 0;
   while (($line = fgets($in)) != false) {
     if (strpos($line, ';') != false) {
       list($id, $name) = explode(';', $line, 2);
       $dir = sprintf('%s/%s%s', $jsonDir, $type->prefix, $id);
-      if (file_exists($dir) && is_dir($dir))
+      if (file_exists($dir) && is_dir($dir)) {
         file_put_contents($outputFile, $line, FILE_APPEND);
+        $entries++;
+      }
     }
   }
   fclose($in);
+  printf("... saved %d entries\n", $entries);
 }
 
 $duration = microtime(TRUE) - $start;
