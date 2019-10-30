@@ -84,7 +84,7 @@ echo "$time> split results. Check log file: ${LOG_FILE}"
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/create-intersection.log
 echo "$time> create intersection. Check log file: ${LOG_FILE}"
-php create-intersection.php ${OUTPUT_DIR} &> ${LOG_FILE}
+php create-intersection.php ${WEB_DATA_DIR} &> ${LOG_FILE}
 
 if [ ! -d ${WEB_DATA_DIR} ]; then
   mkdir -p ${WEB_DATA_DIR}
@@ -95,7 +95,7 @@ cp proxy-based-intersections.json ${WEB_DATA_DIR}
 time=$(date +"%T")
 LOG_FILE=${LOG_DIR}/clear-abbreviations.log
 echo "$time> Clear abbreviations. Check log file: ${LOG_FILE}"
-php clear-abbreviations.php ${WEB_DATA_DIR} ${OUTPUT_DIR} &> ${LOG_FILE}
+php clear-abbreviations.php ${WEB_DATA_DIR} &> ${LOG_FILE}
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))

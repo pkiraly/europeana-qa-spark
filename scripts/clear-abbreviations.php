@@ -1,7 +1,6 @@
 <?php
 
 $WEB_DATA_DIR = $argv[1];
-$OUTPUT_DIR = $argv[2];
 
 $sourceDir = '../../europeana-qa-api/src/main/resources/abbreviations';
 $targetDir = $WEB_DATA_DIR;
