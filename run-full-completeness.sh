@@ -44,19 +44,19 @@ if [[ ! -d logs ]]; then
 fi
 
 LOG_DIR=$(readlink -e logs)
-echo $LOG_DIR
+echo "log dir: ${LOG_DIR}"
 
 if [ -e ${CSV} ]; then
   rm ${CSV}
 fi
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-record-processing.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
 echo "$time> scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
 scripts/record-processing/run-all-proxy-based-completeness --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
@@ -64,24 +64,24 @@ if [ -e ${PARQUET} ]; then
   rm -rf ${PARQUET}
 fi
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-to-parquet.log
 echo "$time> create parquet file. Check log file: ${LOG_FILE}"
 scripts/analysis/proxy-based-completeness-to-parquet.sh ${CSV} &> ${LOG_FILE}
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-analysis.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/proxy-based-completeness-all.sh ${PARQUET} keep_dirs &> ${LOG_FILE}
 
 cd scripts/
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/proxy-based-completeness-split.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
 ./split-completeness.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/create-intersection.log
 echo "$time> create intersection. Check log file: ${LOG_FILE}"
 php create-intersection.php ${WEB_DATA_DIR} &> ${LOG_FILE}
@@ -92,7 +92,7 @@ if [ ! -d ${WEB_DATA_DIR} ]; then
 fi
 cp proxy-based-intersections.json ${WEB_DATA_DIR}
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/clear-abbreviations.log
 echo "$time> Clear abbreviations. Check log file: ${LOG_FILE}"
 php clear-abbreviations.php ${WEB_DATA_DIR} &> ${LOG_FILE}
@@ -102,6 +102,6 @@ hours=$(($duration / (60*60)))
 mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
-date +"%T"
+time=$(date +"%F %T")
 echo "$time> run-full-completeness DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs

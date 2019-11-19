@@ -59,7 +59,7 @@ if [[ ! -d logs ]]; then
 fi
 
 LOG_DIR=$(readlink -e logs)
-echo $LOG_DIR
+echo "log dir: ${LOG_DIR}"
 
 CSV=$LIMBO/${VERSION}-language.csv
 echo "csv: ${CSV}"
@@ -70,7 +70,7 @@ function record_processing {
     rm ${CSV}
   fi
   LOG_FILE=${LOG_DIR}/run-all-language-detection.log
-  printf "%s> Running language detection. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+  printf "%s %s> Running language detection. Check log file: %s\n" $(date +"%F %T") ${LOG_FILE}
   if [[ $VERBOSE_MODE -eq 1 ]]; then
     echo "scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extended-field-extraction &> ${LOG_FILE}"
   fi
@@ -80,7 +80,7 @@ function record_processing {
 # ~03:28:05
 function analysis {
   LOG_FILE=${LOG_DIR}/languages-analysis.log
-  printf "%s> Running language analysis. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+  printf "%s %s> Running language analysis. Check log file: %s\n" $(date +"%F %T") ${LOG_FILE}
   if [[ $VERBOSE_MODE -eq 1 ]]; then
     echo "scripts/analysis/languages-analysis.sh --input-file ${CSV} --output-file $BASE_DIR/output/languages-all.csv &> ${LOG_FILE}"
   fi
@@ -90,7 +90,7 @@ function analysis {
 # ~00:00:33
 function split {
   LOG_FILE=${LOG_DIR}/languages-to-json-and-split.log
-  printf "%s> Running language to json and split. Check log file: %s\n" $(date +"%T") ${LOG_FILE}
+  printf "%s %s> Running language to json and split. Check log file: %s\n" $(date +"%F %T") ${LOG_FILE}
   if [[ $VERBOSE_MODE -eq 1 ]]; then
     echo "php scripts/languages-all-to-json.php $BASE_DIR/output/languages-all.csv $WEB_DATA_DIR &> ${LOG_FILE}"
   fi
@@ -101,7 +101,7 @@ record_processing
 analysis
 split
 
-printf "%s> Languages count is done!\n" $(date +"%T")
+printf "%s %s> Languages count is done!\n" $(date +"%F %T")
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))

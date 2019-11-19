@@ -44,19 +44,19 @@ if [[ ! -d logs ]]; then
 fi
 
 LOG_DIR=$(readlink -e logs)
-echo $LOG_DIR
+echo "log dir: ${LOG_DIR}"
 
 if [ -e ${CSV} ]; then
   rm ${CSV}
 fi
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/multilinguality-record-processing.log
 echo "$time> Running proxy based completeness. Check log file: ${LOG_FILE}"
 echo "scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}"
 scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
@@ -64,18 +64,18 @@ if [ -e ${PARQUET} ]; then
   rm -rf ${PARQUET}
 fi
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/multilinguality-to-parquet.log
 echo "$time> create parquet file. Check log file: ${LOG_FILE}"
 scripts/analysis/multilinguality-to-parquet.sh ${CSV} &> ${LOG_FILE}
 
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/multilinguality-analysis.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/multilinguality-all.sh ${PARQUET} --keep_dirs &> ${LOG_FILE}
 
 cd scripts/
-time=$(date +"%T")
+time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/multilinguality-split.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
 ./split-multilinguality.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
@@ -85,6 +85,6 @@ hours=$(($duration / (60*60)))
 mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
-date +"%T"
-echo "run-full-multilingual-saturation DONE"
+time=$(date +"%F %T")
+echo "$time> run-full-multilingual-saturation DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
