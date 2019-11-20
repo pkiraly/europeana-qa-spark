@@ -28,25 +28,25 @@ if [[ "$VERSION" == "" ]]; then
   echo "You should add an a version (such as 'v2018-08')!"
   exit 1
 fi
-echo "version: ${VERSION}"
+echo "# version: ${VERSION}"
 
 source base-dirs.sh
 
 export BASE_DIR=$(readlink -e .)
-echo "base dir: $BASE_DIR"
+echo "# base dir: $BASE_DIR"
 
 INPUT_DIR=$BASE_SOURCE_DIR/${VERSION}/full
 if [ ! -d ${INPUT_DIR} ]; then
   echo "The input directory is not existing: ${INPUT_DIR}"
   exit 1
 fi
-echo "input dir: ${INPUT_DIR}"
+echo "# input dir: ${INPUT_DIR}"
 
 OUTPUT_DIR=$BASE_OUTPUT_DIR/${VERSION}
-echo "output dir: ${OUTPUT_DIR}"
+echo "# output dir: ${OUTPUT_DIR}"
 
 WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
-echo "web data dir: ${WEB_DATA_DIR}"
+echo "# web data dir: ${WEB_DATA_DIR}"
 
 export LIMBO=$(readlink -e limbo)
 
@@ -59,10 +59,10 @@ if [[ ! -d logs ]]; then
 fi
 
 LOG_DIR=$(readlink -e logs)
-echo "log dir: ${LOG_DIR}"
+echo "# log dir: ${LOG_DIR}"
 
 CSV=$LIMBO/${VERSION}-language.csv
-echo "csv: ${CSV}"
+echo "# csv: ${CSV}"
 
 # ~03:39:46
 function record_processing {

@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
 SECONDS=0
+VERSION=$1
 source base-dirs.sh
 
-VERSION=$1
+SPLIT_LOG="logs/split-spark-result.log"
+if [[ -e $SPLIT_LOG ]]; then
+  rm $SPLIT_LOG
+fi
+
 for TYPE in completeness multilingual-saturation language
 do
-  echo $TYPE
-  ./split-spark-result.sh $TYPE $VERSION
+  printf "%s %s> splitting %s (logs: %s)\n" $(date +"%F %T") $TYPE $SPLIT_LOG
+  ./split-spark-result.sh $TYPE $VERSION >> $SPLIT_LOG
 done
 
 echo "Split done"

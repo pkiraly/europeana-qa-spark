@@ -8,20 +8,20 @@ if [[ ("$#" -ne 1) || ("$VERSION" == "") ]]; then
   echo "You should add an a version (such as 'v2018-08')!"
   exit 1
 fi
-echo "version: ${VERSION}"
+echo "# version: ${VERSION}"
 
 export BASE_DIR=$(readlink -e .)
-echo "base dir: $BASE_DIR"
+echo "# base dir: $BASE_DIR"
 
 source base-dirs.sh
 SOURCE_DIR=$BASE_SOURCE_DIR/${VERSION}/full
-echo "source dir: ${SOURCE_DIR}"
+echo "# source dir: ${SOURCE_DIR}"
 
 OUTPUT_DIR=$BASE_OUTPUT_DIR/${VERSION}
-echo "output dir: ${OUTPUT_DIR}"
+echo "# output dir: ${OUTPUT_DIR}"
 
 WEB_DATA_DIR=$BASE_WEB_DATA_DIR/${VERSION}
-echo "web data dir: ${WEB_DATA_DIR}"
+echo "# web data dir: ${WEB_DATA_DIR}"
 
 if [[ ! -d limbo ]]; then
   mkdir limbo
@@ -30,10 +30,10 @@ fi
 LIMBO=$(readlink -e limbo)
 
 CSV=$LIMBO/${VERSION}-completeness.csv
-echo "csv: ${CSV}"
+echo "# csv: ${CSV}"
 
 PARQUET=$LIMBO/${VERSION}-completeness.parquet
-echo "parquet: ${PARQUET}"
+echo "# parquet: ${PARQUET}"
 
 if [[ ! -d output ]]; then
   mkdir output
@@ -44,7 +44,7 @@ if [[ ! -d logs ]]; then
 fi
 
 LOG_DIR=$(readlink -e logs)
-echo "log dir: ${LOG_DIR}"
+echo "# log dir: ${LOG_DIR}"
 
 if [ -e ${CSV} ]; then
   rm ${CSV}
