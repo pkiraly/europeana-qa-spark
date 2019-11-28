@@ -14,7 +14,8 @@ for TYPE in completeness language multilingual-saturation; do
   sort -T ./temp t > t-sorted
   uniq -c t-sorted > t-uniq
   count=$(grep -c -v " 1 " t-uniq)
-  printf "There are %d non uniqe identifiers in %s" $count $FILE
+  time=$(date +"%F %T")
+  printf "%s> There are %d non uniqe identifiers in %s\n" $time $count $FILE
 done
 
 rm -rf temp t t-sorted
