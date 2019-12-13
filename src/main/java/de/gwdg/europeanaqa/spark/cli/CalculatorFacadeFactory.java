@@ -173,4 +173,21 @@ public class CalculatorFacadeFactory {
     return facade;
   }
 
+  public static EdmCalculatorFacade createAbbreviationCalculator(Format format) {
+
+    final EdmCalculatorFacade facade = new EdmCalculatorFacade();
+    facade.abbreviate(true);
+    facade.enableCompletenessMeasurement(false);
+    facade.enableFieldCardinalityMeasurement(false);
+    facade.enableFieldExistenceMeasurement(false);
+    facade.enableTfIdfMeasurement(false);
+    facade.enableProblemCatalogMeasurement(false);
+    facade.setCheckSkippableCollections(false);
+    if (format != null)
+      facade.setFormat(format);
+    facade.configure();
+
+    return facade;
+  }
+
 }
