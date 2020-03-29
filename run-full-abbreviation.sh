@@ -32,7 +32,7 @@ LIMBO=$(readlink -e limbo)
 CSV=$LIMBO/${VERSION}-abbreviated-ids.csv
 echo "# csv: ${CSV}"
 
-PARQUET=$LIMBO/${VERSION}-completeness.parquet
+PARQUET=$LIMBO/${VERSION}-abbreviation.parquet
 echo "# parquet: ${PARQUET}"
 
 if [[ ! -d output ]]; then
@@ -51,7 +51,7 @@ if [ -e ${CSV} ]; then
 fi
 
 time=$(date +"%F %T")
-LOG_FILE=${LOG_DIR}/proxy-based-completeness-record-processing.log
+LOG_FILE=${LOG_DIR}/abbreviations.log
 echo "$time> Abbreviation check. Check log file: ${LOG_FILE}"
 echo "$time> scripts/record-processing/run-all-abbreviation-check --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
 scripts/record-processing/run-all-abbreviation-check --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
@@ -60,11 +60,19 @@ time=$(date +"%F %T")
 echo "$time> Collecting new abbreviation entries (if any)"
 ./extract-new-abbreviations.sh ${VERSION} ${LOG_FILE}
 
+if [[ -s new-abbreviations-for-${VERSION}.txt ]]; then
+  php update-abbreviations.php ${VERSION}
+  cd ../europeana-qa-api
+  git commit -am "Add abbreviation for ${VERSION}" && git push
+  cd ../europeana-qa-spark
+  ./build-after-abbreviations
+fi
+
 duration=$SECONDS
 hours=$(($duration / (60*60)))
 mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
 time=$(date +"%F %T")
-echo "$time> run-full-completeness DONE"
+echo "$time> run-full-abbreviation DONE"
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
