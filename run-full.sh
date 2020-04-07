@@ -32,13 +32,13 @@ printf "%s %s> archive compressed files (log: /home/pkiraly/data-export/save-ful
 ./save-full.sh $VERSION > save-full-$VERSION.log
 
 printf "%s %s> adjust the web configuration file /var/www/html/europeana-qa/config.cfg\n" $(date +"%F %T")
-cp /var/www/html/europeana-qa/config.cfg > /var/www/html/europeana-qa/config-pre-$VERSION.cfg
+cp /var/www/html/europeana-qa/config.cfg /var/www/html/europeana-qa/config-pre-$VERSION.cfg
 cat /var/www/html/europeana-qa/config.cfg \
   | sed "0,/version/{s/version/version[]=$VERSION\nversion/}" \
   | sed "0,/downloadable_version/{s/downloadable_version/downloadable_version[]=$VERSION\ndownloadable_version/}" \
   | sed "s/DEFAULT_VERSION=.*/DEFAULT_VERSION=$VERSION/" \
   > /var/www/html/europeana-qa/config-$VERSION.cfg
-cp /var/www/html/europeana-qa/config-$VERSION.cfg > /var/www/html/europeana-qa/$VERSION.cfg
+cp /var/www/html/europeana-qa/config-$VERSION.cfg /var/www/html/europeana-qa/config.cfg
 
 duration=$SECONDS
 hours=$(($duration / (60*60)))
