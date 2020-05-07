@@ -52,11 +52,32 @@ echo 'DONE in ', gmdate("H:i:s", (int)$duration), "\n";
 function saveContent($id, $lines) {
   global $outputDir, $options;
 
-  $dir = sprintf("%s/%s", $outputDir, $id);
+  $parentDir = getParentDir($id);
+  $dir = sprintf("%s/%s/%s", $outputDir, $parentDir, $id);
   if (!file_exists($dir)) {
     echo "Making directory: $dir\n";
     mkdir($dir);
   }
   $outputFile = sprintf("%s/%s.%s.csv", $dir, $id, $options['suffix']);
   file_put_contents($outputFile, implode('', $lines));
+}
+
+function getParentDir($id) {
+  global $outputDir;
+
+  $parentDir = '';
+  if ($id == 'all') {
+    $parentDir = 'a';
+  } else {
+    $parts = explode('-', $id);
+    $parentDir = $parts[0];
+  }
+
+  $dir = sprintf("%s/%s", $outputDir, $parentDir);
+  if (!file_exists($dir)) {
+    echo "Making directory: $dir\n";
+    mkdir($dir);
+  }
+
+  return $parentDir;
 }

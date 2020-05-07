@@ -9,6 +9,9 @@ printf "%s %s> launch new abbreviation detection\n" $(date +"%F %T")
 printf "%s %s> launch completeness\n" $(date +"%F %T")
 ./run-full-completeness.sh $VERSION
 
+printf "%s %s> launch profiles\n" $(date +"%F %T")
+./run-full-profiles.sh $VERSION
+
 printf "%s %s> launch multilinguality\n" $(date +"%F %T")
 ./run-full-multilingual-saturation.sh $VERSION
 

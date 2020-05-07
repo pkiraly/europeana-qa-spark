@@ -146,25 +146,27 @@ object ProfileToParquet {
       val data = dataWithoutHeader
     }
 
-    val selectedColumns = dataWithoutHeader.
+    val selectedColumns = data.
       columns.
-      filter(field => (
-        field == "dataset"
+      filter(field =>
+        (
+             field == "dataset"
           || field == "dataProvider"
           || field == "provider"
           || field == "country"
-          || field == "language")
-        || field.startsWith("PROVIDER_Proxy_"
-      )).
+          || field == "language"
+        )
+        || field.startsWith("PROVIDER_Proxy_")
+      ).
       filterNot(field => (
         field.endsWith("rdf_about")
-          || field.endsWith("ProxyFor")
-          || field.endsWith("ProxyIn")
+          || field.endsWith("proxyFor")
+          || field.endsWith("proxyIn")
           || field.endsWith("europeanaProxy")
           || field.endsWith("isNextInSequence")
         ))
 
-    val selectedData = dataWithoutHeader.select(selectedColumns.map(col): _*)
+    val selectedData = data.select(selectedColumns.map(col): _*)
 
     selectedData.write.
       option("header", "true").

@@ -82,8 +82,8 @@ object CompletenessFromParquet {
     var flatted = data.flatMap { row =>
       var c = row.getAs[Int]("c")
       var d = row.getAs[Int]("d")
-      var cid = s"c$c"
-      var did = s"d$c"
+      var cid = s"c-$c"
+      var did = s"d-$c"
       var cdid = s"cd-$c-$d"
 
       var seq = new ListBuffer[Tuple3[String, Int, Double]]()
