@@ -10,6 +10,10 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{Row, SaveMode, SparkSession}
+import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.functions.collect_list
+// import org.apache.spark.sql
+
 // import org.apache.spark.ml.regression.LinearRegression
 // import spark.implicits._
 
@@ -37,7 +41,7 @@ object ProfilesForAllIds {
     val phase = args(1)
     log.info(s"runing phase: $phase")
 
-    dir = new File(inputFile).getAbsoluteFile.getParentFile
+    dir = new File(parquetFile).getAbsoluteFile.getParentFile
     log.info(s"dir: $dir")
 
     if (phase.equals("prepare")) {

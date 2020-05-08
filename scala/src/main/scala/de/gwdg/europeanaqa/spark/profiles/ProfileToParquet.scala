@@ -37,6 +37,7 @@ object ProfileToParquet {
       format(formatOption).
       load(inputFile)
 
+    var data: DataFrame = null
     if (!fromParquet) {
       log.info("setting names")
       val ids = Seq("id", "dataset", "dataProvider", "provider", "country", "language")
@@ -141,9 +142,9 @@ object ProfileToParquet {
       val names = ids ++ cardinalityFields
       val selectedNames = cardinalityFields
 
-      val data = dataWithoutHeader.toDF(names: _*)
+      data = dataWithoutHeader.toDF(names: _*)
     } else {
-      val data = dataWithoutHeader
+      data = dataWithoutHeader
     }
 
     val selectedColumns = data.
