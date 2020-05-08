@@ -53,8 +53,12 @@ fi
 time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/multilinguality-record-processing.log
 echo "$time> Running multilingual saturation by records. Check log file: ${LOG_FILE}"
-echo "scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}"
-scripts/record-processing/run-all-multilingual-saturation  --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
+echo "scripts/record-processing/run-all-multilingual-saturation --output-file ${CSV} --extended-field-extraction --version ${VERSION} --from-gz &> ${LOG_FILE}"
+scripts/record-processing/run-all-multilingual-saturation \
+  --output-file ${CSV} \
+  --extended-field-extraction \
+  --version ${VERSION} \
+  --from-gz &> ${LOG_FILE}
 
 time=$(date +"%F %T")
 echo "$time> Collecting new abbreviation entries (if any)"

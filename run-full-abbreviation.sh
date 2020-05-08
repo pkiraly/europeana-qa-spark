@@ -54,7 +54,11 @@ time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/abbreviations.log
 echo "$time> Abbreviation check. Check log file: ${LOG_FILE}"
 echo "$time> scripts/record-processing/run-all-abbreviation-check --output-file ${CSV} --extended-field-extraction --version ${VERSION} > ${LOG_FILE}"
-scripts/record-processing/run-all-abbreviation-check --output-file ${CSV} --extended-field-extraction --version ${VERSION} &> ${LOG_FILE}
+scripts/record-processing/run-all-abbreviation-check \
+  --output-file ${CSV} \
+  --extended-field-extraction \
+  --version ${VERSION} \
+  --from-gz &> ${LOG_FILE}
 
 time=$(date +"%F %T")
 echo "$time> Collecting new abbreviation entries (if any)"

@@ -72,9 +72,13 @@ function record_processing {
   LOG_FILE=${LOG_DIR}/run-all-language-detection.log
   printf "%s %s> Running language detection. Check log file: %s\n" $(date +"%F %T") ${LOG_FILE}
   if [[ $VERBOSE_MODE -eq 1 ]]; then
-    echo "scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extended-field-extraction &> ${LOG_FILE}"
+    echo "scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extended-field-extraction --from-gz &> ${LOG_FILE}"
   fi
-  scripts/record-processing/run-all-language-detection --output-file ${CSV} --version ${VERSION} --extended-field-extraction &> ${LOG_FILE}
+  scripts/record-processing/run-all-language-detection \
+    --output-file ${CSV} \
+    --version ${VERSION} \
+    --extended-field-extraction \
+    --from-gz &> ${LOG_FILE}
 }
 
 # ~03:28:05
@@ -109,4 +113,3 @@ mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
-

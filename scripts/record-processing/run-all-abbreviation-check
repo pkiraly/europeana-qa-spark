@@ -20,27 +20,28 @@ EXTENDED_FIELD_EXTRACTION=
 VERSION=
 
 # read the options
-TEMP=`getopt -o o:sev: --long output-file:,skip-flag,extended-field-extraction,version: -n 'test.sh' -- "$@"`
+TEMP=`getopt -o o:sgev: --long output-file:,skip-flag,from-gz,extended-field-extraction,version: -n 'test.sh' -- "$@"`
 eval set -- "$TEMP"
 
 # extract options and their arguments into variables.
 while true ; do
-    case "$1" in
-        -o|--output-file)
-            case "$2" in
-                "") shift 2 ;;
-                *) OUTPUT_FILE=$2 ; shift 2 ;;
-            esac ;;
-        -s|--skip-flag) SKIP_FLAG=--skipEnrichments ; shift ;;
-        -e|--extended-field-extraction) EXTENDED_FIELD_EXTRACTION=--extendedFieldExtraction ; shift ;;
-        -v|--version)
-            case "$2" in
-                "") shift 2 ;;
-                *) VERSION=$2 ; shift 2 ;;
-            esac ;;
-        --) shift ; break ;;
-        *) echo "Internal error!" ; exit 1 ;;
-    esac
+  case "$1" in
+    -o|--output-file)
+      case "$2" in
+        "") shift 2 ;;
+        *) OUTPUT_FILE=$2 ; shift 2 ;;
+      esac ;;
+    -s|--skip-flag) SKIP_FLAG=--skipEnrichments ; shift ;;
+    -g|--from-gz) FROM_GZ=1 ; shift ;;
+    -e|--extended-field-extraction) EXTENDED_FIELD_EXTRACTION=--extendedFieldExtraction ; shift ;;
+    -v|--version)
+      case "$2" in
+        "") shift 2 ;;
+        *) VERSION=$2 ; shift 2 ;;
+      esac ;;
+    --) shift ; break ;;
+      *) echo "Internal error!" ; exit 1 ;;
+  esac
 done
 
 if [[ "${OUTPUT_FILE}" == "" ]]; then
@@ -51,6 +52,12 @@ fi
 if [ -e $OUTPUT_FILE ]; then
   echo "WARNING! ${OUTPUT_FILE} exists, rename it to prevent overwriting the file!"
   exit 1
+fi
+
+if [ ${FROM_GZ} -eq 1 ]; then
+  MASK=*.json.gz
+else
+  MASK=*.json
 fi
 
 echo "Run completeness count"
@@ -67,7 +74,7 @@ JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 FORMAT="fullbean"
 
 #  --inputFileName hdfs://localhost:54310/europeana/*.json \
-SOURCE_DIR=file://${BASE_SOURCE_DIR}/${VERSION}/full/*.json
+SOURCE_DIR=file://${BASE_SOURCE_DIR}/${VERSION}/full/${MASK}
 OUTPUT_DIR=${BASE_SOURCE_DIR}/${VERSION}/abbreviations
 
 if [ -d ${OUTPUT_DIR} ]; then
@@ -98,4 +105,3 @@ mins=$(($duration % (60*60) / 60))
 secs=$(($duration % 60))
 
 printf "%02d:%02d:%02d elapsed.\n" $hours $mins $secs
-

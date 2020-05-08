@@ -17,12 +17,10 @@ OUTPUT_FILE=
 SKIP_ENRICHMENTS_FLAG=
 EXTENDED_FIELD_EXTRACTION=
 VERSION=
-
-
 USE_HDFS=0
 
 # read the options
-TEMP=`getopt -o o:sev: --long output-file:,skip-flag,extended-field-extraction,version: -n 'test.sh' -- "$@"`
+TEMP=`getopt -o o:sgev: --long output-file:,skip-flag,from-gz,extended-field-extraction,version: -n 'test.sh' -- "$@"`
 eval set -- "$TEMP"
 
 # extract options and their arguments into variables.
@@ -34,6 +32,7 @@ while true ; do
                 *) OUTPUT_FILE=$2 ; shift 2 ;;
             esac ;;
         -s|--skip-flag) SKIP_ENRICHMENTS_FLAG=--skipEnrichments ; shift ;;
+        -g|--from-gz) FROM_GZ=1 ; shift ;;
         -e|--extended-field-extraction) EXTENDED_FIELD_EXTRACTION=--extendedFieldExtraction ; shift ;;
         -v|--version)
             case "$2" in
@@ -45,7 +44,6 @@ while true ; do
     esac
 done
 
-
 if [[ ("${OUTPUT_FILE}" == "") ]]; then
   echo "You should add an output file (such as resultXX-multilingual-saturation.csv)!"
   exit 1
@@ -54,6 +52,12 @@ fi
 if [ -e ${OUTPUT_FILE} ]; then
   echo "WARNING! ${OUTPUT_FILE} exists, rename it to prevent overwriting the file!"
   exit 1
+fi
+
+if [ ${FROM_GZ} -eq 1 ]; then
+  MASK=*.json.gz
+else
+  MASK=*.json
 fi
 
 FORMAT="fullbean"
@@ -85,7 +89,7 @@ fi
 JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 #  --inputFileName $HDFS/europeana/*.json \
 
-SOURCE_DIR=file://${BASE_SOURCE_DIR}/${VERSION}/full/*.json
+SOURCE_DIR=file://${BASE_SOURCE_DIR}/${VERSION}/full/${MASK}
 OUTPUT_DIR=${BASE_OUTPUT_DIR}/${VERSION}/multilingual-saturation
 
 if [ -d ${OUTPUT_DIR} ]; then
