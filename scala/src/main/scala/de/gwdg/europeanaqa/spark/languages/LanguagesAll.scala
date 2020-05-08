@@ -115,8 +115,8 @@ object LanguagesAll {
       var language = row.getAs[Int]("language")
 
       // composite identifiers
-      var cid = s"c$dataset"
-      var did = s"d$dataProvider"
+      var cid = s"c-$dataset"
+      var did = s"d-$dataProvider"
       var cdId = s"cd-$dataset-$dataProvider"
       var cpId = s"cp-$dataset-$provider"
       var pdId = s"pd-$provider-$dataProvider"

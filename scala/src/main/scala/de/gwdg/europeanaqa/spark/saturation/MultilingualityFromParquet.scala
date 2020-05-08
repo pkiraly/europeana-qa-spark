@@ -92,8 +92,8 @@ object MultilingualityFromParquet {
       var country = row.getAs[Int]("country")
       var language = row.getAs[Int]("language")
 
-      var cId = s"c$dataset"
-      var dId = s"d$dataProvider"
+      var cId = s"c-$dataset"
+      var dId = s"d-$dataProvider"
       var cdId = s"cd-$dataset-$dataProvider"
       var cpId = s"cp-$dataset-$provider"
       var pdId = s"pd-$provider-$dataProvider"

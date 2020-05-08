@@ -96,8 +96,8 @@ object ProxyBasedCompletenessFromParquet {
       var provider = row.getAs[Int]("provider")
       var country = row.getAs[Int]("country")
       var language = row.getAs[Int]("language")
-      var cid = s"c$c"
-      var did = s"d$d"
+      var cid = s"c-$c"
+      var did = s"d-$d"
       var cdId = s"cd-$c-$d"
       var cpId = s"cp-$c-$provider"
       var pdId = s"pd-$provider-$d"
