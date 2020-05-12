@@ -54,6 +54,7 @@ object ProfilesForAllIds {
   }
 
   def runPrepare(inputFile: String): Unit = {
+
     val df = spark.read.load(inputFile)
     var simplenames = df.columns
         .filterNot(
@@ -78,12 +79,14 @@ object ProfilesForAllIds {
       )).
       toDF(Seq("field", "index"): _*)
 
+    var fieldIndexDirPath = this.getPath(fieldIndexDir)
+    log.info(s"ProfilesForAllIds $inputFile -> $fieldIndexDirPath")
     fieldIndexDF.
       repartition(1).
       write.
       option("header", "true").
       mode(SaveMode.Overwrite).
-      csv(fieldIndexDir)
+      csv(fieldIndexDirPath)
 
     var fieldIndex = simplenames.zipWithIndex.toMap
     var typeMap = df.schema.map(x => (x.name, x.dataType)).toMap
@@ -130,9 +133,11 @@ object ProfilesForAllIds {
       }
       .toDF(Seq("id", "value"): _*)
 
+    var longformParquetPath = this.getPath(longformParquet)
+    log.info(s"ProfilesForAllIds $inputFile -> $longformParquetPath")
     flatted.write.
       mode(SaveMode.Overwrite).
-      save(this.getPath(longformParquet))
+      save(longformParquetPath)
     log.info("longform has been created")
   }
 
@@ -173,6 +178,8 @@ object ProfilesForAllIds {
       map(x => (x.getAs[String](0), x.getAs[Long](1))).
       toMap
 
+    var patternCountsDirPath = this.getPath(patternCountsDir)
+    log.info(s"ProfilesForAllIds $longformParquet -> $patternCountsDirPath")
     patternCounts.
       map(x => {
         var fieldInts = x.getAs[String]("fields").split(",");
@@ -197,7 +204,7 @@ object ProfilesForAllIds {
       write.
       option("header", "true").
       mode(SaveMode.Overwrite).
-      csv(this.getPath(patternCountsDir))
+      csv(patternCountsDirPath)
 
     var fieldCounts = patternCounts.
       flatMap{
@@ -226,12 +233,14 @@ object ProfilesForAllIds {
       map(x => (x.getAs[String]("id"), x.getSeq(1).mkString(","))).
       toDF(Seq("id","fields"): _*)
 
+    var fieldCountsDirPath = this.getPath(fieldCountsDir)
+    log.info(s"ProfilesForAllIds $longformParquet -> $fieldCountsDirPath")
     participatingFields.
       repartition(1).
       write.
       option("header", "true").
       mode(SaveMode.Overwrite).
-      csv(this.getPath(fieldCountsDir))
+      csv(fieldCountsDirPath)
   }
 
   def getPath(file: String): String = {
