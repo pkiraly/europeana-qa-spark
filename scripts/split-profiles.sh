@@ -14,9 +14,9 @@ if [ ! -d ${OUTPUT_DIR} ]; then
 fi
 
 echo split profile-patterns
-php split-spark-output.php --fileName ../output/profile-patterns.csv --outputDir $OUTPUT_DIR --suffix profile-patterns
+php split-spark-output.php --fileName ../output/profiles-patterns.csv --outputDir $OUTPUT_DIR --suffix profile-patterns
 
 echo split profile-field-counts
-php split-spark-output.php --fileName ../output/profile-field-counts.csv --outputDir $OUTPUT_DIR --suffix profile-field-counts
+php split-spark-output.php --fileName ../output/profiles-field-counts.csv --outputDir $OUTPUT_DIR --suffix profile-field-counts
 
 echo "split-profiles is ready"
