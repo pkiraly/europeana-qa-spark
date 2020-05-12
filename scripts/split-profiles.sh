@@ -13,10 +13,10 @@ if [ ! -d ${OUTPUT_DIR} ]; then
   mkdir -p ${OUTPUT_DIR}
 fi
 
-echo completeness
+echo split profile-patterns
 php split-spark-output.php --fileName ../output/profile-patterns.csv --outputDir $OUTPUT_DIR --suffix profile-patterns
 
-echo completeness-histogram
+echo split profile-field-counts
 php split-spark-output.php --fileName ../output/profile-field-counts.csv --outputDir $OUTPUT_DIR --suffix profile-field-counts
 
 echo "split-profiles is ready"

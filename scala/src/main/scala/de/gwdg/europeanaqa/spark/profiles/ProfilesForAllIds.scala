@@ -22,8 +22,6 @@ object ProfilesForAllIds {
   Logger.getLogger("org").setLevel(Level.ERROR)
   val log = org.apache.log4j.LogManager.getLogger("ProxyBasedCompletenessFromParquet")
   val spark = SparkSession.builder.appName("ProfilesForAllIds").getOrCreate()
-  val conf = new SparkConf().setAppName("Profiles")
-  val sc = new SparkContext(conf)
   import spark.implicits._
 
   val longformParquet = "profiles-longform.parquet"
@@ -240,4 +238,3 @@ object ProfilesForAllIds {
     return new File(dir, file).getPath
   }
 }
-

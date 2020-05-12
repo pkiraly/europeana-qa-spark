@@ -56,14 +56,14 @@ echo "$time> create parquet file. Check log file: ${LOG_FILE}"
 scripts/analysis/profile-to-parquet.sh ${CSV} ${PARQUET} &> ${LOG_FILE}
 
 time=$(date +"%F %T")
-LOG_FILE=${LOG_DIR}/proxy-based-completeness-analysis.log
+LOG_FILE=${LOG_DIR}/profiles-analysis.log
 echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/profile-all.sh ${PARQUET} keep_dirs &> ${LOG_FILE}
 
 cd scripts/
 
 time=$(date +"%F %T")
-LOG_FILE=${LOG_DIR}/proxy-based-completeness-split.log
+LOG_FILE=${LOG_DIR}/profiles-split.log
 echo "$time> split results. Check log file: ${LOG_FILE}"
 ./split-profiles.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
 

@@ -50,10 +50,12 @@ echo $COMMON_PARAMS
 
 time=$(date +"%T")
 echo "$time> prepare phase ($LOG_DIR/profile-analysis-prepare.log)"
+echo "$time> spark-submit ${COMMON_PARAMS} \"prepare\""
 spark-submit $COMMON_PARAMS "prepare" &> $LOG_DIR/profile-analysis-prepare.log
 
 time=$(date +"%T")
 echo "$time> statistics phase ($LOG_DIR/profile-analysis-statistics.log)"
+echo "$time> spark-submit ${COMMON_PARAMS} \"statistics\""
 spark-submit $COMMON_PARAMS "statistics" &> $LOG_DIR/profile-analysis-statistics.log
 
 time=$(date +"%T")
