@@ -6,6 +6,7 @@ $dir = $OUTPUT_DIR . '/json';
 if ($handle = opendir($dir)) {
   $intersections = ['c' => [], 'd' => [], 'p' => []];
   while (false !== ($entry = readdir($handle))) {
+    printf("dir: %s\n", $entry);
     if (preg_match('/^(cd|pd|cp|cdp)-(\d+)-(\d+)(-(\d+))?$/', $entry, $matches)) {
       echo "$entry\n";
       $file = $matches[0];
