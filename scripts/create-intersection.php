@@ -11,7 +11,6 @@ foreach ($subdirs as $subdir) {
   if ($handle = opendir($dir)) {
     while (false !== ($entry = readdir($handle))) {
       if (preg_match('/^(cd|pd|cp|cdp)-(\d+)-(\d+)(-(\d+))?$/', $entry, $matches)) {
-        echo "$entry\n";
         $file = $matches[0];
         $histogramFile = getHistogramFile($file);
         if (!file_exists($histogramFile)) {
