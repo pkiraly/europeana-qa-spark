@@ -2,57 +2,61 @@
 
 $OUTPUT_DIR = $argv[1];
 
-$dir = $OUTPUT_DIR . '/json';
-if ($handle = opendir($dir)) {
-  $intersections = ['c' => [], 'd' => [], 'p' => []];
-  while (false !== ($entry = readdir($handle))) {
-    printf("dir: %s\n", $entry);
-    if (preg_match('/^(cd|pd|cp|cdp)-(\d+)-(\d+)(-(\d+))?$/', $entry, $matches)) {
-      echo "$entry\n";
-      $file = $matches[0];
-      $histogramFile = getHistogramFile($file);
-      if (!file_exists($histogramFile)) {
-        printf("%s is not existing.\n", $histogramFile);
-        continue;
+$subdirs = ['cd', 'pd', 'cp', 'cdp'];
+
+foreach ($subdirs as $subdir) {
+  $dir = $OUTPUT_DIR . '/json/' . $subdir;
+  if ($handle = opendir($dir)) {
+    $intersections = ['c' => [], 'd' => [], 'p' => []];
+    while (false !== ($entry = readdir($handle))) {
+      printf("dir: %s\n", $entry);
+      if (preg_match('/^(cd|pd|cp|cdp)-(\d+)-(\d+)(-(\d+))?$/', $entry, $matches)) {
+        echo "$entry\n";
+        $file = $matches[0];
+        $histogramFile = getHistogramFile($file);
+        if (!file_exists($histogramFile)) {
+          printf("%s is not existing.\n", $histogramFile);
+          continue;
+        }
+        $count = readCount($histogramFile);
+        $entry = (object)[
+          'file' => $file,
+          'count' => $count,
+        ];
+        if ($matches[1] == 'cd') {
+          $c = $matches[2];
+          $d = $matches[3];
+          addEntry($entry, 'c', $c, 'd', $d);
+          addEntry($entry, 'd', $d, 'c', $c);
+        } else if ($matches[1] == 'pd') {
+          $p = $matches[2];
+          $d = $matches[3];
+          addEntry($entry, 'p', $p, 'd', $d);
+          addEntry($entry, 'd', $d, 'p', $p);
+        } else if ($matches[1] == 'cp') {
+          $c = $matches[2];
+          $p = $matches[3];
+          addEntry($entry, 'c', $c, 'p', $p);
+          addEntry($entry, 'p', $p, 'c', $c);
+        } else if ($matches[1] == 'cdp') {
+          $c = $matches[2];
+          $d = $matches[3];
+          $p = $matches[5];
+          addEntry($entry, 'c', $c, 'd', $d, 'p', $p);
+          addEntry($entry, 'c', $c, 'p', $p, 'd', $d);
+          addEntry($entry, 'd', $d, 'c', $c, 'p', $p);
+          addEntry($entry, 'd', $d, 'p', $p, 'c', $c);
+          addEntry($entry, 'p', $p, 'c', $c, 'd', $d);
+          addEntry($entry, 'p', $p, 'd', $d, 'c', $c);
+        }
+        // print_r($matches);
       }
-      $count = readCount($histogramFile);
-      $entry = (object)[
-        'file' => $file,
-        'count' => $count,
-      ];
-      if ($matches[1] == 'cd') {
-        $c = $matches[2];
-        $d = $matches[3];
-        addEntry($entry, 'c', $c, 'd', $d);
-        addEntry($entry, 'd', $d, 'c', $c);
-      } else if ($matches[1] == 'pd') {
-        $p = $matches[2];
-        $d = $matches[3];
-        addEntry($entry, 'p', $p, 'd', $d);
-        addEntry($entry, 'd', $d, 'p', $p);
-      } else if ($matches[1] == 'cp') {
-        $c = $matches[2];
-        $p = $matches[3];
-        addEntry($entry, 'c', $c, 'p', $p);
-        addEntry($entry, 'p', $p, 'c', $c);
-      } else if ($matches[1] == 'cdp') {
-        $c = $matches[2];
-        $d = $matches[3];
-        $p = $matches[5];
-        addEntry($entry, 'c', $c, 'd', $d, 'p', $p);
-        addEntry($entry, 'c', $c, 'p', $p, 'd', $d);
-        addEntry($entry, 'd', $d, 'c', $c, 'p', $p);
-        addEntry($entry, 'd', $d, 'p', $p, 'c', $c);
-        addEntry($entry, 'p', $p, 'c', $c, 'd', $d);
-        addEntry($entry, 'p', $p, 'd', $d, 'c', $c);
-      }
-      // print_r($matches);
     }
+    closedir($handle);
+    // file_put_contents('intersections.json', json_encode($intersections));
   }
-  closedir($handle);
-  // file_put_contents('intersections.json', json_encode($intersections));
-  file_put_contents('proxy-based-intersections.json', json_encode($intersections));
 }
+file_put_contents('proxy-based-intersections.json', json_encode($intersections));
 
 function getHistogramFile($file) {
   global $dir;
