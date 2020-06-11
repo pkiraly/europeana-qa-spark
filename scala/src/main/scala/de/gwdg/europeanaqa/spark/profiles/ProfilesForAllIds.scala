@@ -50,11 +50,10 @@ object ProfilesForAllIds {
       log.info(s"unrecognized phase '${phase}'")
     }
 
-    log.info(s"ALL took ${System.currentTimeMillis() - startFields}")
+    log.info(s"${phase} took ${System.currentTimeMillis() - startFields}")
   }
 
   def runPrepare(inputFile: String): Unit = {
-
     val df = spark.read.load(inputFile)
     var simplenames = df.columns
         .filterNot(

@@ -37,6 +37,7 @@ foreach ($types as $type) {
     if (strpos($line, ';') != false) {
       list($id, $name) = explode(';', $line, 2);
       $dir = sprintf('%s/%s%s', $jsonDir, $type->prefix, $id);
+      printf("checking dir (%s)\n", $dir);
       if (file_exists($dir) && is_dir($dir)) {
         file_put_contents($outputFile, $line, FILE_APPEND);
         $entries++;

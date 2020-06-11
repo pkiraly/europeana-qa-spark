@@ -64,7 +64,7 @@ cd scripts/
 
 time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/profiles-split.log
-echo "$time> split results. Check log file: ${LOG_FILE}"
+echo "$time> split results to ${WEB_DATA_DIR}. Check log file: ${LOG_FILE}"
 ./split-profiles.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
 
 cd ..
