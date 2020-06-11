@@ -4,12 +4,12 @@ $OUTPUT_DIR = $argv[1];
 
 $subdirs = ['cd', 'pd', 'cp', 'cdp'];
 
+$intersections = ['c' => [], 'd' => [], 'p' => []];
 foreach ($subdirs as $subdir) {
   $dir = $OUTPUT_DIR . '/json/' . $subdir;
+  printf("processing dir: %s\n", $dir);
   if ($handle = opendir($dir)) {
-    $intersections = ['c' => [], 'd' => [], 'p' => []];
     while (false !== ($entry = readdir($handle))) {
-      printf("dir: %s\n", $entry);
       if (preg_match('/^(cd|pd|cp|cdp)-(\d+)-(\d+)(-(\d+))?$/', $entry, $matches)) {
         echo "$entry\n";
         $file = $matches[0];
