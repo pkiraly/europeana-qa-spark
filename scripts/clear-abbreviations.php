@@ -9,9 +9,9 @@ $jsonDir = $WEB_DATA_DIR . '/json';
 $types = [
   (object)['source' => 'datasets-v4.csv',       'target' => 'datasets.csv',       'prefix' => 'c'],
   (object)['source' => 'data-providers-v4.csv', 'target' => 'data-providers.csv', 'prefix' => 'd'],
-  (object)['source' => 'providers-v2.csv',      'target' => 'providers.csv',      'prefix' => 'p-'],
-  (object)['source' => 'countries-v2.csv',      'target' => 'countries.csv',      'prefix' => 'cn-'],
-  (object)['source' => 'languages-v2.csv',      'target' => 'languages.csv',      'prefix' => 'l-'],
+  (object)['source' => 'providers-v2.csv',      'target' => 'providers.csv',      'prefix' => 'p'],
+  (object)['source' => 'countries-v2.csv',      'target' => 'countries.csv',      'prefix' => 'cn'],
+  (object)['source' => 'languages-v2.csv',      'target' => 'languages.csv',      'prefix' => 'l'],
 ];
 
 $start = microtime(TRUE);
@@ -36,7 +36,7 @@ foreach ($types as $type) {
   while (($line = fgets($in)) != false) {
     if (strpos($line, ';') != false) {
       list($id, $name) = explode(';', $line, 2);
-      $dir = sprintf('%s/%s%s', $jsonDir, $type->prefix, $id);
+      $dir = sprintf('%s/%s/%s-%s', $jsonDir, $type->prefix, $type->prefix, $id);
       printf("checking dir (%s)\n", $dir);
       if (file_exists($dir) && is_dir($dir)) {
         file_put_contents($outputFile, $line, FILE_APPEND);
