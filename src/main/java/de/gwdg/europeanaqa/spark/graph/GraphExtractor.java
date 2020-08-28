@@ -5,7 +5,7 @@ import de.gwdg.europeanaqa.api.calculator.MultiFieldExtractor;
 import de.gwdg.europeanaqa.api.model.Format;
 import de.gwdg.europeanaqa.spark.bean.Graph;
 import de.gwdg.europeanaqa.spark.cli.Parameters;
-import de.gwdg.metadataqa.api.model.JsonPathCache;
+import de.gwdg.metadataqa.api.model.pathcache.JsonPathCache;
 import de.gwdg.metadataqa.api.model.XmlFieldInstance;
 import de.gwdg.metadataqa.api.schema.EdmFullBeanSchema;
 import de.gwdg.metadataqa.api.schema.EdmOaiPmhXmlSchema;
