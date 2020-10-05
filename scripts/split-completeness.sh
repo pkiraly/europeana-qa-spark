@@ -14,12 +14,18 @@ if [ ! -d ${OUTPUT_DIR} ]; then
 fi
 
 echo completeness
-php split-spark-output.php --fileName ../output/completeness.csv --outputDir $OUTPUT_DIR --suffix completeness
+php split-spark-output.php --fileName ../output/completeness.csv \
+    --outputDir $OUTPUT_DIR \
+    --suffix completeness
 
 echo completeness-histogram
-php split-spark-output.php --fileName ../output/completeness-histogram.csv --outputDir $OUTPUT_DIR --suffix completeness-histogram
+php split-spark-output.php --fileName ../output/completeness-histogram.csv \
+    --outputDir $OUTPUT_DIR \
+    --suffix completeness-histogram
 
 echo completeness-histogram-raw
-php split-spark-output.php --fileName ../output/completeness-histogram-raw.csv --outputDir $OUTPUT_DIR --suffix completeness-histogram-raw
+php split-spark-output.php --fileName ../output/completeness-histogram-raw.csv \
+    --outputDir $OUTPUT_DIR \
+    --suffix completeness-histogram-raw
 
 echo "split-completeness is ready"
