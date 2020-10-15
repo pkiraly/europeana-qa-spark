@@ -198,7 +198,7 @@ object Cardinality {
           nonZeros.map(unit => unit._2).reduce(_ + _) // sum of all
         }
       )}
-      // calculate nonZero count and proportion 
+      // calculate nonZero count and proportion
       .map{ case(fieldName, zeros, nonZeros) => (
         fieldName, nonZeros, (nonZeros.toFloat / (zeros + nonZeros))
       )}

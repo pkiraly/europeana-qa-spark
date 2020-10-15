@@ -9,7 +9,7 @@
 #   This will be the input of top level, and collection level aggregations
 
 OUTPUT=$1
-JAR_VERSION=0.4-SNAPSHOT
+JAR_VERSION=0.7-SNAPSHOT
 HDFS=hdfs://localhost:54310
 HEADER=header-language-saturation.csv
 HEADEROUTPUT=/join/$HEADER

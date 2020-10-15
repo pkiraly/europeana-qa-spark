@@ -24,7 +24,7 @@ if [[ ("$EXTFIELD_EXTRACTION_FLAG" != "--extendedFieldExtraction") ]]; then
   EXTFIELD_EXTRACTION_FLAG=""
 fi
 
-JAR_VERSION=0.6-SNAPSHOT
+JAR_VERSION=0.7-SNAPSHOT
 HDFS=hdfs://localhost:54310
 INPUTPATH=$HDFS/europeana/$INPUT
 RESULT=$HDFS/result

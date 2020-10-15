@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
+#
+# Make profile clusters (ID.profile-patterns-clustered.csv)
+#
 
-DIR=/opt/data/europeana-qa-webdata/v2020-09/json/
-JAR=target/europeana-qa-spark-0.7-SNAPSHOT-jar-with-dependencies.jar
+# the input directory
+WEB_DATA_DIR=$1
+
+JAR_VERSION=0.7-SNAPSHOT
+DIR=${WEB_DATA_DIR}/json/
+JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 
 for PREFIX_DIR in $DIR/*; do
   echo $PREFIX_DIR

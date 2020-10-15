@@ -13,7 +13,7 @@ if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
   exit 1
 fi
 
-JAR_VERSION=0.4-SNAPSHOT
+JAR_VERSION=0.7-SNAPSHOT
 HDFS=hdfs://localhost:54310
 INPUTPATH=$HDFS/europeana/$INPUT
 RESULT=$HDFS/result

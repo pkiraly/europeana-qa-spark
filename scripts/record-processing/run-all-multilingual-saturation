@@ -9,7 +9,7 @@
 #   This will be the input of top level, and collection level aggregations
 
 SECONDS=0
-JAR_VERSION=0.6-SNAPSHOT
+JAR_VERSION=0.7-SNAPSHOT
 HDFS=hdfs://localhost:54310
 HEADER_FILE=header-multilingual-saturation.csv
 

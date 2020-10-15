@@ -17,7 +17,7 @@ if [[ ("$SKIP_FLAG" != "checkSkippableCollections") ]]; then
   SKIP_FLAG=""
 fi
 
-JAR_VERSION=0.5-SNAPSHOT
+JAR_VERSION=0.7-SNAPSHOT
 HDFS=hdfs://localhost:54310
 INPUTPATH=$HDFS/europeana/$INPUT
 RESULT=$HDFS/result

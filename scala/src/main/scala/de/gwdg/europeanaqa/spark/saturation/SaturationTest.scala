@@ -29,9 +29,9 @@ object SaturationTest {
     case class Unit(key: String, value: Double)
 
     def extract: ((Int, Int, Array[Double]) => Seq[Unit]) = {
-        (c, d, fieldScores) => 
+        (c, d, fieldScores) =>
           fieldScores.zipWithIndex.map{case(value, idx) =>
-            var prefix = "" 
+            var prefix = ""
             if (filterType == "c") {
               prefix = "c" + c + ":"
             } else if (filterType == "d") {
@@ -93,24 +93,24 @@ object SaturationTest {
 
     // prepared.cache()
     val filtered = prepared
-        .filter{case(c, d, line) => 
+        .filter{case(c, d, line) =>
           ((filterType == "c" && first <= c && c <= last) || (filterType == "d" && first <= d && d <= last))
         }
-        .map{case(c, d, line) => 
+        .map{case(c, d, line) =>
           (c, d, line.slice(3, line.length).map(x => x.toDouble))
         }
 
       val pairs = filtered
         .map{case(c, d, fields) => (c, d, fields, (fields.reduce(_ + _) / fields.length))}
         .map{case(c, d, fields, total) => (c, d, (fields :+ total))}
-        .flatMap{case(c, d, fieldScores) => 
+        .flatMap{case(c, d, fieldScores) =>
           extract(c, d, fieldScores)
         }
         .map(unit => (unit.key, unit.value))
 
       val groupped = pairs.groupByKey()
 
-      val calculated = groupped.map{case(field, numbers) => 
+      val calculated = groupped.map{case(field, numbers) =>
           calculate(field, numbers)
         }
 
@@ -124,6 +124,5 @@ object SaturationTest {
       println("saving " + outputFile)
       formatted.
         saveAsTextFile(outputFile)
-
   }
 }

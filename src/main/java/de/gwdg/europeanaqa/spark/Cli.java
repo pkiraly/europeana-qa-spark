@@ -45,7 +45,7 @@ public class Cli {
 
 		// final CompletenessCalculator completenessCalculator = new CompletenessCalculator();
 		// completenessCalculator.setVerbose(true);
-		
+
 		// final TfIdfCalculator tfIdfCalculator = new TfIdfCalculator();
 		// tfIdfCalculator.setDoCollectTerms(true);
 		// DataProviderManager dataProviderManager = new DataProviderManager();

@@ -13,7 +13,7 @@
 OUTPUT=$1
 SKIP_FLAG=$2
 EXTFIELD_EXTRACTION_FLAG=$3
-JAR_VERSION=0.6-SNAPSHOT
+JAR_VERSION=0.7-SNAPSHOT
 
 if [[ ("$#" -ne 1 && "$#" -ne 2 && "$#" -ne 3) || ("$OUTPUT" == "") ]]; then
   echo "You should add an output file (such as resultXX.csv)!"

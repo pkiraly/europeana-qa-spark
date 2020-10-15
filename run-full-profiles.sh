@@ -67,6 +67,11 @@ LOG_FILE=${LOG_DIR}/profiles-split.log
 echo "$time> split results to ${WEB_DATA_DIR}. Check log file: ${LOG_FILE}"
 ./split-profiles.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
 
+time=$(date +"%F %T")
+LOG_FILE=${LOG_DIR}/profiles-clustering.log
+echo "$time> clustering profiles in ${WEB_DATA_DIR}. Check log file: ${LOG_FILE}"
+analysis/profile-clustering.sh ${WEB_DATA_DIR} &> ${LOG_FILE}
+
 cd ..
 
 duration=$SECONDS

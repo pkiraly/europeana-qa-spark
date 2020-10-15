@@ -53,7 +53,7 @@ object MergeUniqueness {
     val united = dataFiltered.union(tfidfFiltered)
     val merged = united
       .groupByKey()
-      .map(x => 
+      .map(x =>
         if (x._2.toList.head != x._2.toList.last) {
           if (x._2.toList.head.length > x._2.toList.last.length) {
             x._2.toList.mkString(",")
