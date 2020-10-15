@@ -13,7 +13,7 @@ if [[ ("$#" -ne 1) || ("$INPUT" == "") ]]; then
   exit 1
 fi
 
-JAR_VERSION=0.7-SNAPSHOT
+#JAR_VERSION=0.7-SNAPSHOT
 HDFS=hdfs://localhost:54310
 INPUTPATH=$HDFS/europeana/$INPUT
 RESULT=$HDFS/result
@@ -35,7 +35,8 @@ if hdfs dfs -test -d $HEADEROUTPUT; then
   sleep 2
 fi
 
-JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+source set-application-jar.sh
+#JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 
 spark-submit --class de.gwdg.europeanaqa.spark.LanguageSaturation \
   --master local[*] \

@@ -9,7 +9,7 @@
 #   This will be the input of top level, and collection level aggregations
 
 SECONDS=0
-JAR_VERSION=0.7-SNAPSHOT
+#JAR_VERSION=0.7-SNAPSHOT
 HDFS=hdfs://localhost:54310
 HEADER_FILE=header-multilingual-saturation.csv
 
@@ -86,7 +86,8 @@ else
   fi
 fi
 
-JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+source set-application-jar.sh
+#JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 #  --inputFileName $HDFS/europeana/*.json \
 
 SOURCE_DIR=file://${BASE_SOURCE_DIR}/${VERSION}/full/${MASK}

@@ -56,8 +56,9 @@ echo "EXTENDED_FIELD_EXTRACTION = ${EXTENDED_FIELD_EXTRACTION}"
 echo "Starting language detection."
 source base-dirs.sh
 
-JAR_VERSION=0.7-SNAPSHOT
-JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+#JAR_VERSION=0.7-SNAPSHOT
+#JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+source set-application-jar.sh
 FORMAT="fullbean"
 
 if [ ${FROM_GZ} -eq 1 ]; then
