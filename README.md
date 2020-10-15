@@ -6,6 +6,10 @@ For running it on Spark, you should install Hadoop, Scala and finally Spark. The
 
 # Running
 
+```
+nohup ./run-full.sh v2020-07 > logs/run-full-v2020-07.log &
+```
+
 ## Completeness
 
 ### step 1. extract features from the Europeana JSON dump (~6:40 hours)
