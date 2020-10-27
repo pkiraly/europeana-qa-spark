@@ -6,9 +6,12 @@
 # the input directory
 WEB_DATA_DIR=$1
 
+CWD=$(dirname $(realpath $0))
+JAR_DIR=$(realpath "$CWD/../../target")
+
 JAR_VERSION=0.7-SNAPSHOT
 DIR=${WEB_DATA_DIR}/json/
-JAR=target/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
+JAR=$JAR_DIR/europeana-qa-spark-${JAR_VERSION}-jar-with-dependencies.jar
 
 for PREFIX_DIR in $DIR/*; do
   echo $PREFIX_DIR

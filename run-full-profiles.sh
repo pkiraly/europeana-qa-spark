@@ -57,7 +57,7 @@ scripts/analysis/profile-to-parquet.sh ${CSV} ${PARQUET} &> ${LOG_FILE}
 
 time=$(date +"%F %T")
 LOG_FILE=${LOG_DIR}/profiles-analysis.log
-echo "$time> run completeness analysis. Check log file: ${LOG_FILE}"
+echo "$time> run profile analysis. Check log file: ${LOG_FILE}"
 scripts/analysis/profile-all.sh ${PARQUET} keep_dirs &> ${LOG_FILE}
 
 cd scripts/

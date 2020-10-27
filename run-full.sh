@@ -27,12 +27,12 @@ printf "%s %s> launch indexing\n" $(date +"%F %T")
 printf "%s %s> copy results to production\n" $(date +"%F %T")
 cp -r ../europeana-qa-webdata/$VERSION /opt/data/europeana-qa-webdata/
 
-cd ~/data-export/
-printf "%s %s> count metadata and compress files (log: /home/pkiraly/data-export/count-and-compress-%s.log)\n" $(date +"%F %T") $VERSION
-./count-and-compress.sh $VERSION > count-and-compress-$VERSION.log
+# cd ~/data-export/
+# printf "%s %s> count metadata and compress files (log: /home/pkiraly/data-export/count-and-compress-%s.log)\n" $(date +"%F %T") $VERSION
+#./count-and-compress.sh $VERSION > count-and-compress-$VERSION.log
 
-printf "%s %s> archive compressed files (log: /home/pkiraly/data-export/save-full-download-%s.log)\n" $(date +"%F %T") $VERSION
-./save-full.sh $VERSION > save-full-$VERSION.log
+# printf "%s %s> archive compressed files (log: /home/pkiraly/data-export/save-full-download-%s.log)\n" $(date +"%F %T") $VERSION
+#./save-full.sh $VERSION > save-full-$VERSION.log
 
 printf "%s %s> adjust the web configuration file /var/www/html/europeana-qa/config.cfg\n" $(date +"%F %T")
 cp /var/www/html/europeana-qa/config.cfg /var/www/html/europeana-qa/config-pre-$VERSION.cfg
